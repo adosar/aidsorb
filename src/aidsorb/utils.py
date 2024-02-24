@@ -1,26 +1,16 @@
-import numpy as np
-from ase.io import read
+r"""
+Provides helper functions for creating and transforming molecular point clouds.
+"""
+
+
+import os
 from pathlib import Path
-
-
-def _check_shape(array):
-    r"""
-    Check if `array` has valid shape to be considered a molecular point cloud.
-
-    Parameters
-    ----------
-    array
-
-    Raises
-    ------
-    ValueError
-        If ``array.shape != (N, 4)``.
-    """
-    if not ((array.ndim == 2) and (array.shape[1] == 4)):
-        raise ValueError(
-                'Expecting array of shape (N, 4) '
-                f'but got array of shape {array.shape}!'
-                )
+import warnings
+import numpy as np
+from tqdm import tqdm
+from ase.io import read
+from . _check import _check_shape
+warnings.filterwarnings('ignore')
 
 
 def split_pcd(pcd):
@@ -75,24 +65,22 @@ def transform_pcd(pcd, M):
 
     points, atoms = split_pcd(pcd)
 
-    # Transpose the transformation matrix or matrices.
     if M.shape == (3, 3):
-        tfm = M.T
+        tfm = M.T  # Transpose the matrix.
+
         new_points = points @ tfm
 
         return np.hstack((new_points, atoms))
 
-    else:
-        size = len(M)  # The number of rotations.
-        tfm = M.transpose([0, 2, 1])
-        new_points = points @ tfm
+    size = len(M)  # The number of rotations.
+    tfm = M.transpose([0, 2, 1])  # Transpose the matrices.
 
-        atoms = atoms[np.newaxis, :]  # Array of shape (1, N, 1).
-        atoms = np.repeat(atoms, size, axis=0)  # Array of shape (size, N, 1).
+    new_points = points @ tfm
 
-        print(new_points.shape, atoms.shape)
+    atoms = atoms[np.newaxis, :]  # Shape (1, N, 1).
+    atoms = np.repeat(atoms, size, axis=0)  # Shape (size, N, 1).
 
-        return np.concatenate((new_points, atoms), axis=2)
+    return np.concatenate((new_points, atoms), axis=2)
 
 
 def center_pcd(pcd, mask_atoms=True):
@@ -134,7 +122,11 @@ def pcd_from_file(filename):
     the number of atoms, `pcd[:, :3]` are the **atom positions** and `pcd[:, 3]`
     are the **atomic numbers**.
 
-    Supported formats are: ``.cif'' and ``.xyz''.
+    .. note::
+        To get a list of the supported chemical file formats visit
+        `ase.io.read<https://wiki.fysik.dtu.dk/ase/ase/io/io.html#ase.io.iread>`_.
+        or type ``ase info --formats``. Alternatively, you can list them from
+        the command line with ``ase info --formats``.
 
     Parameters
     ----------
@@ -144,8 +136,8 @@ def pcd_from_file(filename):
     Returns
     -------
     name_and_pcd : tuple of shape (2,)
-        `name_and_pcd[0]` is the name of the molecule and `name_and_pcd[1]` is
-        the point cloud.
+        * ``name_and_pcd[0] == name``.
+        * ``name_and_pcd[1] == pcd``.
 
     Notes
     -----
@@ -163,8 +155,92 @@ def pcd_from_file(filename):
     return name, pcd
 
 
-def pcd_from_sources():
+def pcd_from_files(filenames, file, shuffle=False, seed=None):
     r"""
-    Create molecular point clouds from multiple sources and store them.
+    Create molecular point clouds from a list of files and store them.
+
+    The point clouds are stored in ``.npz`` format as key-value pairs. For more
+    information, check `np.savez`_.
+
+    Parameters
+    ----------
+    filenames : list-like object
+        A list of files.
+    file : str
+        The filename where the data will be stored.
+    shuffle : bool, default=False
+        If ``True``, the point clouds are shuffled.
+    seed : int, optional
+        Controls the randomness of the ``rng`` used for shuffling. Takes effect
+        only if ``shuffle=True``.
+
+    Notes
+    -----
+    Molecules that can't be processed are ommited.
+
+    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
-    pass
+    if shuffle:
+        rng = np.random.default_rng(seed=seed)
+        rng.shuffle(filenames)
+
+    # Dictionary with names as keys and pcd's as values.
+    savez_dict = {}
+
+    for f in tqdm(filenames, desc='Creating point clouds'):
+        try:
+            name, pcd = pcd_from_file(f)
+            savez_dict[name] = pcd
+        except Exception:
+            pass
+
+    # Store the point clouds.
+    np.savez(file, **savez_dict)
+
+
+def pcd_from_dir(dirname, file, shuffle=False, seed=None):
+    r"""
+    Create molecular point clouds from a directory and store them.
+
+    The point clouds are stored in ``.npz`` format as key-value pairs. For more
+    information, check `np.savez`_.
+
+    Parameters
+    ----------
+    dirname : str
+        The name of the directory.
+    file : str
+        The filename where the data will be stored.
+    shuffle : bool, default=False
+        If ``True``, the point clouds are shuffled.
+    seed : int, optional
+        Controls the randomness of the ``rng`` used for shuffling. Takes effect
+        only if ``shuffle=True``.
+
+    Notes
+    -----
+    Molecules that can't be processed are ommited.
+
+    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
+    """
+    filenames = np.fromiter(
+            (os.path.join(dirname, f) for f in os.listdir(dirname)),
+            dtype=object
+            )
+
+    if shuffle:
+        rng = np.random.default_rng(seed=seed)
+        rng.shuffle(filenames)
+
+    # Dictionary with names as keys and pcd's as values.
+    savez_dict = {}
+
+    for f in tqdm(filenames, desc='Creating point clouds'):
+        try:
+            name, pcd = pcd_from_file(f)
+            savez_dict[name] = pcd
+        except Exception:
+            pass
+
+    # Store the point clouds.
+    np.savez(file, **savez_dict)

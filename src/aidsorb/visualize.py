@@ -1,7 +1,24 @@
-from . utils import _check_shape, split_pcd
+r"""
+Provides helper functions for visualizing molecular point clouds.
+
+.. note::
+    You can alternatively visualize a molecular point cloud with ``ase``:
+
+    .. code-block:: python
+
+        from ase.io import read
+        from ase.visualize import view
+
+        atoms = read(path/to/file)
+        view(atoms)
+"""
+
+
+import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
+from . utils import _check_shape, split_pcd
 
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):
@@ -17,9 +34,29 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
     -------
     colors : array-like of shape (N,)
     """
+    # Subtract 1 to follow the indexing of ``_ptable``.
+    atomic_numbers = np.array(atomic_numbers) - 1
     scheme += '_color'
 
     return _ptable[scheme][atomic_numbers].values
+
+
+def get_elements(atomic_numbers):
+    r"""
+    Convert atomic numbers to element names.
+
+    Parameters
+    ----------
+    atomic_numbers : array-like of shape (N,)
+
+    Returns
+    -------
+    elements : array-like of shape (N,)
+    """
+    # Subtract 1 to follow the indexing of ``_ptable``.
+    atomic_numbers = np.array(atomic_numbers) - 1
+
+    return _ptable['name'][atomic_numbers].values
 
 
 def draw_pcd_mpl(pcd, scheme='cpk', **kwargs):
@@ -81,7 +118,7 @@ def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
        See :func:`utils.pcd_from_file`.
     scheme : {'jmol', 'cpk'}, default='jmol'
     kwargs
-        Valid keword arguments for `plotly.go.Scatter3D`_
+        Valid keword arguments for `plotly.go.Scatter3D`_.
 
     Returns
     -------
@@ -96,6 +133,7 @@ def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
     atoms = atoms.ravel()
 
     colors = get_atom_colors(atoms, scheme=scheme)
+    elements = get_elements(atoms)
 
     fig = go.Figure(data=[go.Scatter3d(
         x=points[:, 0],
@@ -103,6 +141,7 @@ def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
         z=points[:, 2],
         mode='markers',
         marker=dict(size=atoms, color=colors),
+        hovertext=elements,
         **kwargs
         )])
 
