@@ -1,5 +1,4 @@
 r"""Provides functions used for checking parameters in other modules."""
-from pathlib import Path
 
 
 def _check_shape(array):

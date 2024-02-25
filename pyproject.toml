@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+
+[project]
+name = "aidsorb"
+dynamic = ["version"]
+authors = [
+  {name="Antonios P. Sarikas", email="antonios.sarikas@gmail.com"},
+]
+license = {text = "GPL-3.0-only"}
+
+description = "Python package for processing molecular point clouds."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: POSIX :: Linux",
+]
+
+dependencies = [
+	"ase>=3.22.1",
+	"fire>=0.5.0",
+	"mendeleev==0.15.0",
+	"plotly>=5.19.0",
+	"tqdm>=4.66.2",
+	]
+
+[project.urls]
+Homepage = "https://github.com/adosar/aidsorb"
+Issues = "https://github.com/adosar/aidsorb/issues"
+
+# Add them in the end.
+#[project.scripts]
+#aidsorb-cli = "aidsorb.utils:cli"

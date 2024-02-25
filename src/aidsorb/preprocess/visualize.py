@@ -18,7 +18,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
-from . utils import _check_shape, split_pcd
+from . utils import _check_shape, split_pcd, pcd_from_file
 
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):
@@ -61,7 +61,7 @@ def get_elements(atomic_numbers):
 
 def draw_pcd_mpl(pcd, scheme='cpk', **kwargs):
     r"""
-    Visualize a molecular point cloud with Matploblib.
+    Visualize molecular point cloud with Matploblib.
 
     Each point `pcd[i, :-1]` is colorized and sized based on its atomic
     number `pcd[i, -1]`. For large point clouds, visualization with
@@ -82,9 +82,9 @@ def draw_pcd_mpl(pcd, scheme='cpk', **kwargs):
 
     Returns
     -------
-    fig : `Figure`_
+    fig : `mpl.figure.Figure`_
 
-    .. _Figure: https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure
+    .. _mpl.figure.Figure: https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure
     .. _plot.subplots: https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots
     .. _ax.scatter: https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.scatter.html#mpl_toolkits.mplot3d.axes3d.Axes3D.scatter
     """
@@ -107,7 +107,7 @@ def draw_pcd_mpl(pcd, scheme='cpk', **kwargs):
 
 def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
     r"""
-    Visualize a molecular point cloud with Plotly.
+    Visualize molecular point cloud with Plotly.
 
     Each point `pcd[i, :-1]` is colorized and sized based on its atomic
     number `pcd[i, -1]`.
@@ -140,12 +140,37 @@ def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
         y=points[:, 1],
         z=points[:, 2],
         mode='markers',
-        marker=dict(size=atoms, color=colors),
+        marker={'size': atoms, 'color': colors},
         hovertext=elements,
         **kwargs
         )])
 
     return fig
+
+
+def draw_pcd_from_file(filename, show=True, **kwargs):
+    r"""
+    Visualize molecular point from a file.
+
+    Parameters
+    ----------
+    filename : str
+        Absolute or relative path to the file.
+    show : bool, default=True
+        Render the point cloud with ``pio.renderers.default``.
+    kwargs
+        Valid keyword arguments for :func:`draw_pcd_plotly`.
+
+    Returns
+    -------
+    render : `plotly.go.Figure`_ if ``show==False`` else ``None``.
+
+    .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
+    """
+    _, pcd = pcd_from_file(filename)
+    fig = draw_pcd_plotly(pcd, **kwargs)
+
+    return fig.show() if show else fig
 
 
 # Load the periodic table.

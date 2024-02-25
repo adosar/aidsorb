@@ -6,6 +6,7 @@ Provides helper functions for creating and transforming molecular point clouds.
 import os
 from pathlib import Path
 import warnings
+import fire
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
@@ -172,7 +173,7 @@ def pcd_from_files(filenames, file, shuffle=False, seed=None):
         If ``True``, the point clouds are shuffled.
     seed : int, optional
         Controls the randomness of the ``rng`` used for shuffling. Takes effect
-        only if ``shuffle=True``.
+        only if ``shuffle == True``.
 
     Notes
     -----
@@ -180,6 +181,8 @@ def pcd_from_files(filenames, file, shuffle=False, seed=None):
 
     .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
+    filenames = np.fromiter(filenames, dtype=object)
+
     if shuffle:
         rng = np.random.default_rng(seed=seed)
         rng.shuffle(filenames)
@@ -215,7 +218,7 @@ def pcd_from_dir(dirname, file, shuffle=False, seed=None):
         If ``True``, the point clouds are shuffled.
     seed : int, optional
         Controls the randomness of the ``rng`` used for shuffling. Takes effect
-        only if ``shuffle=True``.
+        only if ``shuffle == True``.
 
     Notes
     -----
@@ -244,3 +247,8 @@ def pcd_from_dir(dirname, file, shuffle=False, seed=None):
 
     # Store the point clouds.
     np.savez(file, **savez_dict)
+
+
+def cli():
+    r"""Add docstring"""
+    fire.Fire(pcd_from_dir)
