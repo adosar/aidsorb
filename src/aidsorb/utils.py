@@ -27,6 +27,15 @@ def split_pcd(pcd):
     coords_and_atoms : tuple of shape (2,)
         * ``points_and_atoms[0] == coords``, an array of shape (N, 3).
         * ``points_and_atoms[1] == atoms``, an array of shape (N, 1).
+
+    Examples
+    --------
+    >>> pcd = np.random.randn(25, 4)
+    >>> points, atoms = split_pcd(pcd)
+    >>> points.shape
+    (25, 3)
+    >>> atoms.shape
+    (25, 1)
     """
     _check_shape(pcd)
 
@@ -103,6 +112,17 @@ def center_pcd(pcd, mask_atoms=True):
     -------
     new_pcd : array of shape (N, 4)
         The centered point cloud.
+
+    Examples
+    --------
+    >>> pcd = np.array([[2, 1, 3, 9], [-3, 2, 8, 9]])
+    >>> new_pcd = center_pcd(pcd)
+    >>> new_pcd.mean(axis=0)
+    array([0., 0., 0., 9.])
+
+    >>> new_pcd = center_pcd(pcd, mask_atoms=False)
+    >>> new_pcd.mean(axis=0)
+    array([0., 0., 0., 0.])
     """
     _check_shape(pcd)
 
