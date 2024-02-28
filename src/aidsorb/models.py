@@ -8,9 +8,7 @@ number of points in the point cloud.
 
 
 import torch
-import lightning as L
-from torch import nn, optim
-from torch.nn.functional import max_pool1d
+from torch import nn
 
 
 class TNet(nn.Module):
@@ -198,7 +196,6 @@ class PointNetFeat(nn.Module):
 
     def forward(self, x):
         # Input has shape (B, C, N).
-        bs = x.shape[0]
         n_points = x.shape[2]
 
         # Pass through the first shared MLP.
@@ -231,5 +228,4 @@ class PointNetFeat(nn.Module):
             
             return features, critical_indices, A
 
-        else:
-            return global_features, critical_indices, A
+        return global_features, critical_indices, A
