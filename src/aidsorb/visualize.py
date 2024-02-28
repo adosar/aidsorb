@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from . _check import _check_shape
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
-from . utils import, split_pcd, pcd_from_file
+from . utils import split_pcd, pcd_from_file
 
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):

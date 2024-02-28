@@ -64,6 +64,40 @@ def transform_pcd(pcd, M):
     ------
     ValueError
         If `pcd` or `M` have not the expected shape.
+
+    Examples
+    --------
+    >>> pcd = np.array([[3, -9, 2, 6], [3, 4, -1, 8]])
+    >>> M = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+    >>> transform_pcd(pcd, M)
+    array([[ 9,  3,  2,  6],
+           [-4,  3, -1,  8]])
+
+    >>> from scipy.spatial.transform import Rotation as R
+    >>> M = R.from_euler('z', 90, degrees=True).as_matrix()
+    >>> pcd = np.array([[1, 0, 0, 2], [0, 1, 0, 8]])
+    >>> transform_pcd(pcd, M).astype('int')
+    array([[ 0,  1,  0,  2],
+           [-1,  0,  0,  8]])
+
+    >>> pcd = np.random.randn(424, 4)
+    >>> M = R.random(num=32).as_matrix()
+    >>> transform_pcd(pcd, M).shape
+    (32, 424, 4)
+
+    >>> pcd = np.random.randn(424, 3)  # Invalid shape.
+    >>> M = np.random.randn(32, 3, 3)  # Valid shape.
+    >>> transform_pcd(pcd, M)
+    Traceback (most recent call last):
+        ...
+    ValueError: Expecting array of shape (N, 4) but got array of shape (424, 3)!
+
+    >>> pcd = np.random.randn(424, 4)  # Valid shape.
+    >>> M = np.random.randn(32, 4, 3)  # Invalid shape.
+    >>> transform_pcd(pcd, M)
+    Traceback (most recent call last):
+        ...
+    ValueError: Expecting array of shape (3, 3) or (T, 3, 3) but got array of shape (32, 4, 3)!
     """
     _check_shape(pcd)
 
