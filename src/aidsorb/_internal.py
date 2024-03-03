@@ -19,3 +19,6 @@ def _check_shape(array):
                 'Expecting array of shape (N, 4) '
                 f'but got array of shape {array.shape}!'
                 )
+
+
+_seed = 1  # Default value for controlling randomness.

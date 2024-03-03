@@ -18,13 +18,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
-from . _check import _check_shape
+from . _internal import _check_shape
 from . utils import split_pcd, pcd_from_file
 
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):
     r"""
-    Convert atomic numbers to colors based on `scheme`.
+    Convert atomic numbers to colors based on ``scheme``.
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
     -------
     colors : array-like of shape (N,)
     """
-    # Subtract 1 to follow the indexing of ``_ptable``.
+    # Subtract 1 to follow the indexing of _ptable.
     atomic_numbers = np.array(atomic_numbers) - 1
     scheme += '_color'
 
@@ -54,7 +54,7 @@ def get_elements(atomic_numbers):
     -------
     elements : array-like of shape (N,)
     """
-    # Subtract 1 to follow the indexing of ``_ptable``.
+    # Subtract 1 to follow the indexing of _ptable.
     atomic_numbers = np.array(atomic_numbers) - 1
 
     return _ptable['name'][atomic_numbers].values
@@ -64,17 +64,17 @@ def draw_pcd_mpl(pcd, scheme='cpk', **kwargs):
     r"""
     Visualize molecular point cloud with Matploblib.
 
-    Each point `pcd[i, :-1]` is colorized and sized based on its atomic
-    number `pcd[i, -1]`. For large point clouds, visualization with
+    Each point ``pcd[i, :-1]`` is colorized and sized based on its atomic
+    number ``pcd[i, -1]``. For large point clouds, visualization with
     :func:`draw_pcd_plotly` is recommended.
 
     Parameters
     ----------
     pcd : array of shape (N, 4)
-       See :func:`utils.pcd_from_file`.
+       See :func:``utils.pcd_from_file``.
     scheme : {'jmol', 'cpk'}, default='jmol'
     kwargs
-        Valid keyword arguments for `ax.scatter3D`_.
+        Valid keyword arguments for ``ax.scatter3D``_.
 
         .. warning::
             Do not pass the arguments ``c`` and ``s``. These are used under the
@@ -110,8 +110,8 @@ def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
     r"""
     Visualize molecular point cloud with Plotly.
 
-    Each point `pcd[i, :-1]` is colorized and sized based on its atomic
-    number `pcd[i, -1]`.
+    Each point ``pcd[i, :-1]`` is colorized and sized based on its atomic
+    number ``pcd[i, -1]``.
 
     Parameters
     ----------
@@ -164,7 +164,7 @@ def draw_pcd_from_file(filename, show=True, **kwargs):
 
     Returns
     -------
-    render : `plotly.go.Figure`_ if ``show==False`` else ``None``.
+    render : `plotly.go.Figure`_ if ``show == False`` else ``None``.
 
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
     """

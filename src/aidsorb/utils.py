@@ -4,13 +4,16 @@ Provides helper functions for creating and transforming molecular point clouds.
 
 
 import os
+import json
 from pathlib import Path
 import warnings
 import fire
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
-from . _check import _check_shape
+import torch
+from torch.utils.data import random_split
+from . _internal import _check_shape, _seed
 warnings.filterwarnings('ignore')
 
 
@@ -63,7 +66,7 @@ def transform_pcd(pcd, M):
     Raises
     ------
     ValueError
-        If `pcd` or `M` have not the expected shape.
+        If ``pcd`` or ``M`` have not the expected shape.
 
     Examples
     --------
@@ -173,8 +176,8 @@ def pcd_from_file(filename):
     r"""
     Create molecular point cloud from a file.
 
-    The molecular point cloud `pcd` is an array of shape `(N, 4)` where `N` is
-    the number of atoms, `pcd[:, :3]` are the **atom positions** and `pcd[:, 3]`
+    The molecular point cloud ``pcd`` is an array of shape ``(N, 4)`` where ``N`` is
+    the number of atoms, ``pcd[:, :3]`` are the **atom positions** and ``pcd[:, 3]``
     are the **atomic numbers**.
 
     .. note::
@@ -210,7 +213,7 @@ def pcd_from_file(filename):
     return name, pcd
 
 
-def pcd_from_files(filenames, file, shuffle=False, seed=None):
+def pcd_from_files(filenames, outname, shuffle=False, seed=_seed):
     r"""
     Create molecular point clouds from a list of files and store them.
 
@@ -219,9 +222,10 @@ def pcd_from_files(filenames, file, shuffle=False, seed=None):
 
     Parameters
     ----------
-    filenames : list-like object
-        A list of files.
-    file : str
+    filenames : iterable object
+        An iterable object providing the filenames. Absolute or relative
+        paths can be used.
+    outname : str
         The filename where the data will be stored.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
@@ -231,20 +235,20 @@ def pcd_from_files(filenames, file, shuffle=False, seed=None):
 
     Notes
     -----
-    Molecules that can't be processed are ommited.
+    Molecules that can't be processed are omitted.
 
     .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
-    filenames = np.fromiter(filenames, dtype=object)
+    fnames = np.fromiter(filenames, dtype=object)
 
     if shuffle:
-        rng = np.random.default_rng(seed=seed)
-        rng.shuffle(filenames)
+        rng = np.random.default_rng(seed=_seed)
+        rng.shuffle(fnames)
 
     # Dictionary with names as keys and pcd's as values.
     savez_dict = {}
 
-    for f in tqdm(filenames, desc='Creating point clouds'):
+    for f in tqdm(fnames, desc='\033[32mCreating point clouds\033[0m'):
         try:
             name, pcd = pcd_from_file(f)
             savez_dict[name] = pcd
@@ -252,10 +256,10 @@ def pcd_from_files(filenames, file, shuffle=False, seed=None):
             pass
 
     # Store the point clouds.
-    np.savez(file, **savez_dict)
+    np.savez(outname, **savez_dict)
 
 
-def pcd_from_dir(dirname, file, shuffle=False, seed=None):
+def pcd_from_dir(dirname, outname, shuffle=False, seed=_seed):
     r"""
     Create molecular point clouds from a directory and store them.
 
@@ -265,9 +269,9 @@ def pcd_from_dir(dirname, file, shuffle=False, seed=None):
     Parameters
     ----------
     dirname : str
-        The name of the directory.
-    file : str
-        The filename where the data will be stored.
+        Absolute or relative path to the directory.
+    outname : str
+        The name of the file where point clouds will be stored.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
     seed : int, optional
@@ -276,23 +280,23 @@ def pcd_from_dir(dirname, file, shuffle=False, seed=None):
 
     Notes
     -----
-    Molecules that can't be processed are ommited.
+    Molecules that can't be processed are omitted.
 
     .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
-    filenames = np.fromiter(
+    fnames = np.fromiter(
             (os.path.join(dirname, f) for f in os.listdir(dirname)),
             dtype=object
             )
 
     if shuffle:
-        rng = np.random.default_rng(seed=seed)
-        rng.shuffle(filenames)
+        rng = np.random.default_rng(seed=_seed)
+        rng.shuffle(fnames)
 
     # Dictionary with names as keys and pcd's as values.
     savez_dict = {}
 
-    for f in tqdm(filenames, desc='Creating point clouds'):
+    for f in tqdm(fnames, desc='\033[32mCreating point clouds\033[0m'):
         try:
             name, pcd = pcd_from_file(f)
             savez_dict[name] = pcd
@@ -300,9 +304,80 @@ def pcd_from_dir(dirname, file, shuffle=False, seed=None):
             pass
 
     # Store the point clouds.
-    np.savez(file, **savez_dict)
+    np.savez(outname, **savez_dict)
+
+
+def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_seed):
+    r"""
+    Split a source of point clouds in train, validation and test sets.
+
+    Before the split::
+
+        pcd_data
+        └──source.npz
+
+    After the split::
+
+        pcd_data
+        ├──source.npz
+        ├──train.json
+        ├──validation.json
+        └──test.json
+
+    Each ``.json`` file stores the names of the point clouds.
+
+    .. warning::
+        No directory is created by :func:`prepared_data`. **All ``.json`` files
+        are stored under the directory containing ``source``**.
+
+    Parameters
+    ----------
+    source : str
+        Absolute or relative path to the file holding the point clouds.
+    split_ratio : sequence, default=(0.8, 0.1, 0.1)
+        The sizes or fractions of splits to be produced.
+        * ``split_ratio[0] == train``
+        * ``split_ratio[1] == validation``
+        * ``split_ratio[2] == test``
+    seed : int, optional
+        Controls the randomness of the ``rng`` used for splitting.
+    """
+    rng = torch.Generator().manual_seed(seed)
+    path = Path(source).parents[0]
+    pcds = np.load(source, mmap_mode='r')
+
+    train, val, test = random_split(pcds.files, split_ratio, generator=rng)
+
+    for split, mode in zip((train, val, test), ('train', 'validation', 'test')):
+        names = list(split)
+        with open(os.path.join(path, f'{mode}.json'), 'w') as fhand:
+            json.dump(names, fhand, indent=4)
+
+    print('\033[32mData preparation completed!\033[0m')
+
+
+def get_names(filename):
+    r"""
+    Return names stored in a ``.json`` file.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file from which names will be retrieved.
+
+    Returns
+    -------
+    names : list
+    """
+    with open(filename, 'r') as fhand:
+        names = json.load(fhand)
+
+    return names
+
+
+def zero_pad():
+    ...
 
 
 def cli():
-    r"""Add docstring"""
-    fire.Fire(pcd_from_dir)
+    ...

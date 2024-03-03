@@ -1,9 +1,5 @@
 r"""
-Docstring of the module.
-
-All models must take input of the form `(B, C, N)` where `B` is the batch size,
-`C` the number of input channels (4 for molecular point clouds) and `N` the
-number of points in the point cloud.
+Write the docstring of the module.
 """
 
 
@@ -13,43 +9,40 @@ from torch import nn
 
 class TNet(nn.Module):
     r"""
-    `T-Net` from `PointNet` paper [1]_ for performing the feature transform.
+    ``T-Net`` from the ``PointNet`` paper [1]_ for performing the feature
+    transform.
 
-    `T-Net` takes as input a (possibly embedded) point cloud of shape `(dim, N)`
-    and regresses to a `(dim, dim)` matrix. Each point in the point cloud has
-    shape `(dim,)`.
+    ``T-Net`` takes as input a (possibly embedded) point cloud of shape ``(dim, N)``
+    and regresses a ``(dim, dim)`` matrix. Each point in the point cloud has
+    shape ``(dim,)``.
 
-    The input must be *batched*, i.e. have shape of `(B, dim, N)`, where `B` is
-    the batch size.
+    The input must be *batched*, i.e. have shape of ``(B, dim, N)``, where ``B`` is
+    the batch size and ``N`` is the number of points in each point cloud.
 
     Parameters
     ----------
-    dim : int, default=64
+    embed_dim : int, default=64
         The embedding dimension.
 
     Examples
     --------
-    >>> tnet = TNet(dim=64)
+    >>> tnet = TNet(embed_dim=64)
     >>> x = torch.randn((128, 64, 42))  # Shape (B, dim, N).
     >>> tnet(x).shape
     torch.Size([128, 64, 64])
-
-    The input must be batched:
-    >>> x = torch.randn((64, 42))
-    >>> tnet(x)
-    Traceback (most recent call last):
-        ...
-    RuntimeError: running_mean should contain 42 elements not 64
 
     .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
     Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
     Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
     USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
-    def __init__(self, dim=64):
+    def __init__(self, embed_dim=64):
         super().__init__()
+
+        self.embed_dim = embed_dim
+
         self.conv1 = nn.Sequential(
-                nn.Conv1d(dim, 64, kernel_size=1),
+                nn.Conv1d(embed_dim, 64, kernel_size=1),
                 nn.BatchNorm1d(64),
                 nn.ReLU()
                 )
@@ -74,12 +67,23 @@ class TNet(nn.Module):
                 nn.BatchNorm1d(256),
                 )
         self.fc3 = nn.Sequential(
-                nn.Linear(256, dim*dim),
+                nn.Linear(256, embed_dim * embed_dim),
                 )
 
-        self.dim = dim
-
     def forward(self, x):
+        r"""
+        Return the regressed matrices.
+
+        Parameters
+        ----------
+        x : tensor of shape (B, dim, N)
+            See :class:`TNet`.
+
+        Returns
+        -------
+        out : tensor of shape (B, dim, dim)
+            The regressed matrices.
+        """
         # Input has shape (B, self.dim, N).
         bs = x.shape[0]
 
@@ -92,37 +96,40 @@ class TNet(nn.Module):
         x = self.fc3(x)
 
         # Initialize the identity matrix.
-        identity = torch.eye(self.dim, requires_grad=True).repeat(bs, 1, 1)
+        identity = torch.eye(self.embed_dim, requires_grad=True).repeat(bs, 1, 1)
 
-        # Output has shape (B, self.dim, self.dim).
-        x = x.view(-1, self.dim, self.dim) + identity
+        # Output has shape (B, self.embed_dim, self.embed_dim).
+        x = x.view(-1, self.embed_dim, self.embed_dim) + identity
 
         return x
 
 
-class PointNetFeat(nn.Module):
+class PointNetBackbone(nn.Module):
     r"""
-    Backbone for the :class:`PointNet` model.
+    Backbone of the :class:`PointNet` model.
 
-    This block is responsible for obtaining the **local** and **global
-    features**, which can then be passed to a task head for predictions. This
+    This block is responsible for obtaining the *local* and *global*
+    **features**, which can then be passed to a task head for predictions. This
     block also returns the **critical indices** and the **regressed matrices**
-    (see :class:`STNkd`).
+    (see :class:`TNet`).
 
-    The input must be *batched*, i.e. have shape of `(B, C, N)` where `B` is the
-    batch size, `C` is the number of input channels (4 for molecular point
-    clouds) and `N` is the number of points in the point cloud.
+    The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
+    the batch size, ``C`` is the number of input channels  and ``N`` is the
+    number of points in each point cloud.
 
     Parameters
     ----------
     in_channels : int, default=4
         The number of input channels.
+    embed_dim : int, default=64
+        The embedding dimension of :class:`TNet`.
     n_global_features : int, default=1024
-        The number of `global_features`. These features can be used as input for
-        a task head or concatenated with `local_features`.
+        The number of ``global_features``. These features can be used as input for
+        a task head or concatenated with ``local_features``.
     local_features : bool, default=False
-        If `True`, the returned features are a concatenation of `local_features`
-        and `global_features`. Otherwise, only `global_features` are returned.
+        If ``True``, the returned features are a concatenation of
+        ``local_features`` and ``global_features``. Otherwise, the
+        ``global_features`` are returned.
         
     Notes
     -----
@@ -132,7 +139,7 @@ class PointNetFeat(nn.Module):
 
     Examples
     --------
-    >>> feat = PointNetFeat(n_global_features=2048)
+    >>> feat = PointNetBackbone(n_global_features=2048)
     >>> x = torch.randn((32, 4, 239))
     >>> features, indices, A = feat(x)
     >>> features.shape
@@ -142,7 +149,7 @@ class PointNetFeat(nn.Module):
     >>> A.shape
     torch.Size([32, 64, 64])
 
-    >>> feat = PointNetFeat(n_global_features=1024, local_features=True)
+    >>> feat = PointNetBackbone(n_global_features=1024, local_features=True)
     >>> x = torch.randn((16, 4, 239))
     >>> features, indices, A = feat(x)
     >>> features.shape
@@ -157,44 +164,64 @@ class PointNetFeat(nn.Module):
     Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
     USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
-    def __init__(self, in_channels=4, n_global_features=1024, local_features=False):
+    def __init__(
+            self, in_channels=4, embed_dim=64,
+            n_global_features=1024, local_features=False
+            ):
         super().__init__()
-        self.n_global_features = n_global_features
+
         self.local_features = local_features
 
         # T-Net for feature transform.
-        self.tnet = TNet(dim=64)
+        self.tnet = TNet(embed_dim=embed_dim)
 
         # The first shared MLP.
         self.conv1 = nn.Sequential(
-                nn.Conv1d(in_channels, 64, kernel_size=1),
-                nn.BatchNorm1d(64),
+                nn.Conv1d(in_channels, embed_dim, kernel_size=1),
+                nn.BatchNorm1d(embed_dim),
                 nn.ReLU(),
                 )
         self.conv2 = nn.Sequential(
-                nn.Conv1d(64, 64, kernel_size=1),
-                nn.BatchNorm1d(64),
+                nn.Conv1d(embed_dim, embed_dim, kernel_size=1),
+                nn.BatchNorm1d(embed_dim),
                 nn.ReLU(),
                 )
 
         # The second shared MLP.
         self.conv3 = nn.Sequential(
-                nn.Conv1d(64, 64, kernel_size=1),
-                nn.BatchNorm1d(64),
+                nn.Conv1d(embed_dim, embed_dim, kernel_size=1),
+                nn.BatchNorm1d(embed_dim),
                 nn.ReLU(),
                 )
         self.conv4 = nn.Sequential(
-                nn.Conv1d(64, 128, kernel_size=1),
+                nn.Conv1d(embed_dim, 128, kernel_size=1),
                 nn.BatchNorm1d(128),
                 nn.ReLU(),
                 )
         self.conv5 = nn.Sequential(
-                nn.Conv1d(128, self.n_global_features, kernel_size=1),
-                nn.BatchNorm1d(self.n_global_features),
+                nn.Conv1d(128, n_global_features, kernel_size=1),
+                nn.BatchNorm1d(n_global_features),
                 nn.ReLU(),
                 )
 
     def forward(self, x):
+        r"""
+        Return the features, critical indices and the regressed matrices.
+
+        The type of the features is determined by ``self.local_features``.
+
+        Parameters
+        ----------
+        x : tensor of shape (B, self.in_channels, N)
+            See :class:`PointNetBackbone`.
+
+        Returns
+        -------
+        out : tuple of shape (3,)
+            * ``out[0] == features``
+            * ``out[1] == critical_indices``
+            * ``out[2] == regressed_matrices``
+        """
         # Input has shape (B, C, N).
         n_points = x.shape[2]
 
@@ -229,3 +256,225 @@ class PointNetFeat(nn.Module):
             return features, critical_indices, A
 
         return global_features, critical_indices, A
+
+
+class PointNetClsHead(nn.Module):
+    r"""
+    The classification head from the `PointNet` paper [1]_.
+
+    .. note::
+        This head can be used either for classification or regression.
+
+    Parameters
+    ----------
+    n_inputs : int, default=1024
+    n_outputs : int, default=1
+    dropout_rate : float, default=0.7
+
+    Examples
+    --------
+    >>> head = PointNetClsHead(n_inputs=13, n_outputs=4)
+    >>> x = torch.randn(64, 13)
+    >>> out = head(x)
+    >>> out.shape
+    torch.Size([64, 4])
+
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+    """
+    def __init__(self, n_inputs=1024, n_outputs=1, dropout_rate=0.7):
+        super().__init__()
+
+        self.mlp = nn.Sequential(
+                nn.Linear(n_inputs, 512),
+                nn.BatchNorm1d(512),
+                nn.ReLU(),
+                nn.Linear(512, 256),
+                nn.BatchNorm1d(256),
+                nn.ReLU(),
+                nn.Dropout(dropout_rate),
+                nn.Linear(256, n_outputs),
+                )
+
+    def forward(self, x):
+        r"""
+        Parameters
+        ----------
+        x : tensor of shape (B, self.n_inputs)
+
+        Returns
+        -------
+        out : tensor of shape (B, self.n_outputs)
+        """
+        x = self.mlp(x)
+
+        return x
+
+
+class PointNetSegHead(nn.Module):
+    r"""
+    Modified segmentation head from the ``PointNet`` paper [1]_.
+
+    .. note::
+        This head can be used either for classification or regression.
+
+    The final layer is replaced by a global pooling layer followed by a linear
+    one.
+
+    Parameters
+    ----------
+    in_channels : int, default=1088
+        The number of input channels.
+    n_outputs : int, default=1
+
+    Examples
+    --------
+    >>> head = PointNetSegHead(n_outputs=2)
+    >>> x = torch.randn(32, 1088, 400)
+    >>> out = head(x)
+    >>> out.shape
+    torch.Size([32, 2])
+
+    >>> head.max_idx.shape  # Max indices from the pooling layer.
+    torch.Size([32, 128])
+
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+    """
+    def __init__(self, in_channels=1088, n_outputs=1):
+        super().__init__()
+
+        self.conv1 = nn.Sequential(
+                nn.Conv1d(in_channels, 512, kernel_size=1),
+                nn.BatchNorm1d(512),
+                nn.ReLU(),
+                )
+        self.conv2 = nn.Sequential(
+                nn.Conv1d(512, 256, kernel_size=1),
+                nn.BatchNorm1d(256),
+                nn.ReLU(),
+                )
+        self.conv3 = nn.Sequential(
+                nn.Conv1d(256, 128, kernel_size=1),
+                nn.BatchNorm1d(128),
+                nn.ReLU(),
+                )
+
+        self.linear = nn.Linear(128, n_outputs)
+
+    def forward(self, x):
+        r"""
+        Parameters
+        ----------
+        x : tensor of shape (B, self.in_channels, N).
+
+        Returns
+        -------
+        out : tensor of shape (B, self.n_outputs)
+        """
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)  # Shape (B, C, N).
+        
+        # Perform global pooling and store the max indices.
+        x, self.max_idx = torch.max(x, 2, keepdim=False)
+
+        x = self.linear(x)
+
+        return x
+
+
+class PointNet(nn.Module):
+    r"""
+    A deep learning architecture for processing point clouds [1]_.
+
+    ``PointNet`` takes as input a point cloud and outputs point cloud or point
+    level predictions. *The type of the task is determined by ``head``*.
+
+    Currently implemented heads include:
+    1. :class:`PointNetClsHead`: classification and regression
+    2. :class:`PointNetSegHead`: classification and regression
+
+    The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
+    the batch size, ``C`` is the number of input channels  and ``N`` is the
+    number of points in each point cloud.
+
+    You can define a ``custom_head`` head as a :class:``nn.Module`` instance and
+    pass it to ``head``.
+
+    .. warning::
+        * If ``local_features == False``, the shape of input to ``custom_head``
+        must have the same shape as in :meth:`PointNetClsHead`.
+        * If ``local_features == True``, the shape of the input to ``custom
+        head`` must have the shape as in :meth:`PointNetSegHead`.
+    
+    Parameters
+    ----------
+    head : class:`nn.Module` instance
+    in_channels : int, default=4
+        See :class:`PointNetBackBone`.
+    embed_dim : int, default=64
+        See :class:`PointNetBackBone`.
+    n_global_features : int, default=1024
+        See :class:`PointNetBackBone`.
+    local_features : bool, default=False
+        See :class:`PointNetBackBone`.
+
+    Examples
+    --------
+    >>> head = PointNetSegHead(in_channels=64+256, n_outputs=100)
+    >>> pointnet = PointNet(
+    ...     head=head, embed_dim=64,
+    ...     n_global_features=256, local_features=True
+    ...     )
+    >>> x = torch.randn(32, 4, 300)
+    >>> predictions, indices, A = pointnet(x)
+    >>> predictions.shape
+    torch.Size([32, 100])
+    >>> indices.shape
+    torch.Size([32, 256])
+    >>> A.shape
+    torch.Size([32, 64, 64])
+
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+    """
+    def __init__(
+            self, head, in_channels=4,
+            embed_dim=64, n_global_features=1024,
+            local_features=False,
+            ):
+        super().__init__()
+
+        self.backbone = PointNetBackbone(
+                in_channels=in_channels,
+                embed_dim=embed_dim,
+                n_global_features=n_global_features,
+                local_features=local_features,
+                )
+        
+        self.head = head
+
+    def forward(self, x):
+        r"""
+        Parameters
+        ----------
+        x : tensor of shape (B, self.in_channels, N)
+
+        Returns
+        -------
+        out : tuple of shape (3,)
+            * ``out[0] == predictions``
+            * ``out[1] == critical_indices``
+            * ``out[2] == regressed_matrices``
+        """
+        features, critical_indices, A = self.backbone(x)
+        output = self.head(features)
+
+        return output, critical_indices, A
