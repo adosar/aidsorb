@@ -3,10 +3,7 @@ from pathlib import Path
 import unittest
 import tempfile
 import numpy as np
-from aidsorb.utils import (
-        pcd_from_file, pcd_from_files, pcd_from_dir,
-        prepare_data, get_names,
-        )
+from aidsorb.utils import pcd_from_file, pcd_from_files, pcd_from_dir
 
 
 class TestPointCloudFromFile(unittest.TestCase):
@@ -77,43 +74,6 @@ class TestPointCloudFromDir(unittest.TestCase):
 
                 self.assertEqual(data['IRMOF-1'].shape, (424, 4))
                 self.assertEqual(data['Cu-BTC'].shape, (624, 4))
-
-    def tearDown(self):
-        self.tempdir.cleanup()
-
-
-class TestPrepareData(unittest.TestCase):
-    def setUp(self):
-        self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
-        self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
-        self.split_ratio = (2, 1, 2)
-
-        pcd_from_dir(dirname='tests/samples', outname=self.outname)
-        prepare_data(source=self.outname, split_ratio=self.split_ratio)
-
-    def test_overlap_and_ratio(self):
-        names = np.load(self.outname, mmap_mode='r').files
-        
-        train_names = get_names(os.path.join(self.tempdir.name, 'train.json'))
-        val_names = get_names(os.path.join(self.tempdir.name, 'validation.json'))
-        test_names = get_names(os.path.join(self.tempdir.name, 'test.json'))
-
-        # Their pairwise intersections must be the empty set.
-        self.assertEqual(set(train_names) & set(val_names), set())
-        self.assertEqual(set(train_names) & set(test_names), set())
-        self.assertEqual(set(val_names) & set(test_names), set())
-
-        # Their sizes must be equal to split_ratio.
-        self.assertEqual(
-                (len(train_names), len(val_names), len(test_names)),
-                self.split_ratio
-                )
-
-        # Their union must equal names.
-        self.assertEqual(
-                set(train_names) | set(val_names) | set(test_names),
-                set(names)
-                )
 
     def tearDown(self):
         self.tempdir.cleanup()

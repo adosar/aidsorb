@@ -76,15 +76,15 @@ class TNet(nn.Module):
 
         Parameters
         ----------
-        x : tensor of shape (B, dim, N)
+        x : tensor of shape (B, self.embed_dim, N)
             See :class:`TNet`.
 
         Returns
         -------
-        out : tensor of shape (B, dim, dim)
+        out : tensor of shape (B, self.embed_dim, self.embed_dim)
             The regressed matrices.
         """
-        # Input has shape (B, self.dim, N).
+        # Input has shape (B, self.embed_dim, N).
         bs = x.shape[0]
 
         x = self.conv1(x)
@@ -241,13 +241,13 @@ class PointNetBackbone(nn.Module):
         # Pass through the second shared MLP.
         x = self.conv3(x)
         x = self.conv4(x)
-        x = self.conv5(x)  # Shape (B, self.global_features, N).
+        x = self.conv5(x)  # Shape (B, self.n_global_features, N).
 
-        # Shape (B, self.global_features).
+        # Shape (B, self.n_global_features).
         global_features, critical_indices = torch.max(x, 2, keepdim=False)
 
         if self.local_features:
-            # Shape (B, self.global_features + 64, N)
+            # Shape (B, self.n_global_features + self.embed_dim, N)
             features = torch.cat(
                     (point_features, global_features.unsqueeze(-1).repeat(1, 1, n_points)),
                     dim=1
@@ -392,29 +392,29 @@ class PointNet(nn.Module):
     r"""
     A deep learning architecture for processing point clouds [1]_.
 
-    ``PointNet`` takes as input a point cloud and outputs point cloud or point
-    level predictions. *The type of the task is determined by ``head``*.
+    ``PointNet`` takes as input a point cloud and produces one or more outputs.
+    *The type of the task is determined by ``head``*.
 
     Currently implemented heads include:
-    1. :class:`PointNetClsHead`: classification and regression
-    2. :class:`PointNetSegHead`: classification and regression
+    1. :class:`PointNetClsHead`: classification and regression.
+    2. :class:`PointNetSegHead`: classification and regression.
 
     The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
     the batch size, ``C`` is the number of input channels  and ``N`` is the
     number of points in each point cloud.
 
-    You can define a ``custom_head`` head as a :class:``nn.Module`` instance and
+    You can define a ``custom_head`` head as a :class:``nn.Module`` and
     pass it to ``head``.
 
     .. warning::
         * If ``local_features == False``, the shape of input to ``custom_head``
-        must have the same shape as in :meth:`PointNetClsHead`.
+        must have the same shape as in :meth:`PointNetClsHead.forward`.
         * If ``local_features == True``, the shape of the input to ``custom
-        head`` must have the shape as in :meth:`PointNetSegHead`.
+        head`` must have the shape as in :meth:`PointNetSegHead.forward`.
     
     Parameters
     ----------
-    head : class:`nn.Module` instance
+    head : class:`nn.Module` object
     in_channels : int, default=4
         See :class:`PointNetBackBone`.
     embed_dim : int, default=64

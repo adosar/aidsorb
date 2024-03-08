@@ -4,15 +4,12 @@ Provides helper functions for creating and transforming molecular point clouds.
 
 
 import os
-import json
 from pathlib import Path
 import warnings
 import fire
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
-import torch
-from torch.utils.data import random_split
 from . _internal import _check_shape, _seed
 warnings.filterwarnings('ignore')
 
@@ -134,7 +131,7 @@ def center_pcd(pcd, mask_atoms=True):
     r"""
     Center a point cloud.
 
-    The centering is performed by removing the centroid of the point cloud.
+    The centering is performed by subtracting the centroid of the point cloud.
 
     Parameters
     ----------
@@ -226,7 +223,7 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_seed):
         An iterable object providing the filenames. Absolute or relative
         paths can be used.
     outname : str
-        The filename where the data will be stored.
+        Filename where the data will be stored.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
     seed : int, optional
@@ -271,7 +268,7 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_seed):
     dirname : str
         Absolute or relative path to the directory.
     outname : str
-        The name of the file where point clouds will be stored.
+        Name of the file where point clouds will be stored.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
     seed : int, optional
@@ -305,78 +302,6 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_seed):
 
     # Store the point clouds.
     np.savez(outname, **savez_dict)
-
-
-def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_seed):
-    r"""
-    Split a source of point clouds in train, validation and test sets.
-
-    Before the split::
-
-        pcd_data
-        └──source.npz
-
-    After the split::
-
-        pcd_data
-        ├──source.npz
-        ├──train.json
-        ├──validation.json
-        └──test.json
-
-    Each ``.json`` file stores the names of the point clouds.
-
-    .. warning::
-        No directory is created by :func:`prepared_data`. **All ``.json`` files
-        are stored under the directory containing ``source``**.
-
-    Parameters
-    ----------
-    source : str
-        Absolute or relative path to the file holding the point clouds.
-    split_ratio : sequence, default=(0.8, 0.1, 0.1)
-        The sizes or fractions of splits to be produced.
-        * ``split_ratio[0] == train``
-        * ``split_ratio[1] == validation``
-        * ``split_ratio[2] == test``
-    seed : int, optional
-        Controls the randomness of the ``rng`` used for splitting.
-    """
-    rng = torch.Generator().manual_seed(seed)
-    path = Path(source).parents[0]
-    pcds = np.load(source, mmap_mode='r')
-
-    train, val, test = random_split(pcds.files, split_ratio, generator=rng)
-
-    for split, mode in zip((train, val, test), ('train', 'validation', 'test')):
-        names = list(split)
-        with open(os.path.join(path, f'{mode}.json'), 'w') as fhand:
-            json.dump(names, fhand, indent=4)
-
-    print('\033[32mData preparation completed!\033[0m')
-
-
-def get_names(filename):
-    r"""
-    Return names stored in a ``.json`` file.
-
-    Parameters
-    ----------
-    filename : str
-        The name of the file from which names will be retrieved.
-
-    Returns
-    -------
-    names : list
-    """
-    with open(filename, 'r') as fhand:
-        names = json.load(fhand)
-
-    return names
-
-
-def zero_pad():
-    ...
 
 
 def cli():
