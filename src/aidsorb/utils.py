@@ -10,7 +10,7 @@ import fire
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
-from . _internal import _check_shape, _seed
+from . _internal import _check_shape, _SEED
 warnings.filterwarnings('ignore')
 
 
@@ -210,7 +210,7 @@ def pcd_from_file(filename):
     return name, pcd
 
 
-def pcd_from_files(filenames, outname, shuffle=False, seed=_seed):
+def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
     r"""
     Create molecular point clouds from a list of files and store them.
 
@@ -239,7 +239,7 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_seed):
     fnames = np.fromiter(filenames, dtype=object)
 
     if shuffle:
-        rng = np.random.default_rng(seed=_seed)
+        rng = np.random.default_rng(seed=_SEED)
         rng.shuffle(fnames)
 
     # Dictionary with names as keys and pcd's as values.
@@ -256,7 +256,7 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_seed):
     np.savez(outname, **savez_dict)
 
 
-def pcd_from_dir(dirname, outname, shuffle=False, seed=_seed):
+def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
     r"""
     Create molecular point clouds from a directory and store them.
 
@@ -287,7 +287,7 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_seed):
             )
 
     if shuffle:
-        rng = np.random.default_rng(seed=_seed)
+        rng = np.random.default_rng(seed=_SEED)
         rng.shuffle(fnames)
 
     # Dictionary with names as keys and pcd's as values.

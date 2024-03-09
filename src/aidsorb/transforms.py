@@ -1,7 +1,9 @@
+r"""
+Add docstring of the module.
+"""
 import numpy as np
-from torchvision import transforms
-from . utils import center_pcd, transform_pcd
 from scipy.spatial.transform import Rotation as R
+from . utils import center_pcd, transform_pcd
 
 
 class Centering():
@@ -88,5 +90,3 @@ class RandomRotation():
         new_pcd = transform_pcd(sample, rot)
 
         return new_pcd
-
-

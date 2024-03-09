@@ -21,4 +21,4 @@ def _check_shape(array):
                 )
 
 
-_seed = 1  # Default value for controlling randomness.
+_SEED = 1  # Default value for controlling randomness.

@@ -27,7 +27,7 @@ class TNet(nn.Module):
     Examples
     --------
     >>> tnet = TNet(embed_dim=64)
-    >>> x = torch.randn((128, 64, 42))  # Shape (B, dim, N).
+    >>> x = torch.randn((128, 64, 42))  # Shape (B, embed_dim, N).
     >>> tnet(x).shape
     torch.Size([128, 64, 64])
 
@@ -252,7 +252,7 @@ class PointNetBackbone(nn.Module):
                     (point_features, global_features.unsqueeze(-1).repeat(1, 1, n_points)),
                     dim=1
                     )
-            
+
             return features, critical_indices, A
 
         return global_features, critical_indices, A
@@ -333,11 +333,11 @@ class PointNetSegHead(nn.Module):
     --------
     >>> head = PointNetSegHead(n_outputs=2)
     >>> x = torch.randn(32, 1088, 400)
-    >>> out = head(x)
+    >>> out, max_idx = head(x)
     >>> out.shape
     torch.Size([32, 2])
 
-    >>> head.max_idx.shape  # Max indices from the pooling layer.
+    >>> max_idx.shape  # Max indices from the pooling layer.
     torch.Size([32, 128])
 
     .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
@@ -374,18 +374,20 @@ class PointNetSegHead(nn.Module):
 
         Returns
         -------
-        out : tensor of shape (B, self.n_outputs)
+        out : tuple of shape (2,)
+            * ``out[0] == predictions`` with shape ``(B, self.n_outputs)``
+            * ``out[1] == max_indices`` with shape ``(B, 128)``
         """
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)  # Shape (B, C, N).
         
         # Perform global pooling and store the max indices.
-        x, self.max_idx = torch.max(x, 2, keepdim=False)
+        x, max_idx = torch.max(x, 2, keepdim=False)
 
         x = self.linear(x)
 
-        return x
+        return x, max_idx
 
 
 class PointNet(nn.Module):
@@ -432,9 +434,11 @@ class PointNet(nn.Module):
     ...     n_global_features=256, local_features=True
     ...     )
     >>> x = torch.randn(32, 4, 300)
-    >>> predictions, indices, A = pointnet(x)
+    >>> (predictions, max_idx), indices, A = pointnet(x)
     >>> predictions.shape
     torch.Size([32, 100])
+    >>> max_idx.shape
+    torch.Size([32, 128])
     >>> indices.shape
     torch.Size([32, 256])
     >>> A.shape
@@ -470,7 +474,7 @@ class PointNet(nn.Module):
         Returns
         -------
         out : tuple of shape (3,)
-            * ``out[0] == predictions``
+            * ``out[0] == head_output``
             * ``out[1] == critical_indices``
             * ``out[2] == regressed_matrices``
         """

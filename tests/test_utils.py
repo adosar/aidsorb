@@ -1,17 +1,27 @@
 import os
 from pathlib import Path
+import doctest
 import unittest
 import tempfile
 import numpy as np
+from aidsorb import utils
 from aidsorb.utils import pcd_from_file, pcd_from_files, pcd_from_dir
 
 
 class TestPointCloudFromFile(unittest.TestCase):
     def test_pcd_from_file(self):
         name, pcd = pcd_from_file('tests/samples/IRMOF-1.xyz')
-
         self.assertEqual(name, 'IRMOF-1')
         self.assertEqual(pcd.shape, (424, 4))
+
+        water = np.array([
+            [0, 0, 0.11779, 8],
+            [0, 0.75545, -0.47116, 1],
+            [0, -0.75545, -0.47116, 1],
+            ], dtype='float32')
+        name, pcd = pcd_from_file('tests/dummy/H2O.xyz')
+        self.assertEqual(name, 'H2O')
+        self.assertTrue(np.all(pcd == water))
 
 
 class TestPointCloudFromFiles(unittest.TestCase):
@@ -77,6 +87,11 @@ class TestPointCloudFromDir(unittest.TestCase):
 
     def tearDown(self):
         self.tempdir.cleanup()
+
+
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite(utils))
+    return tests
 
 
 if __name__ == '__main__':

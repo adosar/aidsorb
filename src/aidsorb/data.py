@@ -1,15 +1,17 @@
+r"""
+Add docstring of the module.
+"""
 import os
 import json
 from pathlib import Path
 import numpy as np
 import torch
-import lightning as L
 from torch.utils.data import random_split, Dataset
 from torch.nn.utils.rnn import pad_sequence
-from . _internal import _seed
+from . _internal import _SEED
 
 
-def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_seed):
+def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
     r"""
     Split a source of point clouds in train, validation and test sets.
 
@@ -45,7 +47,7 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_seed):
         Controls the randomness of the ``rng`` used for splitting.
     """
     rng = torch.Generator().manual_seed(seed)
-    path = Path(source).parents[0]
+    path = Path(source).parent
     pcds = np.load(source, mmap_mode='r')
 
     train, val, test = random_split(pcds.files, split_ratio, generator=rng)
@@ -77,7 +79,7 @@ def get_names(filename):
     return names
 
 
-def zero_pad_pcds(pcds):
+def zero_pad_pcds(pcds, channels_first):
     r"""
     Pad a sequence of variable size point clouds with zeroes.
 
@@ -86,29 +88,46 @@ def zero_pad_pcds(pcds):
     Parameters
     ----------
     pcds : sequence of tensors
+    channels_first : bool
 
     Returns
     -------
-    batch : tensor of shape (B, T, *)
+    batch : tensor of shape (B, T, *) or (B, *, T)
         ``B == len(pcds)`` is the batch size and ``T`` is the size of the
-        largest point cloud.
+        largest point cloud. If ``channels_first == False``, ``batch.shape ==
+        (B, T, *)``. Otherwise, ``batch.shape == (B, *, T)``.
 
     Examples
     --------
     >>> x1 = torch.tensor([[1, 2, 3, 4]])
     >>> x2 = torch.tensor([[2, 5, 3, 8], [0, 2, 8, 9]])
-    >>> batch = zero_pad_pcds((x1, x2))
+    >>> batch = zero_pad_pcds((x1, x2), channels_first=False)
     >>> batch
     tensor([[[1, 2, 3, 4],
              [0, 0, 0, 0]],
     <BLANKLINE>
             [[2, 5, 3, 8],
              [0, 2, 8, 9]]])
+
+    >>> batch = zero_pad_pcds((x1, x2), channels_first=True)
+    >>> batch
+    tensor([[[1, 0],
+             [2, 0],
+             [3, 0],
+             [4, 0]],
+    <BLANKLINE>
+            [[2, 0],
+             [5, 2],
+             [3, 8],
+             [8, 9]]])
     """
     # Shape (B, n_points, C).
-    x = pad_sequence(pcds, batch_first=True, padding_value=0)
+    batch = pad_sequence(pcds, batch_first=True, padding_value=0)
 
-    return x
+    if channels_first:
+        batch = batch.transpose(1, 2)  # Shape (B, C, n_points).
+
+    return batch
 
 
 def collate_zero_pad_pointnet(samples):
@@ -118,7 +137,7 @@ def collate_zero_pad_pointnet(samples):
     Point clouds are zero padded before collation. See :func:`zero_pad_pcds`.
 
     .. note::
-        You can use this collate function if your model is
+        You should use this collate function if your model is
         :class:`models.PointNet`.
 
     Parameters
@@ -158,11 +177,8 @@ def collate_zero_pad_pointnet(samples):
             [7., 3.]])
     """
     pcds, labels = list(zip(*samples))
-
-    # Shape (B, T, *).
-    x = pad_sequence(pcds, batch_first=True, padding_value=0)
     
-    x = x.transpose(1, 2)  # Shape (B, *, T).
+    x = zero_pad_pcds(pcds, channels_first=True)  # Shape (B, *, T).
     y = torch.stack(labels)  # Shape (B, n_outputs).
 
     return x, y
@@ -178,18 +194,19 @@ class PCDDataset(Dataset):
         List containing the names of the point clouds.
     pcd_X : numpy.lib.npyio.NpzFile
         Loaded `.npz` file. ``pcd_names`` must be present in ``pcd_X.files``.
-    pcd_Y : pandas.core.frame.DataFrame
+    pcd_Y : pandas.core.frame.DataFrame, optional
         Dataframe containing the desired outputs (i.e ground truth values).
         ``pcd_names`` must be present in ``pcd_Y.index``.
-    labels : list
-        List containing the names of the properties to be modelled. ``labels``
-        must be present in ``pcd_Y.columns``.
-    transform_x : transform, optional
+    labels : list, optional
+        List containing the names of the properties to be predicted. ``labels``
+        must be present in ``pcd_Y.columns``. No effect if ``pcd_Y == None``.
+    transform_x : callable, optional
         Transforms applied to ``sample_x`` (i.e to each point cloud). See
         `transforms`_ for implementing your own transforms.
-    transform_y : transform, optional
+    transform_y : callable, optional
         Transforms applied to ``sample_y`` (i.e. to the individual outputs).
-        See `transforms`_ for implementing your own transforms.
+        See `transforms`_ for implementing your own transforms. No effect if
+        ``pcd_Y == None``.
 
         .. note::
             For example, if you want to perform classification, here you can
@@ -198,35 +215,42 @@ class PCDDataset(Dataset):
     .. _transforms: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
     """
     def __init__(
-            self, pcd_names, pcd_X, pcd_Y, labels,
+            self, pcd_names, pcd_X, pcd_Y=None, labels=None,
             transform_x=None, transform_y=None,
             ):
 
-        if type(labels) != list:
-            raise ValueError(f'labels must be a list!')
+        if (labels is not None) and (type(labels) != list):
+            raise ValueError('labels must be a list!')
 
-        self.pcd_names = pcd_names
+        self._pcd_names = pcd_names
         self.X = pcd_X
         self.Y = pcd_Y
         self.labels = labels
         self.transform_x = transform_x
         self.transform_y = transform_y
 
+    @property
+    def pcd_names(self):
+        return self._pcd_names
+
     def __len__(self):
         return len(self.pcd_names)
 
     def __getitem__(self, idx):
         name = self.pcd_names[idx]
-        sample_x, sample_y = self.X[name], self.Y.loc[name, self.labels]
 
-        if self.transform_x:
+        sample_x = self.X[name]
+
+        if self.transform_x is not None:
             sample_x = self.transform_x(sample_x)
 
-        if self.transform_y:
-            sample_y = self.transform_y(sample_y)
+        # Only for labeled datasets.
+        if self.Y is not None:
+            sample_y = self.Y.loc[name, self.labels].values
 
-        return sample_x, sample_y
+            if self.transform_y is not None:
+                sample_y = self.transform_y(sample_y)
 
+            return torch.tensor(sample_x), torch.tensor(sample_y)
 
-class PointNetDataModule(L.LightningDataModule):
-    ...
+        return torch.tensor(sample_x)
