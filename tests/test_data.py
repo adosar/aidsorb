@@ -2,6 +2,7 @@ import os
 import doctest
 import unittest
 import tempfile
+from itertools import combinations
 import numpy as np
 import torch
 import pandas as pd
@@ -33,9 +34,12 @@ class TestPrepareData(unittest.TestCase):
         test_names = get_names(os.path.join(self.tempdir.name, 'test.json'))
 
         # Their pairwise intersections must be the empty set.
-        self.assertEqual(set(train_names) & set(val_names), set())
-        self.assertEqual(set(train_names) & set(test_names), set())
-        self.assertEqual(set(val_names) & set(test_names), set())
+        for comb in combinations([train_names, val_names, test_names], r=2):
+            self.assertEqual(set(comb[0]) & set(comb[1]), set())
+
+        #self.assertEqual(set(train_names) & set(val_names), set())
+        #self.assertEqual(set(train_names) & set(test_names), set())
+        #self.assertEqual(set(val_names) & set(test_names), set())
 
         # Their sizes must be equal to split_ratio.
         self.assertEqual(

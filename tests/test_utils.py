@@ -8,7 +8,7 @@ from aidsorb import utils
 from aidsorb.utils import pcd_from_file, pcd_from_files, pcd_from_dir
 
 
-class TestPointCloudFromFile(unittest.TestCase):
+class TestPCDFromFile(unittest.TestCase):
     def test_pcd_from_file(self):
         name, pcd = pcd_from_file('tests/samples/IRMOF-1.xyz')
         self.assertEqual(name, 'IRMOF-1')
@@ -24,7 +24,7 @@ class TestPointCloudFromFile(unittest.TestCase):
         self.assertTrue(np.all(pcd == water))
 
 
-class TestPointCloudFromFiles(unittest.TestCase):
+class TestPCDFromFiles(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.fnames = ['tests/samples/IRMOF-1.xyz', 'tests/samples/Cu-BTC.cif']
@@ -60,7 +60,7 @@ class TestPointCloudFromFiles(unittest.TestCase):
         self.tempdir.cleanup()
 
 
-class TestPointCloudFromDir(unittest.TestCase):
+class TestPCDFromDir(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')

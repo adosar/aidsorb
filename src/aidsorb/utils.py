@@ -137,8 +137,8 @@ def center_pcd(pcd, mask_atoms=True):
     ----------
     pcd : array of shape (N, 4)
     mask_atoms : bool, default=True
-        Whether to mask atoms when calculating the
-        centroid. If ``True``, ``centroid == pcd.mean(axis=0) * mask`` where
+        Whether to mask centroid.
+        If ``True``, ``centroid == pcd.mean(axis=0) * mask`` where
         ``mask == array([1, 1, 1, 0])``. Otherwise, ``centroid ==
         pcd.mean(axis=0)``.
 
@@ -149,11 +149,12 @@ def center_pcd(pcd, mask_atoms=True):
 
     Examples
     --------
-    >>> pcd = np.array([[2, 1, 3, 9], [-3, 2, 8, 9]])
+    >>> pcd = np.array([[2, 1, 3, 9], [-3, 2, 8, 7]])
     >>> new_pcd = center_pcd(pcd)
     >>> new_pcd.mean(axis=0)
-    array([0., 0., 0., 9.])
+    array([0., 0., 0., 8.])
 
+    >>> pcd = np.array([[2, 1, 3, 9], [-3, 2, 8, 7]])
     >>> new_pcd = center_pcd(pcd, mask_atoms=False)
     >>> new_pcd.mean(axis=0)
     array([0., 0., 0., 0.])
@@ -164,9 +165,7 @@ def center_pcd(pcd, mask_atoms=True):
     if mask_atoms:
         centroid *= np.array([1, 1, 1, 0])
 
-    new_pcd = pcd - centroid
-
-    return new_pcd
+    return pcd - centroid
 
 
 def pcd_from_file(filename):
@@ -205,7 +204,7 @@ def pcd_from_file(filename):
     positions = structure.get_positions()
     atoms = structure.get_atomic_numbers().reshape(len(positions), -1)
 
-    pcd = np.hstack((positions, atoms)).astype('float32')
+    pcd = np.hstack((positions, atoms), dtype='float32')
 
     return name, pcd
 
@@ -253,7 +252,7 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
             pass
 
     # Store the point clouds.
-    np.savez(outname, **savez_dict)
+    np.savez_compressed(outname, **savez_dict)
 
 
 def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
@@ -301,7 +300,7 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
             pass
 
     # Store the point clouds.
-    np.savez(outname, **savez_dict)
+    np.savez_compressed(outname, **savez_dict)
 
 
 def cli():

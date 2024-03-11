@@ -133,7 +133,7 @@ class PointNetBackbone(nn.Module):
         
     Notes
     -----
-    In this implementation, the input `T-Net` transformation from the original
+    In this implementation, the input ``T-Net`` transformation from the original
     paper [1]_ is not applied since is it is not guaranteed to be a rigid
     one.
 
@@ -409,10 +409,10 @@ class PointNet(nn.Module):
     pass it to ``head``.
 
     .. warning::
-        * If ``local_features == False``, the shape of input to ``custom_head``
-        must have the same shape as in :meth:`PointNetClsHead.forward`.
-        * If ``local_features == True``, the shape of the input to ``custom
-        head`` must have the shape as in :meth:`PointNetSegHead.forward`.
+        * If ``local_features == False``, the input to ``custom_head`` must have
+        the same shape as in :meth:`PointNetClsHead.forward`.
+        * If ``local_features == True``, the input to ``custom_head`` must have
+        the same shape as in :meth:`PointNetSegHead.forward`.
     
     Parameters
     ----------

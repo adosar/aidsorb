@@ -1,6 +1,7 @@
 r"""
 Add module docstring.
 """
+
 import os
 from pathlib import Path
 import lightning as L
@@ -56,10 +57,13 @@ class PCDDataModule(L.LightningDataModule):
         Transforms applied to the labels. See :class:`PCDDataset`.
     shuffle : bool, default=False
         Only for ``train_dataloader``. See `DataLoader`_.
-    batch_size : int, default=64
-        See `DataLoader`_.
+    train_batch_size : int, default=64
+        For ``*_dataloader``. See `DataLoader`_.
+    eval_batch_size : int, default=64
+        For ``{validation,test,predict}_dataloader``. See `DataLoader`_.
     kwargs : dict, optional
-        Valid keyword arguments for `DataLoader`_.
+        Valid keyword arguments for `DataLoader`_. For ``*_dataloader``. See
+        `DataLoader`_.
 
     .. _DataLoader : https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
     """
@@ -68,7 +72,7 @@ class PCDDataModule(L.LightningDataModule):
             labels, train_size=None,
             train_transform_x=None, eval_transform_x=None,
             transform_y=None, shuffle=False,
-            batch_size=64, **kwargs
+            train_batch_size=64, eval_batch_size=64, **kwargs
             ):
         super().__init__()
         
@@ -84,8 +88,9 @@ class PCDDataModule(L.LightningDataModule):
 
         self.train_size = train_size
         self.shuffle = shuffle
-        self.batch_size = batch_size
 
+        self.train_batch_size = train_batch_size
+        self.eval_batch_size = eval_batch_size
         self._config_dataloader = kwargs
 
     def prepare_data(self):
@@ -93,7 +98,7 @@ class PCDDataModule(L.LightningDataModule):
         self._pcds_npz = np.load(self.path_to_X, mmap_mode='r')
         self._df = pd.read_csv(self.path_to_Y, index_col=self.index_col)
 
-    def setup(self, stage):
+    def setup(self, stage=None):
         if stage in (None, 'fit'):
             # Load the names for training and validation.
             self._train_names = get_names(
@@ -150,7 +155,7 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def set_test_dataset(self):
-        return PCDDataset(
+        self.test_dataset = PCDDataset(
                 pcd_names=self.test_names,
                 pcd_X=self._pcds_npz, pcd_Y=self._df,
                 labels=self.labels,
@@ -162,27 +167,27 @@ class PCDDataModule(L.LightningDataModule):
         return DataLoader(
                 dataset=self.train_dataset,
                 shuffle=self.shuffle,
-                batch_size=self.batch_size,
+                batch_size=self.train_batch_size,
                 **self._config_dataloader,
                 )
 
     def validation_dataloader(self):
         return DataLoader(
                 dataset=self.validation_dataset,
-                batch_size=self.batch_size,
+                batch_size=self.eval_batch_size,
                 **self._config_dataloader,
                 )
 
     def test_dataloader(self):
         return DataLoader(
                 dataset=self.test_dataset,
-                batch_size=self.batch_size,
+                batch_size=self.eval_batch_size,
                 **self._config_dataloader,
                 )
 
     def predict_dataloader(self):
         return DataLoader(
                 dataset=self.test_dataset,
-                batch_size=self.batch_size,
+                batch_size=self.eval_batch_size,
                 **self._config_dataloader,
                 )
