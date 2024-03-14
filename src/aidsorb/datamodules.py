@@ -58,7 +58,7 @@ class PCDDataModule(L.LightningDataModule):
     shuffle : bool, default=False
         Only for ``train_dataloader``. See `DataLoader`_.
     train_batch_size : int, default=64
-        For ``*_dataloader``. See `DataLoader`_.
+        Only for ``train_dataloader``. See `DataLoader`_.
     eval_batch_size : int, default=64
         For ``{validation,test,predict}_dataloader``. See `DataLoader`_.
     kwargs : dict, optional

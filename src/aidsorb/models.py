@@ -97,6 +97,8 @@ class TNet(nn.Module):
 
         # Initialize the identity matrix.
         identity = torch.eye(self.embed_dim, requires_grad=True).repeat(bs, 1, 1)
+        if x.is_cuda:
+            identity = identity.to(device='cuda')
 
         # Output has shape (B, self.embed_dim, self.embed_dim).
         x = x.view(-1, self.embed_dim, self.embed_dim) + identity

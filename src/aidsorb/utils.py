@@ -63,7 +63,7 @@ def transform_pcd(pcd, M):
     Raises
     ------
     ValueError
-        If ``pcd`` or ``M`` have not the expected shape.
+        If ``pcd`` or ``M`` do not have the expected shape.
 
     Examples
     --------
