@@ -82,15 +82,13 @@ class TestPCDDataModule(unittest.TestCase):
     def test_dataloaders(self):
         dataloaders = [
                 self.dm.train_dataloader(),
-                self.dm.validation_dataloader(),
+                self.dm.val_dataloader(),
                 self.dm.test_dataloader(),
-                self.dm.predict_dataloader(),
                 ]
         datasets = [
                 self.dm.train_dataset,
                 self.dm.validation_dataset,
                 self.dm.test_dataset,
-                self.dm.test_dataset,  # Predict == test.
                 ]
 
         passed_collate_fn = self._config_dl['collate_fn']

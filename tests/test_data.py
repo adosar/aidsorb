@@ -37,10 +37,6 @@ class TestPrepareData(unittest.TestCase):
         for comb in combinations([train_names, val_names, test_names], r=2):
             self.assertEqual(set(comb[0]) & set(comb[1]), set())
 
-        #self.assertEqual(set(train_names) & set(val_names), set())
-        #self.assertEqual(set(train_names) & set(test_names), set())
-        #self.assertEqual(set(val_names) & set(test_names), set())
-
         # Their sizes must be equal to split_ratio.
         self.assertEqual(
                 (len(train_names), len(val_names), len(test_names)),
@@ -64,19 +60,28 @@ class TestPCDDataset(unittest.TestCase):
 
         pcd_from_dir(dirname='tests/samples', outname=self.outname)
 
-        self.pcd_X = np.load(self.outname, mmap_mode='r')
-        self.pcd_names = self.pcd_X.files
-        self.pcd_Y = pd.read_csv('tests/samples.csv', index_col='id')
+        self.pcd_names = np.load(self.outname).files
+        self.path_to_X = self.outname
+        self.path_to_Y = 'tests/samples.csv'
+        self.index_col = 'id'
         self.labels = ['y1', 'y2']
         self.transform_x = Centering()
         self.transform_y = lambda y: y - 1  # Decrease all outputs by 1.
         self.batch_size = 2
 
+        self.X = np.load(self.outname, mmap_mode='r')
+        self.Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
+
+    #@unittest.skip
     def test_labeled_pcddataset(self):
         dataset = PCDDataset(
-                pcd_names=self.pcd_names, pcd_X=self.pcd_X,
-                pcd_Y=self.pcd_Y, labels=self.labels,
-                transform_x=self.transform_x, transform_y=self.transform_y
+                pcd_names=self.pcd_names,
+                path_to_X=self.path_to_X,
+                path_to_Y=self.path_to_Y,
+                index_col=self.index_col,
+                labels=self.labels,
+                transform_x=self.transform_x,
+                transform_y=self.transform_y
                 )
 
         # Check the size of the dataset.
@@ -86,8 +91,8 @@ class TestPCDDataset(unittest.TestCase):
             name = self.pcd_names[i]
 
             # Untransformed sample.
-            x = torch.tensor(dataset.X[name])
-            y = torch.tensor(dataset.Y.loc[name, self.labels].values)
+            x = torch.tensor(self.X[name])
+            y = torch.tensor(self.Y.loc[name].values)
 
             # Transformed sample.
             sample_x, sample_y = dataset[i]
@@ -110,14 +115,18 @@ class TestPCDDataset(unittest.TestCase):
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=collate_zero_pad_pointnet,
+                num_workers=2,
                 ):
             self.assertEqual(x.ndim, 3)
             self.assertEqual(len(x), self.batch_size)
+            self.assertEqual(x.dtype, torch.float)
             self.assertEqual(y.shape, (self.batch_size, len(self.labels)))
+            self.assertEqual(y.dtype, torch.float)
 
     def test_unlabeled_pcddataset(self):
         dataset = PCDDataset(
-                pcd_names=self.pcd_names, pcd_X=self.pcd_X,
+                pcd_names=self.pcd_names,
+                path_to_X=self.path_to_X,
                 transform_x=None,
                 )
 
@@ -128,7 +137,7 @@ class TestPCDDataset(unittest.TestCase):
             name = self.pcd_names[i]
 
             # Untransformed sample.
-            x = torch.tensor(dataset.X[name])
+            x = torch.tensor(self.X[name])
 
             # "Transformed" sample.
             sample_x = dataset[i]
@@ -143,9 +152,11 @@ class TestPCDDataset(unittest.TestCase):
         for x in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=lambda b: zero_pad_pcds(b, channels_first=True),
+                num_workers=2,
                 ):
             self.assertEqual(len(x), self.batch_size)
             self.assertEqual(x.ndim, 3)
+            self.assertEqual(x.dtype, torch.float)
 
     def tearDown(self):
         self.tempdir.cleanup()

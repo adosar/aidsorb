@@ -30,14 +30,13 @@ class PCDDataModule(L.LightningDataModule):
     Parameters
     ----------
     path_to_X : str
-        Absolute or relative path to the ``.npz`` file holding the point clouds.
+        See :class:`PCDDataset`.
     path_to_Y : str
-        Absolute or relative path to the ``.csv`` file holding the labels of
-        the point clouds.
+        See :class:`PCDDataset`.
     index_col : str
-        Column name of the ``.csv`` file to be used as row labels.
+        See :class:`PCDDataset`.
     labels : list
-        List containing the names of the properties to be predicted.
+        See :class:`PCDDataset`.
     train_size : int, optional
         The number of training samples. By default, all training samples are
         used.
@@ -72,7 +71,7 @@ class PCDDataModule(L.LightningDataModule):
             labels, train_size=None,
             train_transform_x=None, eval_transform_x=None,
             transform_y=None, shuffle=False,
-            train_batch_size=64, eval_batch_size=64, **kwargs
+            train_batch_size=32, eval_batch_size=32, **kwargs
             ):
         super().__init__()
         
@@ -93,10 +92,7 @@ class PCDDataModule(L.LightningDataModule):
         self.eval_batch_size = eval_batch_size
         self._config_dataloader = kwargs
 
-    def prepare_data(self):
         self._path_to_names = Path(self.path_to_X).parent
-        self._pcds_npz = np.load(self.path_to_X, mmap_mode='r')
-        self._df = pd.read_csv(self.path_to_Y, index_col=self.index_col)
 
     def setup(self, stage=None):
         if stage in (None, 'fit'):
@@ -112,7 +108,7 @@ class PCDDataModule(L.LightningDataModule):
             self.set_train_dataset()
             self.set_validation_dataset()
 
-        if stage in (None, 'test', 'predict'):
+        if stage in (None, 'test'):
             # Load the names for testing and prediction.
             self._test_names = get_names(
                     os.path.join(self._path_to_names, 'test.json')
@@ -132,14 +128,12 @@ class PCDDataModule(L.LightningDataModule):
     def test_names(self):
         return self._test_names
 
-    @property
-    def predict_names(self):
-        return self._test_names
-
     def set_train_dataset(self):
         self.train_dataset = PCDDataset(
                 pcd_names=self.train_names,
-                pcd_X=self._pcds_npz, pcd_Y=self._df,
+                path_to_X=self.path_to_X,
+                path_to_Y=self.path_to_Y,
+                index_col=self.index_col,
                 labels=self.labels,
                 transform_x=self.train_transform_x,
                 transform_y=self.transform_y,
@@ -148,7 +142,9 @@ class PCDDataModule(L.LightningDataModule):
     def set_validation_dataset(self):
         self.validation_dataset = PCDDataset(
                 pcd_names=self.val_names,
-                pcd_X=self._pcds_npz, pcd_Y=self._df,
+                path_to_X=self.path_to_X,
+                path_to_Y=self.path_to_Y,
+                index_col=self.index_col,
                 labels=self.labels,
                 transform_x=self.eval_transform_x,
                 transform_y=self.transform_y,
@@ -157,7 +153,9 @@ class PCDDataModule(L.LightningDataModule):
     def set_test_dataset(self):
         self.test_dataset = PCDDataset(
                 pcd_names=self.test_names,
-                pcd_X=self._pcds_npz, pcd_Y=self._df,
+                path_to_X=self.path_to_X,
+                path_to_Y=self.path_to_Y,
+                index_col=self.index_col,
                 labels=self.labels,
                 transform_x=self.eval_transform_x,
                 transform_y=self.transform_y,
@@ -171,7 +169,7 @@ class PCDDataModule(L.LightningDataModule):
                 **self._config_dataloader,
                 )
 
-    def validation_dataloader(self):
+    def val_dataloader(self):
         return DataLoader(
                 dataset=self.validation_dataset,
                 batch_size=self.eval_batch_size,
@@ -179,13 +177,6 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def test_dataloader(self):
-        return DataLoader(
-                dataset=self.test_dataset,
-                batch_size=self.eval_batch_size,
-                **self._config_dataloader,
-                )
-
-    def predict_dataloader(self):
         return DataLoader(
                 dataset=self.test_dataset,
                 batch_size=self.eval_batch_size,

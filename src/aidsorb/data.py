@@ -5,6 +5,7 @@ import os
 import json
 from pathlib import Path
 import numpy as np
+import pandas as pd
 import torch
 from torch.utils.data import random_split, Dataset
 from torch.nn.utils.rnn import pad_sequence
@@ -31,7 +32,7 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
     Each ``.json`` file stores the names of the point clouds.
 
     .. warning::
-        No directory is created by :func:`prepared_data`. **All ``.json`` files
+        No directory is created by :func:`prepare_data`. **All ``.json`` files
         are stored under the directory containing ``source``**.
 
     Parameters
@@ -43,7 +44,7 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
         * ``split_ratio[0] == train``.
         * ``split_ratio[1] == validation``.
         * ``split_ratio[2] == test``.
-    seed : int, optional
+    seed : int, default=1
         Controls the randomness of the ``rng`` used for splitting.
     """
     rng = torch.Generator().manual_seed(seed)
@@ -192,14 +193,16 @@ class PCDDataset(Dataset):
     ----------
     pcd_names : list
         List containing the names of the point clouds.
-    pcd_X : numpy.lib.npyio.NpzFile
-        Loaded `.npz` file. ``pcd_names`` must be present in ``pcd_X.files``.
-    pcd_Y : pandas.core.frame.DataFrame, optional
-        Dataframe containing the desired outputs (i.e ground truth values).
-        ``pcd_names`` must be present in ``pcd_Y.index``.
+    path_to_X : str
+        Absolute or relative path to the ``.npz`` file holding the point clouds.
+    path_to_Y : str, optional
+        Absolute or relative path to the ``.csv`` file holding the labels of the
+        point clouds.
+    index_col : str, optional
+        Column name of the ``.csv`` file to be used as row labels.
     labels : list, optional
-        List containing the names of the properties to be predicted. ``labels``
-        must be present in ``pcd_Y.columns``. No effect if ``pcd_Y == None``.
+        List containing the names of the properties to be predicted. No effect
+        if ``path_to_Y == None``.
     transform_x : callable, optional
         Transforms applied to ``sample_x`` (i.e to each point cloud). See
         `transforms`_ for implementing your own transforms.
@@ -215,7 +218,8 @@ class PCDDataset(Dataset):
     .. _transforms: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
     """
     def __init__(
-            self, pcd_names, pcd_X, pcd_Y=None, labels=None,
+            self, pcd_names, path_to_X,
+            path_to_Y=None, index_col=None, labels=None,
             transform_x=None, transform_y=None,
             ):
 
@@ -223,11 +227,15 @@ class PCDDataset(Dataset):
             raise ValueError('labels must be a list!')
 
         self._pcd_names = pcd_names
-        self.X = pcd_X
-        self.Y = pcd_Y
+        self.path_to_X = path_to_X
+        self.path_to_Y = path_to_Y
         self.labels = labels
+        self.index_col = index_col
         self.transform_x = transform_x
         self.transform_y = transform_y
+
+        self.X = None
+        self.Y = None
 
     @property
     def pcd_names(self):
@@ -237,8 +245,13 @@ class PCDDataset(Dataset):
         return len(self.pcd_names)
 
     def __getitem__(self, idx):
-        name = self.pcd_names[idx]
+        # Account for np.load and multiprocessing.
+        if self.X is None:
+            self.X = np.load(self.path_to_X, mmap_mode='r')
+        if self.Y is None and self.path_to_Y is not None:
+            self.Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
 
+        name = self.pcd_names[idx]
         sample_x = self.X[name]
 
         if self.transform_x is not None:
@@ -246,11 +259,14 @@ class PCDDataset(Dataset):
 
         # Only for labeled datasets.
         if self.Y is not None:
-            sample_y = self.Y.loc[name, self.labels].values
+            sample_y = self.Y.loc[name].values
 
             if self.transform_y is not None:
                 sample_y = self.transform_y(sample_y)
 
-            return torch.tensor(sample_x), torch.tensor(sample_y)
+            return (
+                    torch.tensor(sample_x, dtype=torch.float),
+                    torch.tensor(sample_y, dtype=torch.float)
+                    )
 
-        return torch.tensor(sample_x)
+        return torch.tensor(sample_x, dtype=torch.float)
