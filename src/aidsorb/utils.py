@@ -218,14 +218,14 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
 
     Parameters
     ----------
-    filenames : iterable object
-        An iterable object providing the filenames. Absolute or relative
-        paths can be used.
+    filenames : iterable
+        An iterable providing the filenames. Absolute or relative paths can be
+        used.
     outname : str
         Filename where the data will be stored.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
-    seed : int, optional
+    seed : int, default=1
         Controls the randomness of the ``rng`` used for shuffling. Takes effect
         only if ``shuffle == True``.
 
@@ -270,7 +270,7 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
         Name of the file where point clouds will be stored.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
-    seed : int, optional
+    seed : int, default=1
         Controls the randomness of the ``rng`` used for shuffling. Takes effect
         only if ``shuffle == True``.
 

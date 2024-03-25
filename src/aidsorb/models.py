@@ -2,9 +2,80 @@ r"""
 Write the docstring of the module.
 """
 
-
 import torch
 from torch import nn
+
+
+def conv1d_block(in_channels, out_channels, **kwargs):
+    r"""
+    Return a convolutional block.
+
+    The block has the following form::
+        block = nn.Sequential(
+            nn.Conv1d(in_channels, out_channels, **kwargs),
+            nn.BatchNorm1d(out_channels),
+            nn.ReLU(),
+            )
+        
+    Parameters
+    ----------
+    in_channels : int
+        See `torch.nn.Conv1d`_.
+    out_channels : int
+        See `torch.nn.Conv1d`_.
+    kwargs
+        Valid keyword arguments for `torch.nn.Conv1d`_.
+
+    Returns
+    -------
+    block : `torch.nn.Sequential`_
+
+    .. _torch.nn.Conv1d: https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html
+    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
+    """
+    block = nn.Sequential(
+            nn.Conv1d(in_channels, out_channels, **kwargs),
+            nn.BatchNorm1d(out_channels),
+            nn.ReLU(),
+            )
+
+    return block
+
+
+def dense_block(in_features, out_features, **kwargs):
+    r"""
+    Return a dense block.
+
+    The block has the following form::
+        block = nn.Sequential(
+            nn.Conv1d(in_features, out_features, **kwargs),
+            nn.BatchNorm1d(out_features),
+            nn.ReLU(),
+            )
+        
+    Parameters
+    ----------
+    in_features : int
+        See `torch.nn.Linear`_.
+    out_features : int
+        See `torch.nn.Linear`_.
+    kwargs
+        Valid keyword arguments for `torch.nn.Linear`_.
+
+    Returns
+    -------
+    block : `torch.nn.Sequential`_
+
+    .. _torch.nn.Conv1d: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
+    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
+    """
+    block = nn.Sequential(
+            nn.Linear(in_features, out_features, **kwargs),
+            nn.BatchNorm1d(out_features),
+            nn.ReLU(),
+            )
+
+    return block
 
 
 class TNet(nn.Module):
@@ -41,32 +112,15 @@ class TNet(nn.Module):
 
         self.embed_dim = embed_dim
 
-        self.conv1 = nn.Sequential(
-                nn.Conv1d(embed_dim, 64, kernel_size=1),
-                nn.BatchNorm1d(64),
-                nn.ReLU()
+        self.conv_blocks = nn.Sequential(
+                conv1d_block(embed_dim, 64, kernel_size=1, bias=False),
+                conv1d_block(64, 128, kernel_size=1, bias=False),
+                conv1d_block(128, 1024, kernel_size=1, bias=False),
                 )
-        self.conv2 = nn.Sequential(
-                nn.Conv1d(64, 128, kernel_size=1),
-                nn.BatchNorm1d(128),
-                nn.ReLU()
-                )
-        self.conv3 = nn.Sequential(
-                nn.Conv1d(128, 1024, kernel_size=1),
-                nn.BatchNorm1d(1024),
-                nn.ReLU()
-                )
-        self.fc1 = nn.Sequential(
-                nn.Linear(1024, 512),
-                nn.ReLU(),
-                nn.BatchNorm1d(512),
-                )
-        self.fc2 = nn.Sequential(
-                nn.Linear(512, 256),
-                nn.ReLU(),
-                nn.BatchNorm1d(256),
-                )
-        self.fc3 = nn.Sequential(
+
+        self.dense_blocks = nn.Sequential(
+                dense_block(1024, 512, bias=False),
+                dense_block(512, 256, bias=False),
                 nn.Linear(256, embed_dim * embed_dim),
                 )
 
@@ -87,13 +141,9 @@ class TNet(nn.Module):
         # Input has shape (B, self.embed_dim, N).
         bs = x.shape[0]
 
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)
-        x = torch.max(x, 2, keepdim=False)[0]  # Get only the values.
-        x = self.fc1(x)
-        x = self.fc2(x)
-        x = self.fc3(x)
+        x = self.conv_blocks(x)
+        x, _ = torch.max(x, 2, keepdim=False)  # Ignore indices.
+        x = self.dense_blocks(x)
 
         # Initialize the identity matrix.
         identity = torch.eye(self.embed_dim, requires_grad=True).repeat(bs, 1, 1)
@@ -178,32 +228,17 @@ class PointNetBackbone(nn.Module):
         self.tnet = TNet(embed_dim=embed_dim)
 
         # The first shared MLP.
-        self.conv1 = nn.Sequential(
-                nn.Conv1d(in_channels, embed_dim, kernel_size=1),
-                nn.BatchNorm1d(embed_dim),
-                nn.ReLU(),
-                )
-        self.conv2 = nn.Sequential(
-                nn.Conv1d(embed_dim, embed_dim, kernel_size=1),
-                nn.BatchNorm1d(embed_dim),
-                nn.ReLU(),
+        self.shared_mlp_1 = nn.Sequential(
+                # Consider changing the first block with LazyConv1d.
+                conv1d_block(in_channels, embed_dim, kernel_size=1, bias=False),
+                conv1d_block(embed_dim, embed_dim, kernel_size=1, bias=False),
                 )
 
         # The second shared MLP.
-        self.conv3 = nn.Sequential(
-                nn.Conv1d(embed_dim, embed_dim, kernel_size=1),
-                nn.BatchNorm1d(embed_dim),
-                nn.ReLU(),
-                )
-        self.conv4 = nn.Sequential(
-                nn.Conv1d(embed_dim, 128, kernel_size=1),
-                nn.BatchNorm1d(128),
-                nn.ReLU(),
-                )
-        self.conv5 = nn.Sequential(
-                nn.Conv1d(128, n_global_features, kernel_size=1),
-                nn.BatchNorm1d(n_global_features),
-                nn.ReLU(),
+        self.shared_mlp_2 = nn.Sequential(
+                conv1d_block(embed_dim, embed_dim, kernel_size=1, bias=False),
+                conv1d_block(embed_dim, 128, kernel_size=1, bias=False),
+                conv1d_block(128, n_global_features, kernel_size=1, bias=False),
                 )
 
     def forward(self, x):
@@ -228,8 +263,7 @@ class PointNetBackbone(nn.Module):
         n_points = x.shape[2]
 
         # Pass through the first shared MLP.
-        x = self.conv1(x)
-        x = self.conv2(x)
+        x = self.shared_mlp_1(x)
 
         # Get regressed matrices from T-Net.
         A = self.tnet(x)  # Shape (B, 64, 64).
@@ -241,9 +275,7 @@ class PointNetBackbone(nn.Module):
         point_features = x.clone()  # Shape (B, 64, N).
 
         # Pass through the second shared MLP.
-        x = self.conv3(x)
-        x = self.conv4(x)
-        x = self.conv5(x)  # Shape (B, self.n_global_features, N).
+        x = self.shared_mlp_2(x)  # Shape (B, self.n_global_features, N).
 
         # Shape (B, self.n_global_features).
         global_features, critical_indices = torch.max(x, 2, keepdim=False)
@@ -290,16 +322,12 @@ class PointNetClsHead(nn.Module):
         super().__init__()
 
         self.mlp = nn.Sequential(
-                nn.Linear(n_inputs, 512),
-                nn.BatchNorm1d(512),
-                nn.ReLU(),
-                nn.Linear(512, 256),
-                nn.BatchNorm1d(256),
-                nn.ReLU(),
+                dense_block(n_inputs, 512, bias=False),
+                dense_block(512, 256, bias=False),
                 nn.Dropout(dropout_rate),
                 nn.Linear(256, n_outputs),
                 )
-
+    
     def forward(self, x):
         r"""
         Parameters
@@ -335,12 +363,9 @@ class PointNetSegHead(nn.Module):
     --------
     >>> head = PointNetSegHead(n_outputs=2)
     >>> x = torch.randn(32, 1088, 400)
-    >>> out, max_idx = head(x)
+    >>> out = head(x)
     >>> out.shape
     torch.Size([32, 2])
-
-    >>> max_idx.shape  # Max indices from the pooling layer.
-    torch.Size([32, 128])
 
     .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
     Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
@@ -350,20 +375,10 @@ class PointNetSegHead(nn.Module):
     def __init__(self, in_channels=1088, n_outputs=1):
         super().__init__()
 
-        self.conv1 = nn.Sequential(
-                nn.Conv1d(in_channels, 512, kernel_size=1),
-                nn.BatchNorm1d(512),
-                nn.ReLU(),
-                )
-        self.conv2 = nn.Sequential(
-                nn.Conv1d(512, 256, kernel_size=1),
-                nn.BatchNorm1d(256),
-                nn.ReLU(),
-                )
-        self.conv3 = nn.Sequential(
-                nn.Conv1d(256, 128, kernel_size=1),
-                nn.BatchNorm1d(128),
-                nn.ReLU(),
+        self.shared_mlp = nn.Sequential(
+                conv1d_block(in_channels, 512, kernel_size=1, bias=False),
+                conv1d_block(512, 256, kernel_size=1, bias=False),
+                conv1d_block(256, 128, kernel_size=1, bias=False),
                 )
 
         self.linear = nn.Linear(128, n_outputs)
@@ -376,20 +391,16 @@ class PointNetSegHead(nn.Module):
 
         Returns
         -------
-        out : tuple of shape (2,)
-            * ``out[0] == predictions`` with shape ``(B, self.n_outputs)``
-            * ``out[1] == max_indices`` with shape ``(B, 128)``
+        out : tensor of shape (B, self.n_outputs)
         """
-        x = self.conv1(x)
-        x = self.conv2(x)
-        x = self.conv3(x)  # Shape (B, C, N).
+        x = self.shared_mlp(x)  # Shape (B, C, N).
         
-        # Perform global pooling and store the max indices.
-        x, max_idx = torch.max(x, 2, keepdim=False)
+        # Perform global pooling.
+        x, _ = torch.max(x, 2, keepdim=False)  # Ignore indices.
 
         x = self.linear(x)
 
-        return x, max_idx
+        return x
 
 
 class PointNet(nn.Module):
@@ -407,7 +418,7 @@ class PointNet(nn.Module):
     the batch size, ``C`` is the number of input channels  and ``N`` is the
     number of points in each point cloud.
 
-    You can define a ``custom_head`` head as a :class:``nn.Module`` and
+    You can define a ``custom_head`` head as a :class:``torch.nn.Module`` and
     pass it to ``head``.
 
     .. warning::
@@ -418,7 +429,7 @@ class PointNet(nn.Module):
     
     Parameters
     ----------
-    head : class:`nn.Module` object
+    head : class:`nn.Module`
     in_channels : int, default=4
         See :class:`PointNetBackBone`.
     embed_dim : int, default=64
@@ -436,11 +447,9 @@ class PointNet(nn.Module):
     ...     n_global_features=256, local_features=True
     ...     )
     >>> x = torch.randn(32, 4, 300)
-    >>> (predictions, max_idx), indices, A = pointnet(x)
+    >>> predictions, indices, A = pointnet(x)
     >>> predictions.shape
     torch.Size([32, 100])
-    >>> max_idx.shape
-    torch.Size([32, 128])
     >>> indices.shape
     torch.Size([32, 256])
     >>> A.shape

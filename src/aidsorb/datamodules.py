@@ -60,11 +60,11 @@ class PCDDataModule(L.LightningDataModule):
         Only for ``train_dataloader``. See `DataLoader`_.
     eval_batch_size : int, default=64
         For ``{validation,test,predict}_dataloader``. See `DataLoader`_.
-    kwargs : dict, optional
+    kwargs
         Valid keyword arguments for `DataLoader`_. For ``*_dataloader``. See
         `DataLoader`_.
 
-    .. _DataLoader : https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
+    .. _DataLoader: https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
     """
     def __init__(
             self, path_to_X, path_to_Y, index_col,
