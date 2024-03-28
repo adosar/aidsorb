@@ -13,12 +13,11 @@ Provides helper functions for visualizing molecular point clouds.
         view(atoms)
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
-from . _internal import _check_shape
+from . _internal import _check_shape_vis
 from . utils import split_pcd, pcd_from_file
 
 
@@ -89,7 +88,7 @@ def draw_pcd_mpl(pcd, scheme='cpk', **kwargs):
     .. _plot.subplots: https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots
     .. _ax.scatter: https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.scatter.html#mpl_toolkits.mplot3d.axes3d.Axes3D.scatter
     """
-    _check_shape(pcd)
+    _check_shape_vis(pcd)
 
     fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
 
@@ -128,7 +127,7 @@ def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
     .. _plotly.go.Scatter3D: https://plotly.github.io/plotly.py-docs/generated/plotly.graph_objects.Scatter3d.html#plotly-graph-objs-scatter3d
     """
-    _check_shape(pcd)
+    _check_shape_vis(pcd)
 
     points, atoms = split_pcd(pcd)
     atoms = atoms.ravel()
@@ -151,7 +150,7 @@ def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
 
 def draw_pcd_from_file(filename, show=True, **kwargs):
     r"""
-    Visualize molecular point from a file.
+    Visualize molecular point cloud from a file.
 
     Parameters
     ----------

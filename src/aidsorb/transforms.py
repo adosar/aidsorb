@@ -1,6 +1,9 @@
 r"""
 Add docstring of the module.
+
+The ``pcd`` must have shape of (N, 3+C).
 """
+
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 from . utils import center_pcd, transform_pcd
@@ -11,42 +14,27 @@ class Centering():
     Center a point cloud by subtracting its centroid.
 
     .. warning::
-        The input must be a ``np.array`` of shape ``(N, 4)``.
+        The input must be a ``np.array``.
 
     .. note::
-        See :func:`utils.center_pcd`.
-
-    Parameters
-    ----------
-    mask_atoms : bool, default=True
-        See :func:`utils.center_pcd`.
+        See also :func:`utils.center_pcd`.
 
     Examples
     --------
-    >>> x = np.array([[1, 2, 4, 9]])
+    >>> x = np.array([[1., 2., 3., 4., 5.]])
     >>> center = Centering()
     >>> center(x)
-    array([[0., 0., 0., 9.]])
+    array([[0., 0., 0., 4., 5.]])
 
-    >>> x = np.array([[1, 2, 4, 9]])
-    >>> center = Centering(mask_atoms=False)
-    >>> center(x)
-    array([[0., 0., 0., 0.]])
-
-    >>> x = np.array([1, 4, 9])
+    >>> x = np.array([[1., 4., 9.]])
     >>> center = Centering()
     >>> center(x)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting array of shape (N, 4) but got array of shape (3,)!
+    ValueError: Expecting array of shape (N, C) with C >= 4 but got array of shape (1, 3)!
     """
-    def __init__(self, mask_atoms=True):
-        self.mask_atoms = mask_atoms
-
     def __call__(self, sample):
-        new_pcd = center_pcd(sample, mask_atoms=self.mask_atoms)
-
-        return new_pcd
+        return center_pcd(sample)
 
 
 class Identity():
@@ -69,7 +57,10 @@ class RandomRotation():
     Randomly rotate a point cloud.
 
     .. warning::
-        The input must be a ``np.array`` of shape ``(N, 4)``.
+        The input must be a ``np.array``.
+
+    .. note::
+        See also :func:`utils.transform_pcd`.
 
     Examples
     --------
@@ -78,12 +69,12 @@ class RandomRotation():
     >>> randomrot(x).shape
     (25, 4)
 
-    >>> x = np.random.randn(25, 9)
+    >>> x = np.random.randn(25, 3)
     >>> randomrot = RandomRotation()
     >>> randomrot(x)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting array of shape (N, 4) but got array of shape (25, 9)!
+    ValueError: Expecting array of shape (N, C) with C >= 4 but got array of shape (25, 3)!
     """
     def __call__(self, sample):
         rot = R.random().as_matrix()

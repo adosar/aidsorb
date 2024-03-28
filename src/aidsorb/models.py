@@ -48,7 +48,7 @@ def dense_block(in_features, out_features, **kwargs):
 
     The block has the following form::
         block = nn.Sequential(
-            nn.Conv1d(in_features, out_features, **kwargs),
+            nn.Linear(in_features, out_features, **kwargs),
             nn.BatchNorm1d(out_features),
             nn.ReLU(),
             )
@@ -408,7 +408,7 @@ class PointNet(nn.Module):
     A deep learning architecture for processing point clouds [1]_.
 
     ``PointNet`` takes as input a point cloud and produces one or more outputs.
-    *The type of the task is determined by ``head``*.
+    *The type of the task is determined by* ``head``.
 
     Currently implemented heads include:
     1. :class:`PointNetClsHead`: classification and regression.
