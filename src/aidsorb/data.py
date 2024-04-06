@@ -80,15 +80,36 @@ def get_names(filename):
     return names
 
 
-def zero_pad_pcds(pcds, channels_first):
+def upsample_pcd(pcd, size):
     r"""
-    Pad a sequence of variable size point clouds with zeroes.
+    Upsample a point cloud to a new size by duplicating points.
+
+    Examples
+    --------
+    >>> pcd = torch.tensor([[2, 4, 5, 6]])
+    >>> new_pcd = upsample_pcd(pcd, 3)
+    >>> new_pcd
+    tensor([[2, 4, 5, 6],
+            [2, 4, 5, 6],
+            [2, 4, 5, 6]])
+    """
+    n_samples = size - len(pcd)
+    indices = torch.from_numpy(np.random.choice(len(pcd), n_samples))
+    new_points = pcd[indices]
+
+    return torch.cat((pcd, new_points))
+
+
+def pad_pcds(pcds, channels_first, mode='upsample'):
+    r"""
+    Pad a sequence of variable size point clouds.
 
     Each point cloud must have shape ``(N, *)``.
 
     Parameters
     ----------
     pcds : sequence of tensors
+    mode : {'zeropad', 'upsample'}, default='zeropad'
     channels_first : bool
 
     Returns
@@ -102,7 +123,7 @@ def zero_pad_pcds(pcds, channels_first):
     --------
     >>> x1 = torch.tensor([[1, 2, 3, 4]])
     >>> x2 = torch.tensor([[2, 5, 3, 8], [0, 2, 8, 9]])
-    >>> batch = zero_pad_pcds((x1, x2), channels_first=False)
+    >>> batch = pad_pcds((x1, x2), channels_first=False)
     >>> batch
     tensor([[[1, 2, 3, 4],
              [0, 0, 0, 0]],
@@ -110,7 +131,7 @@ def zero_pad_pcds(pcds, channels_first):
             [[2, 5, 3, 8],
              [0, 2, 8, 9]]])
 
-    >>> batch = zero_pad_pcds((x1, x2), channels_first=True)
+    >>> batch = pad_pcds((x1, x2), channels_first=True)
     >>> batch
     tensor([[[1, 0],
              [2, 0],
@@ -123,7 +144,13 @@ def zero_pad_pcds(pcds, channels_first):
              [8, 9]]])
     """
     # Shape (B, n_points, C).
-    batch = pad_sequence(pcds, batch_first=True, padding_value=0)
+    if mode == 'zeropad':
+        batch = pad_sequence(pcds, batch_first=True, padding_value=0)
+
+    elif mode == 'upsample':
+        max_len = max(len(i) for i in pcds)
+        new_pcds = [upsample_pcd(p, max_len) for p in pcds if len(p) < max_len]
+        batch = torch.stack(new_pcds)
 
     if channels_first:
         batch = batch.transpose(1, 2)  # Shape (B, C, n_points).
@@ -131,11 +158,11 @@ def zero_pad_pcds(pcds, channels_first):
     return batch
 
 
-def collate_zero_pad_pointnet(samples):
+def collate_pcds_labels(samples):
     r"""
     Collate point clouds and labels.
 
-    Point clouds are zero padded before collation. See :func:`zero_pad_pcds`.
+    Point clouds are zero padded before collation. See :func:`pad_pcds`.
 
     .. note::
         You should use this collate function if your model is
@@ -158,7 +185,7 @@ def collate_zero_pad_pointnet(samples):
     --------
     >>> sample1 = (torch.tensor([[1, 4, 5, 2]]), torch.tensor([1., 2.]))
     >>> sample2 = (torch.tensor([[0, 4, 0, 2], [2, 4, 1, 8]]), torch.tensor([7., 3.]))
-    >>> x, y = collate_zero_pad_pointnet((sample1, sample2))
+    >>> x, y = collate_pcds_labels((sample1, sample2))
     >>> x.shape
     torch.Size([2, 4, 2])
     >>> y.shape
@@ -179,7 +206,7 @@ def collate_zero_pad_pointnet(samples):
     """
     pcds, labels = list(zip(*samples))
     
-    x = zero_pad_pcds(pcds, channels_first=True)  # Shape (B, *, T).
+    x = pad_pcds(pcds, channels_first=True)  # Shape (B, *, T).
     y = torch.stack(labels)  # Shape (B, n_outputs).
 
     return x, y

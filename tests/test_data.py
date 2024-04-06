@@ -13,7 +13,7 @@ from aidsorb.utils import pcd_from_dir
 from aidsorb.transforms import Centering
 from aidsorb.data import (
         get_names, prepare_data, PCDDataset,
-        zero_pad_pcds, collate_zero_pad_pointnet
+        pad_pcds, collate_pcds_labels
         )
 
 
@@ -114,7 +114,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=collate_zero_pad_pointnet,
+                collate_fn=collate_pcds_labels,
                 num_workers=2,
                 ):
             self.assertEqual(x.ndim, 3)
@@ -151,7 +151,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=lambda b: zero_pad_pcds(b, channels_first=True),
+                collate_fn=lambda b: pad_pcds(b, channels_first=True),
                 num_workers=2,
                 ):
             self.assertEqual(len(x), self.batch_size)
