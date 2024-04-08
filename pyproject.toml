@@ -37,6 +37,5 @@ dependencies = [
 Homepage = "https://github.com/adosar/aidsorb"
 Issues = "https://github.com/adosar/aidsorb/issues"
 
-# Add them in the end.
-#[project.scripts]
-#aidsorb-cli = "aidsorb.utils:cli"
+[project.scripts]
+aidsorb = "aidsorb.cli:aidsorb_fire"

@@ -5,8 +5,6 @@ Add module docstring.
 import os
 from pathlib import Path
 import lightning as L
-import pandas as pd
-import numpy as np
 from torch.utils.data import DataLoader
 from . data import get_names, PCDDataset
 

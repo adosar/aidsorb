@@ -7,7 +7,6 @@ The ``pcd`` must have shape ``(N, 4+C)``.
 import os
 from pathlib import Path
 import warnings
-import fire
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
@@ -184,7 +183,3 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
 
     # Store the point clouds.
     np.savez_compressed(outname, **savez_dict)
-
-
-def cli():
-    ...
