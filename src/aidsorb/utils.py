@@ -1,7 +1,7 @@
 r"""
-Provides helper functions for creating and transforming molecular point clouds.
+Provides helper functions for creating molecular point clouds.
 
-The ``pcd`` must have shape of (N, 3+C).
+The ``pcd`` must have shape ``(N, 4+C)``.
 """
 
 import os
@@ -49,129 +49,6 @@ def split_pcd(pcd):
     _check_shape(pcd)
 
     return pcd[:, :3], pcd[:, 3:]
-
-
-def transform_pcd(pcd, tfm):
-    r"""
-    Transform a point cloud.
-
-    For molecular point clouds, *only rigid transformations are recommended*.
-
-    Parameters
-    ----------
-    pcd : array of shape (N, 3+C)
-        The original point cloud.
-
-        .. note::
-            At least one feature is required, i.e. ``C >= 1``.
-
-    tfm : array of shape (3, 3) or (T, 3, 3)
-        The transformation matrix or matrices.
-
-    Returns
-    -------
-    new_pcd : array of shape (N, C) or (T, N, C)
-        The transformed point cloud or point clouds.
-
-    Raises
-    ------
-    ValueError
-        If ``pcd`` or ``M`` do not have the expected shape.
-
-    Examples
-    --------
-    >>> pcd = np.array([[3, -9, 2, 6], [3, 4, -1, 8]])
-    >>> tfm = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
-    >>> transform_pcd(pcd, tfm)
-    array([[ 9,  3,  2,  6],
-           [-4,  3, -1,  8]])
-
-    >>> from scipy.spatial.transform import Rotation as R
-    >>> pcd = np.random.randn(424, 4)
-    >>> tfm = R.random(num=32).as_matrix()
-    >>> transform_pcd(pcd, tfm).shape
-    (32, 424, 4)
-
-    >>> pcd = np.random.randn(424, 3)  # Invalid shape.
-    >>> tfm = np.random.randn(32, 3, 3)  # Valid shape.
-    >>> transform_pcd(pcd, tfm)
-    Traceback (most recent call last):
-        ...
-    ValueError: Expecting array of shape (N, C) with C >= 4 but got array of shape (424, 3)!
-
-    >>> pcd = np.random.randn(424, 4)  # Valid shape.
-    >>> tfm = np.random.randn(32, 4, 3)  # Invalid shape.
-    >>> transform_pcd(pcd, tfm)
-    Traceback (most recent call last):
-        ...
-    ValueError: Expecting array of shape (3, 3) or (T, 3, 3) but got array of shape (32, 4, 3)!
-    """
-    _check_shape(pcd)
-
-    if not ((tfm.shape == (3, 3)) or tfm.shape[1:] == (3, 3)):
-        raise ValueError(
-                'Expecting array of shape (3, 3) or (T, 3, 3) '
-                f'but got array of shape {tfm.shape}!'
-                )
-
-    points, features = split_pcd(pcd)
-
-    if tfm.shape == (3, 3):
-        new_points = points @ tfm.T  # Transpose the matrix.
-
-        return np.hstack((new_points, features))
-
-    size = len(tfm)  # The number of transformations.
-    new_points = points @ tfm.transpose([0, 2, 1])  # Transpose the matrices.
-
-    features = features[np.newaxis, :]  # Shape (1, N, C).
-    features = np.repeat(features, size, axis=0)  # Shape (size, N, C).
-
-    return np.concatenate((new_points, features), axis=2)
-
-
-def center_pcd(pcd):
-    r"""
-    Center a point cloud.
-
-    The centering is performed by subtracting the centroid (of the points)
-    ``centroid == points.mean(axis=0)`` from ``points == pcd[:, :3]``.
-
-    .. note::
-        The ``features == pcd[:, 3:]`` are not affected.
-
-    Parameters
-    ----------
-    pcd : array of shape (N, 3+C)
-
-        .. note::
-            At least one feature is required, i.e. ``C >= 1``.
-
-    Returns
-    -------
-    new_pcd : array of shape (N, C)
-        The centered point cloud.
-
-    Raises
-    ------
-    ValueError
-        If ``pcd`` does not have the expected shape.
-
-    Examples
-    --------
-    >>> pcd = np.array([[2, 1, 3, 9, 6], [-3, 2, 8, 7, 8]])
-    >>> new_pcd = center_pcd(pcd)
-    >>> new_pcd.mean(axis=0)
-    array([0., 0., 0., 8., 7.])
-    """
-    _check_shape(pcd)
-
-    points, features = split_pcd(pcd)
-    centroid = points.mean(axis=0)
-
-    new_points = points - centroid
-
-    return np.hstack((new_points, features))
 
 
 def pcd_from_file(filename):

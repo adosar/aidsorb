@@ -60,7 +60,7 @@ class PCDDataModule(L.LightningDataModule):
         Only for ``train_dataloader``. See `DataLoader`_.
     eval_batch_size : int, default=64
         For ``{validation,test,predict}_dataloader``. See `DataLoader`_.
-    kwargs
+    **kwargs
         Valid keyword arguments for `DataLoader`_. For ``*_dataloader``. See
         `DataLoader`_.
 

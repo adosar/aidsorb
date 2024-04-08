@@ -13,7 +13,7 @@ from aidsorb.utils import pcd_from_dir
 from aidsorb.transforms import Centering
 from aidsorb.data import (
         get_names, prepare_data, PCDDataset,
-        pad_pcds, collate_pcds_labels
+        pad_pcds, Collator
         )
 
 
@@ -60,7 +60,10 @@ class TestPCDDataset(unittest.TestCase):
 
         pcd_from_dir(dirname='tests/samples', outname=self.outname)
 
-        self.pcd_names = np.load(self.outname).files
+        _npz = np.load(self.outname)
+        self.pcd_names = _npz.files
+        del _npz
+
         self.path_to_X = self.outname
         self.path_to_Y = 'tests/samples.csv'
         self.index_col = 'id'
@@ -69,11 +72,10 @@ class TestPCDDataset(unittest.TestCase):
         self.transform_y = lambda y: y - 1  # Decrease all outputs by 1.
         self.batch_size = 2
 
+    def test_labeled_pcddataset(self):
         self.X = np.load(self.outname, mmap_mode='r')
         self.Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
 
-    #@unittest.skip
-    def test_labeled_pcddataset(self):
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
                 path_to_X=self.path_to_X,
@@ -114,7 +116,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=collate_pcds_labels,
+                collate_fn=Collator(),
                 num_workers=2,
                 ):
             self.assertEqual(x.ndim, 3)
@@ -124,6 +126,8 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(y.dtype, torch.float)
 
     def test_unlabeled_pcddataset(self):
+        self.X = np.load(self.outname, mmap_mode='r')
+
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
                 path_to_X=self.path_to_X,
@@ -151,7 +155,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=lambda b: pad_pcds(b, channels_first=True),
+                collate_fn=pad_pcds,
                 num_workers=2,
                 ):
             self.assertEqual(len(x), self.batch_size)

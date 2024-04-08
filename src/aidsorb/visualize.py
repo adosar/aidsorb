@@ -17,13 +17,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
-from . _internal import _check_shape_vis
+from . _internal import _check_shape
 from . utils import split_pcd, pcd_from_file
 
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):
     r"""
-    Convert atomic numbers to colors based on ``scheme``.
+    Convert atomic numbers to colors based on `scheme`.
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
     colors : array-like of shape (N,)
     """
     # Subtract 1 to follow the indexing of _ptable.
-    atomic_numbers = np.array(atomic_numbers) - 1
+    atomic_numbers = np.array(atomic_numbers)
     scheme += '_color'
 
     return _ptable[scheme][atomic_numbers].values
@@ -54,96 +54,70 @@ def get_elements(atomic_numbers):
     elements : array-like of shape (N,)
     """
     # Subtract 1 to follow the indexing of _ptable.
-    atomic_numbers = np.array(atomic_numbers) - 1
+    atomic_numbers = np.array(atomic_numbers)
 
     return _ptable['name'][atomic_numbers].values
 
 
-def draw_pcd_mpl(pcd, scheme='cpk', **kwargs):
-    r"""
-    Visualize molecular point cloud with Matploblib.
-
-    Each point ``pcd[i, :-1]`` is colorized and sized based on its atomic
-    number ``pcd[i, -1]``. For large point clouds, visualization with
-    :func:`draw_pcd_plotly` is recommended.
-
-    Parameters
-    ----------
-    pcd : array of shape (N, 4)
-       See :func:``utils.pcd_from_file``.
-    scheme : {'jmol', 'cpk'}, default='jmol'
-    kwargs
-        Valid keyword arguments for ``ax.scatter3D``_.
-
-        .. warning::
-            Do not pass the arguments ``c`` and ``s``. These are used under the
-            hood from :func:`draw_pcd_mpl` to set the size and the color of the
-            points based on their atomic number.
-
-    Returns
-    -------
-    fig : `mpl.figure.Figure`_
-
-    .. _mpl.figure.Figure: https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure
-    .. _plot.subplots: https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots
-    .. _ax.scatter: https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.Axes3D.scatter.html#mpl_toolkits.mplot3d.axes3d.Axes3D.scatter
-    """
-    _check_shape_vis(pcd)
-
-    fig, ax = plt.subplots(subplot_kw={'projection': '3d'})
-
-    points, atoms = split_pcd(pcd)
-    atoms = atoms.ravel()
-
-    colors = get_atom_colors(atoms, scheme=scheme)
-
-    ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=colors, s=atoms, **kwargs)
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
-
-    return fig
-
-
-def draw_pcd_plotly(pcd, scheme='cpk', **kwargs):
+def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs):
     r"""
     Visualize molecular point cloud with Plotly.
 
-    Each point ``pcd[i, :-1]`` is colorized and sized based on its atomic
-    number ``pcd[i, -1]``.
+    Each point ``pcd[i]`` is sized based on its atomic number ``pcd[i, 3]``.
+
+    The color of each point is determined by ``feature_to_color``. If ``None``,
+    each point is colorized based on its atomic number. Otherwise, it is
+    colorized based on its ``pcd[i, feat_idx_label[0]`` value.
 
     Parameters
     ----------
-    pcd : array of shape (N, 4)
-       See :func:`utils.pcd_from_file`.
+    pcd : array of shape (N, 4+C)
     scheme : {'jmol', 'cpk'}, default='jmol'
-    kwargs
-        Valid keword arguments for `plotly.go.Scatter3D`_.
+        Takes effect only if ``feature_to_color == None``.
+    feature_to_color : tuple of shape (2,), optional
+        * ``feature_to_color[0] == idx``, the index of the feature to be colored.
+        * ``feature_to_color[1] == label``, the name of the feature for the colorbar.
+    colorscale : str, optional
+        Takes effect only if ``feature_to_color != None``. See `colorscale`_.
+    **kwargs
+        Valid keword arguments for `plotly.go.Figure`_.
 
     Returns
     -------
     fig : `plotly.go.Figure`_
 
+    .. _colorscale: https://plotly.com/python/builtin-colorscales/
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
-    .. _plotly.go.Scatter3D: https://plotly.github.io/plotly.py-docs/generated/plotly.graph_objects.Scatter3d.html#plotly-graph-objs-scatter3d
     """
-    _check_shape_vis(pcd)
+    _check_shape(pcd)
 
-    points, atoms = split_pcd(pcd)
-    atoms = atoms.ravel()
-
-    colors = get_atom_colors(atoms, scheme=scheme)
+    points = pcd[:, :3]
+    atoms = pcd[:, 3]
     elements = get_elements(atoms)
 
-    fig = go.Figure(data=[go.Scatter3d(
-        x=points[:, 0],
-        y=points[:, 1],
-        z=points[:, 2],
-        mode='markers',
-        marker={'size': atoms, 'color': colors},
-        hovertext=elements,
-        **kwargs
-        )])
+    if feature_to_color is None:
+        colors = get_atom_colors(atoms, scheme=scheme)
+        marker = {'size': atoms, 'color': colors}
+    else:
+        idx, label = feature_to_color
+        colors = pcd[:, idx]
+        marker = {
+                'size': atoms, 'color': colors,
+                'colorscale': colorscale,
+                'colorbar': {'thickness': 20, 'title': label}
+                }
+
+    fig = go.Figure(
+            data=[go.Scatter3d(
+                x=points[:, 0],
+                y=points[:, 1],
+                z=points[:, 2],
+                mode='markers',
+                marker=marker,
+                hovertext=elements
+                )],
+            **kwargs
+            )
 
     return fig
 
@@ -158,20 +132,21 @@ def draw_pcd_from_file(filename, show=True, **kwargs):
         Absolute or relative path to the file.
     show : bool, default=True
         Render the point cloud with ``pio.renderers.default``.
-    kwargs
-        Valid keyword arguments for :func:`draw_pcd_plotly`.
+    **kwargs
+        Valid keyword arguments for :func:`draw_pcd`.
 
     Returns
     -------
-    render : `plotly.go.Figure`_ if ``show == False`` else ``None``.
+    render : `plotly.go.Figure`_ if ``show == False``, else ``None``.
 
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
     """
     _, pcd = pcd_from_file(filename)
-    fig = draw_pcd_plotly(pcd, **kwargs)
+    fig = draw_pcd(pcd, **kwargs)
 
     return fig.show() if show else fig
 
 
 # Load the periodic table.
 _ptable = fetch_table('elements')
+_ptable.set_index('atomic_number', inplace=True)

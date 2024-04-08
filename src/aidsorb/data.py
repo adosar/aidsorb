@@ -82,16 +82,28 @@ def get_names(filename):
 
 def upsample_pcd(pcd, size):
     r"""
-    Upsample a point cloud to a new size by duplicating points.
+    Upsample ``pcd`` to a new ``size`` by sampling with replacement from ``pcd``.
+
+    Parameters
+    ----------
+    pcd : array of shape (N, *).
+        The original point cloud of size ``N``.
+    size : int
+        The size of the new point cloud.
+
+    Returns
+    -------
+    new_pcd : array of shape (size, *).
 
     Examples
     --------
     >>> pcd = torch.tensor([[2, 4, 5, 6]])
-    >>> new_pcd = upsample_pcd(pcd, 3)
-    >>> new_pcd
+    >>> upsample_pcd(pcd, 3)
     tensor([[2, 4, 5, 6],
             [2, 4, 5, 6],
             [2, 4, 5, 6]])
+    >>> upsample_pcd(pcd, 1)  # No upsampling.
+    tensor([[2, 4, 5, 6]])
     """
     n_samples = size - len(pcd)
     indices = torch.from_numpy(np.random.choice(len(pcd), n_samples))
@@ -100,7 +112,7 @@ def upsample_pcd(pcd, size):
     return torch.cat((pcd, new_points))
 
 
-def pad_pcds(pcds, channels_first, mode='upsample'):
+def pad_pcds(pcds, channels_first=True, mode='upsample'):
     r"""
     Pad a sequence of variable size point clouds.
 
@@ -109,8 +121,10 @@ def pad_pcds(pcds, channels_first, mode='upsample'):
     Parameters
     ----------
     pcds : sequence of tensors
-    mode : {'zeropad', 'upsample'}, default='zeropad'
-    channels_first : bool
+    mode : {'zeropad', 'upsample'}, default='upsample'
+        * ``'upsample'``: see :func:`upsample_pcd`.
+        * ``'zeropad'``: see `pad_sequence`_.
+    channels_first : bool, default=True
 
     Returns
     -------
@@ -123,7 +137,7 @@ def pad_pcds(pcds, channels_first, mode='upsample'):
     --------
     >>> x1 = torch.tensor([[1, 2, 3, 4]])
     >>> x2 = torch.tensor([[2, 5, 3, 8], [0, 2, 8, 9]])
-    >>> batch = pad_pcds((x1, x2), channels_first=False)
+    >>> batch = pad_pcds((x1, x2), channels_first=False, mode='zeropad')
     >>> batch
     tensor([[[1, 2, 3, 4],
              [0, 0, 0, 0]],
@@ -131,7 +145,7 @@ def pad_pcds(pcds, channels_first, mode='upsample'):
             [[2, 5, 3, 8],
              [0, 2, 8, 9]]])
 
-    >>> batch = pad_pcds((x1, x2), channels_first=True)
+    >>> batch = pad_pcds((x1, x2), channels_first=True, mode='zeropad')
     >>> batch
     tensor([[[1, 0],
              [2, 0],
@@ -142,59 +156,76 @@ def pad_pcds(pcds, channels_first, mode='upsample'):
              [5, 2],
              [3, 8],
              [8, 9]]])
+
+    >>> batch = pad_pcds((x1, x2), channels_first=False)
+    >>> batch
+    tensor([[[1, 2, 3, 4],
+             [1, 2, 3, 4]],
+    <BLANKLINE>
+            [[2, 5, 3, 8],
+             [0, 2, 8, 9]]])
+
+    >>> batch = pad_pcds((x1, x2), channels_first=True)
+    >>> batch
+    tensor([[[1, 1],
+             [2, 2],
+             [3, 3],
+             [4, 4]],
+    <BLANKLINE>
+            [[2, 0],
+             [5, 2],
+             [3, 8],
+             [8, 9]]])
+
+    .. _pad_sequence: https://pytorch.org/docs/stable/generated/torch.nn.utils.rnn.pad_sequence.html
     """
-    # Shape (B, n_points, C).
     if mode == 'zeropad':
         batch = pad_sequence(pcds, batch_first=True, padding_value=0)
 
     elif mode == 'upsample':
         max_len = max(len(i) for i in pcds)
-        new_pcds = [upsample_pcd(p, max_len) for p in pcds if len(p) < max_len]
+        new_pcds = [upsample_pcd(p, max_len) if len(p) < max_len else p for p in pcds]
         batch = torch.stack(new_pcds)
 
+    # Shape (B, n_points, C).
     if channels_first:
         batch = batch.transpose(1, 2)  # Shape (B, C, n_points).
 
     return batch
 
 
-def collate_pcds_labels(samples):
+class Collator():
     r"""
     Collate point clouds and labels.
 
-    Point clouds are zero padded before collation. See :func:`pad_pcds`.
+    Point clouds are padded before collation. See :func:`pad_pcds`.
 
     .. note::
-        You should use this collate function if your model is
-        :class:`models.PointNet`.
+        You should use an instance of this class as ``collate_fn`` if your model
+        is :class:`models.PointNet`.
 
     Parameters
     ----------
-    samples : sequence of tuples
-        Each sample is a tuple of tensors ``(pcd, label)`` where ``pcd.shape ==
-        (n_points, *)`` and ``label.shape == (n_outputs,)``.
-
-    Returns
-    -------
-    batch : tuple of shape (2,)
-        * ``x == batch[0]`` with shape ``(B, *, T)``, where ``T`` is the size of
-        the largest point cloud.
-        * ``y == batch[1]`` with shape ``(B, n_outputs)``.
+    channels_first : bool, default=True
+        See :func:`pad_pcds`.
+    mode : {'zeropad', 'sample'}, default='upsample'
+        See :func:`pad_pcds`.
 
     Examples
     --------
     >>> sample1 = (torch.tensor([[1, 4, 5, 2]]), torch.tensor([1., 2.]))
     >>> sample2 = (torch.tensor([[0, 4, 0, 2], [2, 4, 1, 8]]), torch.tensor([7., 3.]))
-    >>> x, y = collate_pcds_labels((sample1, sample2))
+    >>> collate_fn = Collator()
+    >>> x, y = collate_fn((sample1, sample2))
     >>> x.shape
     torch.Size([2, 4, 2])
     >>> y.shape
     torch.Size([2, 2])
     >>> x
-    tensor([[[1, 0],
-             [4, 0],
-             [5, 0],
-             [2, 0]],
+    tensor([[[1, 1],
+             [4, 4],
+             [5, 5],
+             [2, 2]],
     <BLANKLINE>
             [[0, 2],
              [4, 4],
@@ -203,13 +234,44 @@ def collate_pcds_labels(samples):
     >>> y
     tensor([[1., 2.],
             [7., 3.]])
-    """
-    pcds, labels = list(zip(*samples))
-    
-    x = pad_pcds(pcds, channels_first=True)  # Shape (B, *, T).
-    y = torch.stack(labels)  # Shape (B, n_outputs).
 
-    return x, y
+    >>> collate_fn = Collator(channels_first=False, mode='zeropad')
+    >>> x, y = collate_fn((sample1, sample2))
+    >>> x
+    tensor([[[1, 4, 5, 2],
+             [0, 0, 0, 0]],
+    <BLANKLINE>
+            [[0, 4, 0, 2],
+             [2, 4, 1, 8]]])
+    >>> y
+    tensor([[1., 2.],
+            [7., 3.]])
+    """
+    def __init__(self, channels_first=True, mode='upsample'):
+        self.channels_first = channels_first
+        self.mode = mode
+
+    def __call__(self, samples):
+        r"""
+        Parameters
+        ----------
+        samples : sequence of tuples
+            Each sample is a tuple of tensors ``(pcd, label)`` where ``pcd.shape ==
+            (n_points, *)`` and ``label.shape == (n_outputs,)``.
+
+        Returns
+        -------
+        batch : tuple of shape (2,)
+            * ``x == batch[0]`` with shape ``(B, *, T)``, where ``T`` is the size of
+            the largest point cloud.
+            * ``y == batch[1]`` with shape ``(B, n_outputs)``.
+        """
+        pcds, labels = list(zip(*samples))
+        
+        x = pad_pcds(pcds, channels_first=self.channels_first, mode=self.mode)
+        y = torch.stack(labels)  # Shape (B, n_outputs).
+
+        return x, y
 
 
 class PCDDataset(Dataset):

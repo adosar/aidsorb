@@ -23,7 +23,7 @@ def conv1d_block(in_channels, out_channels, **kwargs):
         See `torch.nn.Conv1d`_.
     out_channels : int
         See `torch.nn.Conv1d`_.
-    kwargs
+    **kwargs
         Valid keyword arguments for `torch.nn.Conv1d`_.
 
     Returns
@@ -59,7 +59,7 @@ def dense_block(in_features, out_features, **kwargs):
         See `torch.nn.Linear`_.
     out_features : int
         See `torch.nn.Linear`_.
-    kwargs
+    **kwargs
         Valid keyword arguments for `torch.nn.Linear`_.
 
     Returns
@@ -229,7 +229,7 @@ class PointNetBackbone(nn.Module):
 
         # The first shared MLP.
         self.shared_mlp_1 = nn.Sequential(
-                # Consider changing the first block with LazyConv1d.
+                # Change the first block with nn.LazyConv1d when its API stabilizes.
                 conv1d_block(in_channels, embed_dim, kernel_size=1, bias=False),
                 conv1d_block(embed_dim, embed_dim, kernel_size=1, bias=False),
                 )

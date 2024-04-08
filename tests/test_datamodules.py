@@ -4,7 +4,7 @@ import tempfile
 from itertools import combinations, product
 from torch.utils.data import RandomSampler, SequentialSampler
 from aidsorb.utils import pcd_from_dir
-from aidsorb.data import prepare_data, collate_zero_pad_pointnet
+from aidsorb.data import prepare_data, Collator
 from aidsorb.transforms import Centering, RandomRotation
 from aidsorb.datamodules import PCDDataModule
 
@@ -30,7 +30,7 @@ class TestPCDDataModule(unittest.TestCase):
         self.shuffle = True
         self.train_bs = 3
         self.eval_bs = 2
-        self._config_dl = {'collate_fn' : collate_zero_pad_pointnet}
+        self._config_dl = {'collate_fn' : Collator()}
 
         # Instantiate the datamodule.
         self.dm = PCDDataModule(
