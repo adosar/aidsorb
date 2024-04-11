@@ -66,7 +66,7 @@ def dense_block(in_features, out_features, **kwargs):
     -------
     block : `torch.nn.Sequential`_
 
-    .. _torch.nn.Conv1d: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
+    .. _torch.nn.Linear: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
     .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
     """
     block = nn.Sequential(
@@ -80,8 +80,8 @@ def dense_block(in_features, out_features, **kwargs):
 
 class TNet(nn.Module):
     r"""
-    ``T-Net`` from the ``PointNet`` paper [1]_ for performing the feature
-    transform.
+    ``T-Net`` from the ``PointNet`` paper [1]_ for performing the input and
+    feature transform.
 
     ``T-Net`` takes as input a (possibly embedded) point cloud of shape ``(dim, N)``
     and regresses a ``(dim, dim)`` matrix. Each point in the point cloud has
@@ -174,7 +174,7 @@ class PointNetBackbone(nn.Module):
     in_channels : int, default=4
         The number of input channels.
     embed_dim : int, default=64
-        The embedding dimension of :class:`TNet`.
+        The embedding dimension of :class:`TNet` used for feature transform.
     n_global_features : int, default=1024
         The number of ``global_features``. These features can be used as input for
         a task head or concatenated with ``local_features``.
@@ -183,12 +183,6 @@ class PointNetBackbone(nn.Module):
         ``local_features`` and ``global_features``. Otherwise, the
         ``global_features`` are returned.
         
-    Notes
-    -----
-    In this implementation, the input ``T-Net`` transformation from the original
-    paper [1]_ is not applied since is it is not guaranteed to be a rigid
-    one.
-
     Examples
     --------
     >>> feat = PointNetBackbone(n_global_features=2048)
@@ -210,11 +204,6 @@ class PointNetBackbone(nn.Module):
     torch.Size([16, 1024])
     >>> A.shape
     torch.Size([16, 64, 64])
-
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
     def __init__(
             self, in_channels=4, embed_dim=64,
@@ -227,17 +216,17 @@ class PointNetBackbone(nn.Module):
         # T-Net for feature transform.
         self.tnet = TNet(embed_dim=embed_dim)
 
-        # The first shared MLP.
+        # First shared MLP.
         self.shared_mlp_1 = nn.Sequential(
                 # Change the first block with nn.LazyConv1d when its API stabilizes.
-                conv1d_block(in_channels, embed_dim, kernel_size=1, bias=False),
-                conv1d_block(embed_dim, embed_dim, kernel_size=1, bias=False),
+                conv1d_block(in_channels, 64, kernel_size=1, bias=False),
+                conv1d_block(64, embed_dim, kernel_size=1, bias=False),
                 )
 
-        # The second shared MLP.
+        # Second shared MLP.
         self.shared_mlp_2 = nn.Sequential(
-                conv1d_block(embed_dim, embed_dim, kernel_size=1, bias=False),
-                conv1d_block(embed_dim, 128, kernel_size=1, bias=False),
+                conv1d_block(embed_dim, 64, kernel_size=1, bias=False),
+                conv1d_block(64, 128, kernel_size=1, bias=False),
                 conv1d_block(128, n_global_features, kernel_size=1, bias=False),
                 )
 
@@ -262,20 +251,13 @@ class PointNetBackbone(nn.Module):
         # Input has shape (B, C, N).
         n_points = x.shape[2]
 
-        # Pass through the first shared MLP.
         x = self.shared_mlp_1(x)
 
-        # Get regressed matrices from T-Net.
         A = self.tnet(x)  # Shape (B, 64, 64).
-
-        # Perform feature transform.
         x = torch.bmm(x.transpose(2, 1), A).transpose(2, 1)
-
-        # Store point features for later concatenation.
         point_features = x.clone()  # Shape (B, 64, N).
 
-        # Pass through the second shared MLP.
-        x = self.shared_mlp_2(x)  # Shape (B, self.n_global_features, N).
+        x = self.shared_mlp_2(x)
 
         # Shape (B, self.n_global_features).
         global_features, critical_indices = torch.max(x, 2, keepdim=False)
@@ -294,20 +276,20 @@ class PointNetBackbone(nn.Module):
 
 class PointNetClsHead(nn.Module):
     r"""
-    The classification head from the `PointNet` paper [1]_.
+    The classification head from the ``PointNet`` paper [1]_.
 
     .. note::
         This head can be used either for classification or regression.
 
     Parameters
     ----------
-    n_inputs : int, default=1024
+    in_features : int, default=1024
     n_outputs : int, default=1
-    dropout_rate : float, default=0.7
+    dropout_rate : float, default=0
 
     Examples
     --------
-    >>> head = PointNetClsHead(n_inputs=13, n_outputs=4)
+    >>> head = PointNetClsHead(in_features=13, n_outputs=4)
     >>> x = torch.randn(64, 13)
     >>> out = head(x)
     >>> out.shape
@@ -318,11 +300,11 @@ class PointNetClsHead(nn.Module):
     Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
     USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
-    def __init__(self, n_inputs=1024, n_outputs=1, dropout_rate=0.7):
+    def __init__(self, in_features=1024, n_outputs=1, dropout_rate=0):
         super().__init__()
 
         self.mlp = nn.Sequential(
-                dense_block(n_inputs, 512, bias=False),
+                dense_block(in_features, 512, bias=False),
                 dense_block(512, 256, bias=False),
                 nn.Dropout(dropout_rate),
                 nn.Linear(256, n_outputs),
@@ -332,7 +314,7 @@ class PointNetClsHead(nn.Module):
         r"""
         Parameters
         ----------
-        x : tensor of shape (B, self.n_inputs)
+        x : tensor of shape (B, self.in_features)
 
         Returns
         -------
@@ -350,14 +332,13 @@ class PointNetSegHead(nn.Module):
     .. note::
         This head can be used either for classification or regression.
 
-    The final layer is replaced by a global pooling layer followed by a linear
-    one.
+    The final layer is replaced by a global pooling layer followed by a MLP.
 
     Parameters
     ----------
     in_channels : int, default=1088
-        The number of input channels.
     n_outputs : int, default=1
+    dropout_rate : int, default=0
 
     Examples
     --------
@@ -372,7 +353,7 @@ class PointNetSegHead(nn.Module):
     Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
     USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
-    def __init__(self, in_channels=1088, n_outputs=1):
+    def __init__(self, in_channels=1088, n_outputs=1, dropout_rate=0):
         super().__init__()
 
         self.shared_mlp = nn.Sequential(
@@ -381,7 +362,12 @@ class PointNetSegHead(nn.Module):
                 conv1d_block(256, 128, kernel_size=1, bias=False),
                 )
 
-        self.linear = nn.Linear(128, n_outputs)
+        self.mlp = nn.Sequential(
+                dense_block(128, 64, bias=False),
+                dense_block(64, 32, bias=False),
+                nn.Dropout(dropout_rate),
+                nn.Linear(32, n_outputs),
+                )
 
     def forward(self, x):
         r"""
@@ -398,7 +384,7 @@ class PointNetSegHead(nn.Module):
         # Perform global pooling.
         x, _ = torch.max(x, 2, keepdim=False)  # Ignore indices.
 
-        x = self.linear(x)
+        x = self.mlp(x)
 
         return x
 
