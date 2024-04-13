@@ -30,7 +30,11 @@ class TestPCDDataModule(unittest.TestCase):
         self.shuffle = True
         self.train_bs = 3
         self.eval_bs = 2
-        self._config_dl = {'collate_fn' : Collator()}
+        self.config_dataloaders = {
+                'pin_memory': True,
+                'num_workers': 2,
+                'collate_fn': Collator()
+                }
 
         # Instantiate the datamodule.
         self.dm = PCDDataModule(
@@ -45,7 +49,7 @@ class TestPCDDataModule(unittest.TestCase):
                 shuffle=self.shuffle,
                 train_batch_size=self.train_bs,
                 eval_batch_size=self.eval_bs,
-                **self._config_dl,
+                config_dataloaders=self.config_dataloaders,
                 )
 
         self.dm.prepare_data()
@@ -91,7 +95,7 @@ class TestPCDDataModule(unittest.TestCase):
                 self.dm.test_dataset,
                 ]
 
-        passed_collate_fn = self._config_dl['collate_fn']
+        passed_collate_fn = self.config_dataloaders['collate_fn']
 
         for i, dl in enumerate(dataloaders):
             # Check that dataloaders use appropriate settings.

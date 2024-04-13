@@ -104,7 +104,9 @@ class TestPCDDataset(unittest.TestCase):
             self.assertFalse(torch.all(sample_y == y))
 
             # Check that self.transform_x is correctly applied.
-            self.assertTrue(torch.all(sample_x.mean(axis=0)[:3].int() == 0))
+            self.assertTrue(torch.all(
+                torch.isclose(sample_x.mean(axis=0)[:3], torch.zeros(3), atol=1e-4)  # Single precision.
+                ))
 
             # Check that self.transform_y is correctly applied.
             self.assertTrue(torch.all(y - 1 == sample_y))
@@ -113,11 +115,13 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(_check_shape(sample_x), None)
             self.assertEqual(sample_y.shape, (len(self.labels),))
 
+        del self.X
+
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=Collator(),
-                num_workers=2,
+                num_workers=1,
                 ):
             self.assertEqual(x.ndim, 3)
             self.assertEqual(len(x), self.batch_size)
@@ -152,11 +156,13 @@ class TestPCDDataset(unittest.TestCase):
             # Check that sample has correct dimensions/shape.
             self.assertEqual(_check_shape(sample_x), None)
 
+        del self.X
+
         # Check that it works properly with a dataloader.
         for x in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=pad_pcds,
-                num_workers=2,
+                num_workers=1,
                 ):
             self.assertEqual(len(x), self.batch_size)
             self.assertEqual(x.ndim, 3)

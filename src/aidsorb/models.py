@@ -95,17 +95,17 @@ class TNet(nn.Module):
     embed_dim : int, default=64
         The embedding dimension.
 
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+
     Examples
     --------
     >>> tnet = TNet(embed_dim=64)
     >>> x = torch.randn((128, 64, 42))  # Shape (B, embed_dim, N).
     >>> tnet(x).shape
     torch.Size([128, 64, 64])
-
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
     def __init__(self, embed_dim=64):
         super().__init__()
@@ -287,6 +287,11 @@ class PointNetClsHead(nn.Module):
     n_outputs : int, default=1
     dropout_rate : float, default=0
 
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+
     Examples
     --------
     >>> head = PointNetClsHead(in_features=13, n_outputs=4)
@@ -294,11 +299,6 @@ class PointNetClsHead(nn.Module):
     >>> out = head(x)
     >>> out.shape
     torch.Size([64, 4])
-
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
     def __init__(self, in_features=1024, n_outputs=1, dropout_rate=0):
         super().__init__()
@@ -340,6 +340,11 @@ class PointNetSegHead(nn.Module):
     n_outputs : int, default=1
     dropout_rate : int, default=0
 
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+
     Examples
     --------
     >>> head = PointNetSegHead(n_outputs=2)
@@ -347,11 +352,6 @@ class PointNetSegHead(nn.Module):
     >>> out = head(x)
     >>> out.shape
     torch.Size([32, 2])
-
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
     def __init__(self, in_channels=1088, n_outputs=1, dropout_rate=0):
         super().__init__()
@@ -425,6 +425,11 @@ class PointNet(nn.Module):
     local_features : bool, default=False
         See :class:`PointNetBackBone`.
 
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+
     Examples
     --------
     >>> head = PointNetSegHead(in_channels=64+256, n_outputs=100)
@@ -440,11 +445,6 @@ class PointNet(nn.Module):
     torch.Size([32, 256])
     >>> A.shape
     torch.Size([32, 64, 64])
-
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
     """
     def __init__(
             self, head, in_channels=4,

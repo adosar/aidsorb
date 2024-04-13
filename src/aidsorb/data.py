@@ -122,8 +122,6 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     ----------
     pcds : sequence of tensors
     mode : {'zeropad', 'upsample'}, default='upsample'
-        * ``'upsample'``: see :func:`upsample_pcd`.
-        * ``'zeropad'``: see `pad_sequence`_.
     channels_first : bool, default=True
 
     Returns
@@ -132,6 +130,11 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
         ``B == len(pcds)`` is the batch size and ``T`` is the size of the
         largest point cloud. If ``channels_first == False``, ``batch.shape ==
         (B, T, *)``. Otherwise, ``batch.shape == (B, *, T)``.
+
+    See Also
+    --------
+    :func:`usample_pcd` : For a description of ``'upsample'`` mode.
+    `pad_sequence`_ : For a description of ``'zeropad'`` mode.
 
     Examples
     --------
@@ -207,9 +210,11 @@ class Collator():
     Parameters
     ----------
     channels_first : bool, default=True
-        See :func:`pad_pcds`.
     mode : {'zeropad', 'sample'}, default='upsample'
-        See :func:`pad_pcds`.
+
+    See Also
+    --------
+    :func:`pad_pcds`
 
     Examples
     --------
@@ -338,7 +343,11 @@ class PCDDataset(Dataset):
         if self.X is None:
             self.X = np.load(self.path_to_X, mmap_mode='r')
         if self.Y is None and self.path_to_Y is not None:
-            self.Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
+            self.Y = pd.read_csv(
+                    self.path_to_Y,
+                    index_col=self.index_col,
+                    usecols=[*self.labels, self.index_col],
+                    )
 
         name = self.pcd_names[idx]
         sample_x = self.X[name]

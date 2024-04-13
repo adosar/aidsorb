@@ -140,6 +140,10 @@ def draw_pcd_from_file(filename, show=True, **kwargs):
     render : `plotly.go.Figure`_ if ``show == False``, else ``None``.
 
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
+
+    See Also
+    --------
+    :func:`draw_pcd`
     """
     _, pcd = pcd_from_file(filename)
     fig = draw_pcd(pcd, **kwargs)

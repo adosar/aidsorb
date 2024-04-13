@@ -119,12 +119,11 @@ def center_pcd(pcd):
     """
     _check_shape(pcd)
 
-    points, features = split_pcd(pcd)
-    centroid = points.mean(axis=0)
+    mask = np.zeros(pcd.shape[1])
+    mask[:3] = 1  # Do not center the features.
+    masked_centroid = pcd.mean(axis=0) * mask
 
-    new_points = points - centroid
-
-    return np.hstack((new_points, features))
+    return pcd - masked_centroid
 
 
 class Centering():
@@ -134,8 +133,9 @@ class Centering():
     .. warning::
         The input must be a ``np.array`` of shape ``(N, 4+C)``.
 
-    .. note::
-        See also :func:`center_pcd`.
+    See Also
+    --------
+    :func:`center_pcd`
 
     Examples
     --------
@@ -177,8 +177,9 @@ class RandomRotation():
     .. warning::
         The input must be a ``np.array`` of shape ``(N, 4+C)``.
 
-    .. note::
-        See also :func:`transform_pcd`.
+    See Also
+    --------
+    :func:`transform_pcd`
 
     Examples
     --------
