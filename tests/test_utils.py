@@ -9,17 +9,24 @@ from aidsorb.utils import pcd_from_file, pcd_from_files, pcd_from_dir
 
 
 class TestPCDFromFile(unittest.TestCase):
-    def test_pcd_from_file(self):
+    def test_shape(self):
         name, pcd = pcd_from_file('tests/samples/IRMOF-1.xyz')
         self.assertEqual(name, 'IRMOF-1')
         self.assertEqual(pcd.shape, (424, 4))
 
+    def test_features(self):
+        # Features: Pauling electronegativity and period.
         water = np.array([
-            [0, 0, 0.11779, 8],
-            [0, 0.75545, -0.47116, 1],
-            [0, -0.75545, -0.47116, 1],
+            [0, 0, 0.11779, 8, 3.44, 2],
+            [0, 0.75545, -0.47116, 1, 2.20, 1],
+            [0, -0.75545, -0.47116, 1, 2.20, 1],
             ], dtype='float32')
-        name, pcd = pcd_from_file('tests/dummy/H2O.xyz')
+
+        name, pcd = pcd_from_file(
+                'tests/dummy/H2O.xyz',
+                features=['en_pauling', 'period'],
+                )
+
         self.assertEqual(name, 'H2O')
         self.assertTrue(np.all(pcd == water))
 

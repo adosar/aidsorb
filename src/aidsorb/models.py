@@ -214,7 +214,7 @@ class PointNetBackbone(nn.Module):
         self.local_features = local_features
 
         # T-Net for feature transform.
-        self.tnet = TNet(embed_dim=embed_dim)
+        #self.tnet = TNet(embed_dim=embed_dim)
 
         # First shared MLP.
         self.shared_mlp_1 = nn.Sequential(
@@ -253,8 +253,9 @@ class PointNetBackbone(nn.Module):
 
         x = self.shared_mlp_1(x)
 
-        A = self.tnet(x)  # Shape (B, 64, 64).
-        x = torch.bmm(x.transpose(2, 1), A).transpose(2, 1)
+        A = None
+        #A = self.tnet(x)  # Shape (B, 64, 64).
+        #x = torch.bmm(x.transpose(2, 1), A).transpose(2, 1)
         point_features = x.clone()  # Shape (B, 64, N).
 
         x = self.shared_mlp_2(x)

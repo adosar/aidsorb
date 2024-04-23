@@ -1,7 +1,7 @@
 r"""
 This module provides helper functions and classes for transforming point clouds.
 
-The ``pcd`` must have shape of (N, 4+C).
+The ``pcd`` must have shape of ``(N, 3+C)``.
 """
 
 import numpy as np
@@ -12,22 +12,25 @@ from . _internal import _check_shape
 
 def transform_pcd(pcd, tfm):
     r"""
-    Transform a point cloud.
+    Transform the coordinates of a point cloud.
 
     For molecular point clouds, *only rigid transformations are recommended*.
 
+    ..note::
+        The ``features == pcd[:, 3:]`` are not affected.
+
     Parameters
     ----------
-    pcd : array of shape (N, 4+C)
+    pcd : array of shape (N, 3+C)
         The original point cloud.
 
-    tfm : array of shape (3, 3) or (T, 3, 3)
-        The transformation matrix or matrices.
+    tfm : array of shape (3, 3)
+        The transformation matrix.
 
     Returns
     -------
-    new_pcd : array of shape (N, 4+C) or (T, N, 4+C)
-        The transformed point cloud or point clouds.
+    new_pcd : array of shape (N, 3+C)
+        The transformed point cloud.
 
     Raises
     ------
@@ -42,48 +45,24 @@ def transform_pcd(pcd, tfm):
     array([[ 9,  3,  2,  6],
            [-4,  3, -1,  8]])
 
-    >>> from scipy.spatial.transform import Rotation as R
-    >>> pcd = np.random.randn(424, 4)
-    >>> tfm = R.random(num=32).as_matrix()
-    >>> transform_pcd(pcd, tfm).shape
-    (32, 424, 4)
-
-    >>> pcd = np.random.randn(424, 3)  # Invalid shape.
-    >>> tfm = np.random.randn(32, 3, 3)  # Valid shape.
+    >>> pcd = np.random.randn(424, 2)  # Invalid shape.
     >>> transform_pcd(pcd, tfm)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting array of shape (N, C) with C >= 4 but got array of shape (424, 3)!
-
-    >>> pcd = np.random.randn(424, 4)  # Valid shape.
-    >>> tfm = np.random.randn(32, 4, 3)  # Invalid shape.
-    >>> transform_pcd(pcd, tfm)
-    Traceback (most recent call last):
-        ...
-    ValueError: Expecting array of shape (3, 3) or (T, 3, 3) but got array of shape (32, 4, 3)!
+    ValueError: Expecting array of shape (N, 3+C) but got array of shape (424, 2)!
     """
     _check_shape(pcd)
 
-    if not ((tfm.shape == (3, 3)) or tfm.shape[1:] == (3, 3)):
+    if not tfm.shape == (3, 3):
         raise ValueError(
-                'Expecting array of shape (3, 3) or (T, 3, 3) '
+                'Expecting array of shape (3, 3) '
                 f'but got array of shape {tfm.shape}!'
                 )
 
     points, features = split_pcd(pcd)
+    new_points = points @ tfm.T  # Transpose the matrix.
 
-    if tfm.shape == (3, 3):
-        new_points = points @ tfm.T  # Transpose the matrix.
-
-        return np.hstack((new_points, features))
-
-    size = len(tfm)  # The number of transformations.
-    new_points = points @ tfm.transpose([0, 2, 1])  # Transpose the matrices.
-
-    features = features[np.newaxis, :]  # Shape (1, N, C).
-    features = np.repeat(features, size, axis=0)  # Shape (size, N, C).
-
-    return np.concatenate((new_points, features), axis=2)
+    return np.hstack((new_points, features))
 
 
 def center_pcd(pcd):
@@ -98,11 +77,11 @@ def center_pcd(pcd):
 
     Parameters
     ----------
-    pcd : array of shape (N, 4+C)
+    pcd : array of shape (N, 3+C)
 
     Returns
     -------
-    new_pcd : array of shape (N, 4+C)
+    new_pcd : array of shape (N, 3+C)
         The centered point cloud.
 
     Raises
@@ -119,19 +98,18 @@ def center_pcd(pcd):
     """
     _check_shape(pcd)
 
-    mask = np.zeros(pcd.shape[1])
-    mask[:3] = 1  # Do not center the features.
-    masked_centroid = pcd.mean(axis=0) * mask
+    centroid = pcd.mean(axis=0)
+    centroid[3:] = 0  # Center only the coordinates.
 
-    return pcd - masked_centroid
+    return pcd - centroid
 
 
 class Centering():
     r"""
-    Center a point cloud by subtracting its centroid.
+    Center the coordinates of a point cloud by subtracting their centroid.
 
-    .. warning::
-        The input must be a ``np.array`` of shape ``(N, 4+C)``.
+    ..note::
+        The ``features == pcd[:, 3:]`` are not affected.
 
     See Also
     --------
@@ -144,15 +122,15 @@ class Centering():
     >>> center(x)
     array([[0., 0., 0., 4., 5.]])
 
-    >>> x = np.array([[1., 4., 9.]])
+    >>> x = np.array([[1., 4.]])
     >>> center = Centering()
     >>> center(x)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting array of shape (N, C) with C >= 4 but got array of shape (1, 3)!
+    ValueError: Expecting array of shape (N, 3+C) but got array of shape (1, 2)!
     """
-    def __call__(self, sample):
-        return center_pcd(sample)
+    def __call__(self, pcd):
+        return center_pcd(pcd)
 
 
 class Identity():
@@ -166,16 +144,16 @@ class Identity():
     >>> np.all(identity(x) == x)
     True
     """
-    def __call__(self, sample):
-        return sample
+    def __call__(self, pcd):
+        return pcd
 
 
 class RandomRotation():
     r"""
-    Randomly rotate a point cloud.
+    Randomly rotate the coordinates of a point cloud.
 
-    .. warning::
-        The input must be a ``np.array`` of shape ``(N, 4+C)``.
+    ..note::
+        The ``features == pcd[:, 3:]`` are not affected.
 
     See Also
     --------
@@ -183,20 +161,52 @@ class RandomRotation():
 
     Examples
     --------
-    >>> x = np.random.randn(25, 4)
+    >>> x = np.random.randn(25, 3)
     >>> randomrot = RandomRotation()
     >>> randomrot(x).shape
-    (25, 4)
+    (25, 3)
 
-    >>> x = np.random.randn(25, 3)
+    >>> x = np.random.randn(25, 2)
     >>> randomrot = RandomRotation()
     >>> randomrot(x)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting array of shape (N, C) with C >= 4 but got array of shape (25, 3)!
+    ValueError: Expecting array of shape (N, 3+C) but got array of shape (25, 2)!
     """
-    def __call__(self, sample):
+    def __call__(self, pcd):
         rot = R.random().as_matrix()
-        new_pcd = transform_pcd(sample, rot)
+        new_pcd = transform_pcd(pcd, rot)
 
         return new_pcd
+
+
+class Jitter():
+    r"""
+    Jitter the coordinates of a point cloud by adding standard normal noise.
+
+    ..note::
+        The ``features == pcd[:, 3:]`` are not affected.
+
+    Parameters
+    ----------
+    std: float, default=0.001
+        The standard deviation of the normal noise.
+
+    Examples
+    --------
+    >>> pcd = np.random.randn(100, 5)
+    >>> jitter = Jitter()
+    >>> new_pcd = jitter(pcd)
+    >>> np.all(pcd[:, 3:] == new_pcd[:, 3:])  # Features are not affected.
+    True
+    """
+    def __init__(self, std=0.001):
+        self.std = std
+
+    def __call__(self, pcd):
+        _check_shape(pcd)
+
+        noise = np.random.normal(loc=0, scale=self.std, size=pcd.shape)
+        noise[:, 3:] = 0  # Jitter only the coordinates.
+
+        return pcd + noise

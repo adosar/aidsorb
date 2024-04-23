@@ -17,7 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
-from . _internal import _check_shape
+from . _internal import _check_shape_vis, _ptable
 from . utils import split_pcd, pcd_from_file
 
 
@@ -34,11 +34,10 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
     -------
     colors : array-like of shape (N,)
     """
-    # Subtract 1 to follow the indexing of _ptable.
     atomic_numbers = np.array(atomic_numbers)
     scheme += '_color'
 
-    return _ptable[scheme][atomic_numbers].values
+    return _ptable.loc[atomic_numbers, scheme].values
 
 
 def get_elements(atomic_numbers):
@@ -53,10 +52,9 @@ def get_elements(atomic_numbers):
     -------
     elements : array-like of shape (N,)
     """
-    # Subtract 1 to follow the indexing of _ptable.
     atomic_numbers = np.array(atomic_numbers)
 
-    return _ptable['name'][atomic_numbers].values
+    return _ptable.loc[atomic_numbers, 'name'].values
 
 
 def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs):
@@ -89,7 +87,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     .. _colorscale: https://plotly.com/python/builtin-colorscales/
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
     """
-    _check_shape(pcd)
+    _check_shape_vis(pcd)
 
     points = pcd[:, :3]
     atoms = pcd[:, 3]
@@ -149,8 +147,3 @@ def draw_pcd_from_file(filename, show=True, **kwargs):
     fig = draw_pcd(pcd, **kwargs)
 
     return fig.show() if show else fig
-
-
-# Load the periodic table.
-_ptable = fetch_table('elements')
-_ptable.set_index('atomic_number', inplace=True)

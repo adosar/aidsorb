@@ -1,7 +1,5 @@
 r"""
 Provides helper functions for creating molecular point clouds.
-
-The ``pcd`` must have shape ``(N, 4+C)``.
 """
 
 import os
@@ -10,7 +8,7 @@ import warnings
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
-from . _internal import _check_shape, _SEED
+from . _internal import _check_shape, _SEED, _ptable
 warnings.filterwarnings('ignore')
 
 
@@ -22,19 +20,11 @@ def split_pcd(pcd):
     ----------
     pcd : array of shape (N, 3+C)
 
-        .. note::
-            At least one feature is required, i.e. ``C >= 1``.
-
     Returns
     -------
     points_and_features : tuple of shape (2,)
         * ``points_and_features[0] == coords``, array of shape (N, 3).
         * ``points_and_features[1] == atoms``, array of shape (N, C).
-
-    Raises
-    ------
-    ValueError
-        If ``pcd`` does not have the expected shape.
 
     Examples
     --------
@@ -50,24 +40,22 @@ def split_pcd(pcd):
     return pcd[:, :3], pcd[:, 3:]
 
 
-def pcd_from_file(filename):
+def pcd_from_file(filename, features=None):
     r"""
     Create molecular point cloud from a file.
 
-    The molecular ``pcd`` is an array of shape ``(N, 4)`` where ``N`` is the
-    number of atoms, ``pcd[:, :3]`` are the **atomic coordinates**
-    and ``pcd[:, 3]`` are the **atomic numbers**.
-
-    .. note::
-        To get a list of the supported chemical file formats visit
-        `ase.io.read<https://wiki.fysik.dtu.dk/ase/ase/io/io.html#ase.io.iread>`_.
-        or type ``ase info --formats``. Alternatively, you can list them from
-        the command line with ``ase info --formats``.
+    The molecular ``pcd`` has shape ``(N, 4+C)`` where ``N`` is the
+    number of atoms, ``pcd[:, :3]`` are the **atomic coordinates**,
+    ``pcd[:, 3]`` are the **atomic numbers** and ``pcd[:, 4:]`` any
+    additional ``features``. If ``features == None``, then the only features
+    are the atomic numbers.
 
     Parameters
     ----------
     filename : str
         Absolute or relative path to the file.
+    features : list of str, optional
+        All ``float`` properties from `elements_table`_ are supported.
 
     Returns
     -------
@@ -77,21 +65,30 @@ def pcd_from_file(filename):
 
     Notes
     -----
-    The ``name`` of the molecule is the ``basename`` of ``filename`` with its
+    * The ``name`` of the molecule is the ``basename`` of ``filename`` with its
     suffix removed.
+    * To get a list of the supported chemical file formats visit
+    `ase.io.read<https://wiki.fysik.dtu.dk/ase/ase/io/io.html#ase.io.iread>`_.
+    Alternatively, you can list them from the command line with ``ase info --formats``.
+
+    .. _elements_table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
     """
     name = Path(filename).stem
-
     structure = read(filename)
+
     positions = structure.get_positions()
-    atoms = structure.get_atomic_numbers().reshape(len(positions), -1)
+    atoms = structure.get_atomic_numbers()
 
-    pcd = np.hstack((positions, atoms), dtype='float32')
+    if features is not None:
+        feats = _ptable.loc[atoms.astype(int), features].values
+        pcd = np.hstack((positions, atoms[:, None], feats), dtype='float32')
+    else:
+        pcd = np.hstack((positions, atoms[:, None]), dtype='float32')
 
-    return name, pcd
+    return  name, pcd
 
 
-def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
+def pcd_from_files(filenames, outname, features=None, shuffle=False, seed=_SEED):
     r"""
     Create molecular point clouds from a list of files and store them.
 
@@ -105,6 +102,8 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
         used.
     outname : str
         Filename where the data will be stored.
+    features: list, optional
+        See :func:`pcd_from_file`.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
     seed : int, default=1
@@ -120,7 +119,7 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
     fnames = np.fromiter(filenames, dtype=object)
 
     if shuffle:
-        rng = np.random.default_rng(seed=_SEED)
+        rng = np.random.default_rng(seed=seed)
         rng.shuffle(fnames)
 
     # Dictionary with names as keys and pcd's as values.
@@ -128,7 +127,7 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
 
     for f in tqdm(fnames, desc='\033[32mCreating point clouds\033[0m'):
         try:
-            name, pcd = pcd_from_file(f)
+            name, pcd = pcd_from_file(f, features=features)
             savez_dict[name] = pcd
         except Exception:
             pass
@@ -137,7 +136,7 @@ def pcd_from_files(filenames, outname, shuffle=False, seed=_SEED):
     np.savez_compressed(outname, **savez_dict)
 
 
-def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
+def pcd_from_dir(dirname, outname, features=None, shuffle=False, seed=_SEED):
     r"""
     Create molecular point clouds from a directory and store them.
 
@@ -150,6 +149,8 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
         Absolute or relative path to the directory.
     outname : str
         Name of the file where point clouds will be stored.
+    features: list, optional
+        See :func:`pcd_from_file`.
     shuffle : bool, default=False
         If ``True``, the point clouds are shuffled.
     seed : int, default=1
@@ -168,7 +169,7 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
             )
 
     if shuffle:
-        rng = np.random.default_rng(seed=_SEED)
+        rng = np.random.default_rng(seed=seed)
         rng.shuffle(fnames)
 
     # Dictionary with names as keys and pcd's as values.
@@ -176,7 +177,7 @@ def pcd_from_dir(dirname, outname, shuffle=False, seed=_SEED):
 
     for f in tqdm(fnames, desc='\033[32mCreating point clouds\033[0m'):
         try:
-            name, pcd = pcd_from_file(f)
+            name, pcd = pcd_from_file(f, features=features)
             savez_dict[name] = pcd
         except Exception:
             pass

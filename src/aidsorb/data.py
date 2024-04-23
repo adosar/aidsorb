@@ -261,8 +261,8 @@ class Collator():
         Parameters
         ----------
         samples : sequence of tuples
-            Each sample is a tuple of tensors ``(pcd, label)`` where ``pcd.shape ==
-            (n_points, *)`` and ``label.shape == (n_outputs,)``.
+            Each sample is a tuple of tensors ``(pcd, label)`` where
+            ``pcd.shape == (n_points, *)`` and ``label.shape == (n_outputs,)``.
 
         Returns
         -------

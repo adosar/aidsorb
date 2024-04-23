@@ -4,7 +4,7 @@ AIdsorb is a Python package for processing molecular point clouds.
 
 A molecular ``pcd`` is an array of shape ``(N, 4+C)`` where ``N`` is the
 number of atoms, ``pcd[:, :3]`` are the **atomic coordinates**,
-``pcd[:, 3]`` are the **atomic numbers** and ``pcd[:, 3+C]`` any additional
+``pcd[:, 3]`` are the **atomic numbers** and ``pcd[:, 4:]`` any additional
 **features**. If ``C==0``, then the only features are the atomic numbers.
 """
 
