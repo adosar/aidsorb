@@ -189,7 +189,7 @@ class Jitter():
 
     Parameters
     ----------
-    std: float, default=0.001
+    std: float, default=0.01
         The standard deviation of the normal noise.
 
     Examples
@@ -200,7 +200,7 @@ class Jitter():
     >>> np.all(pcd[:, 3:] == new_pcd[:, 3:])  # Features are not affected.
     True
     """
-    def __init__(self, std=0.001):
+    def __init__(self, std=0.01):
         self.std = std
 
     def __call__(self, pcd):
@@ -210,3 +210,32 @@ class Jitter():
         noise[:, 3:] = 0  # Jitter only the coordinates.
 
         return pcd + noise
+
+
+class RandomErase():
+    r"""
+    Randomly erase a number of points from the point cloud.
+
+    Parameters
+    ----------
+    n_points : int, default=5
+        Number of points to be erased.
+
+    Examples
+    --------
+    >>> pcd = np.random.randn(100, 5)
+    >>> erase = RandomErase(n_points=10)
+    >>> erase(pcd).shape
+    (90, 5)
+    """
+    def __init__(self, n_points=5):
+        self.n_points = n_points
+
+    def __call__(self, pcd):
+        _check_shape(pcd)
+
+        # Indices of points to keep.
+        keep_size = len(pcd) - self.n_points
+        indices = new_pcd = np.random.choice(len(pcd), size=keep_size, replace=False)
+
+        return pcd[indices]

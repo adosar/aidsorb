@@ -1,9 +1,14 @@
 r"""
 Write the docstring of the module.
+
+* Check All docstrings must corrected since the function signatures have changed.
+* Inform users that the modules are lazy initialized.
 """
 
+import warnings
 import torch
 from torch import nn
+warnings.filterwarnings('ignore')
 
 
 def conv1d_block(in_channels, out_channels, **kwargs):
@@ -92,7 +97,7 @@ class TNet(nn.Module):
 
     Parameters
     ----------
-    embed_dim : int, default=64
+    embed_dim : int
         The embedding dimension.
 
     .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
@@ -107,7 +112,7 @@ class TNet(nn.Module):
     >>> tnet(x).shape
     torch.Size([128, 64, 64])
     """
-    def __init__(self, embed_dim=64):
+    def __init__(self, embed_dim):
         super().__init__()
 
         self.embed_dim = embed_dim
@@ -162,8 +167,7 @@ class PointNetBackbone(nn.Module):
 
     This block is responsible for obtaining the *local* and *global*
     **features**, which can then be passed to a task head for predictions. This
-    block also returns the **critical indices** and the **regressed matrices**
-    (see :class:`TNet`).
+    block also returns the **critical indices**.
 
     The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
     the batch size, ``C`` is the number of input channels  and ``N`` is the
@@ -171,108 +175,92 @@ class PointNetBackbone(nn.Module):
 
     Parameters
     ----------
-    in_channels : int, default=4
-        The number of input channels.
-    embed_dim : int, default=64
-        The embedding dimension of :class:`TNet` used for feature transform.
-    n_global_features : int, default=1024
-        The number of ``global_features``. These features can be used as input for
-        a task head or concatenated with ``local_features``.
-    local_features : bool, default=False
+    local_feats : bool, default=False
         If ``True``, the returned features are a concatenation of
         ``local_features`` and ``global_features``. Otherwise, the
         ``global_features`` are returned.
+    n_global_feats : int, default=1024
+        The number of ``global_features``. These features can be used as input for
+        a task head or concatenated with ``local_features``.
         
     Examples
     --------
-    >>> feat = PointNetBackbone(n_global_features=2048)
+    >>> feat = PointNetBackbone(n_global_feats=2048)
     >>> x = torch.randn((32, 4, 239))
-    >>> features, indices, A = feat(x)
+    >>> features, indices = feat(x)
     >>> features.shape
     torch.Size([32, 2048])
     >>> indices.shape
     torch.Size([32, 2048])
-    >>> A.shape
-    torch.Size([32, 64, 64])
 
-    >>> feat = PointNetBackbone(n_global_features=1024, local_features=True)
+    >>> feat = PointNetBackbone(n_global_feats=1024, local_feats=True)
     >>> x = torch.randn((16, 4, 239))
-    >>> features, indices, A = feat(x)
+    >>> features, indices = feat(x)
     >>> features.shape
     torch.Size([16, 1088, 239])
     >>> indices.shape
     torch.Size([16, 1024])
-    >>> A.shape
-    torch.Size([16, 64, 64])
     """
-    def __init__(
-            self, in_channels=4, embed_dim=64,
-            n_global_features=1024, local_features=False
-            ):
+    def __init__(self, local_feats=False, n_global_feats=1024):
         super().__init__()
 
-        self.local_features = local_features
-
-        # T-Net for feature transform.
-        #self.tnet = TNet(embed_dim=embed_dim)
+        self.local_feats = local_feats
 
         # First shared MLP.
         self.shared_mlp_1 = nn.Sequential(
-                # Change the first block with nn.LazyConv1d when its API stabilizes.
-                conv1d_block(in_channels, 64, kernel_size=1, bias=False),
-                conv1d_block(64, embed_dim, kernel_size=1, bias=False),
+                nn.LazyConv1d(64, kernel_size=1, bias=False),
+                nn.BatchNorm1d(64),
+                nn.ReLU(),
+                conv1d_block(64, 64, kernel_size=1, bias=False),
                 )
 
         # Second shared MLP.
         self.shared_mlp_2 = nn.Sequential(
-                conv1d_block(embed_dim, 64, kernel_size=1, bias=False),
+                nn.LazyConv1d(64, kernel_size=1, bias=False),
+                nn.BatchNorm1d(64),
+                nn.ReLU(),
                 conv1d_block(64, 128, kernel_size=1, bias=False),
-                conv1d_block(128, n_global_features, kernel_size=1, bias=False),
+                conv1d_block(128, n_global_feats, kernel_size=1, bias=False),
                 )
 
     def forward(self, x):
         r"""
-        Return the features, critical indices and the regressed matrices.
+        Return the *features* and *critical indices*.
 
-        The type of the features is determined by ``self.local_features``.
+        The type of the features is determined by ``self.local_feats``.
 
         Parameters
         ----------
-        x : tensor of shape (B, self.in_channels, N)
-            See :class:`PointNetBackbone`.
+        x : tensor of shape (B, C, N)
 
         Returns
         -------
         out : tuple of shape (3,)
             * ``out[0] == features``
             * ``out[1] == critical_indices``
-            * ``out[2] == regressed_matrices``
         """
-        # Input has shape (B, C, N).
         n_points = x.shape[2]
 
         x = self.shared_mlp_1(x)
 
-        A = None
-        #A = self.tnet(x)  # Shape (B, 64, 64).
-        #x = torch.bmm(x.transpose(2, 1), A).transpose(2, 1)
-        point_features = x.clone()  # Shape (B, 64, N).
+        if self.local_feats:
+            point_feats = x.clone()
 
         x = self.shared_mlp_2(x)
 
-        # Shape (B, self.n_global_features).
-        global_features, critical_indices = torch.max(x, 2, keepdim=False)
+        # Shape (B, self.n_global_feats).
+        global_feats, critical_indices = torch.max(x, 2, keepdim=False)
 
-        if self.local_features:
-            # Shape (B, self.n_global_features + self.embed_dim, N)
-            features = torch.cat(
-                    (point_features, global_features.unsqueeze(-1).repeat(1, 1, n_points)),
-                    dim=1
-                    )
+        if self.local_feats:
+             # Shape (B, self.n_global_feats + 64, N)
+             feats = torch.cat(
+                     (point_feats, global_feats.unsqueeze(-1).repeat(1, 1, n_points)),
+                     dim=1
+                     )
 
-            return features, critical_indices, A
+             return feats, critical_indices
 
-        return global_features, critical_indices, A
+        return global_feats, critical_indices
 
 
 class PointNetClsHead(nn.Module):
@@ -284,7 +272,6 @@ class PointNetClsHead(nn.Module):
 
     Parameters
     ----------
-    in_features : int, default=1024
     n_outputs : int, default=1
     dropout_rate : float, default=0
 
@@ -295,17 +282,18 @@ class PointNetClsHead(nn.Module):
 
     Examples
     --------
-    >>> head = PointNetClsHead(in_features=13, n_outputs=4)
+    >>> head = PointNetClsHead(n_outputs=4)
     >>> x = torch.randn(64, 13)
-    >>> out = head(x)
-    >>> out.shape
+    >>> head(x).shape
     torch.Size([64, 4])
     """
     def __init__(self, in_features=1024, n_outputs=1, dropout_rate=0):
         super().__init__()
 
         self.mlp = nn.Sequential(
-                dense_block(in_features, 512, bias=False),
+                nn.LazyLinear(512, bias=False),
+                nn.BatchNorm1d(512),
+                nn.ReLU(),
                 dense_block(512, 256, bias=False),
                 nn.Dropout(dropout_rate),
                 nn.Linear(256, n_outputs),
@@ -315,7 +303,7 @@ class PointNetClsHead(nn.Module):
         r"""
         Parameters
         ----------
-        x : tensor of shape (B, self.in_features)
+        x : tensor of shape (B, C)
 
         Returns
         -------
@@ -337,7 +325,6 @@ class PointNetSegHead(nn.Module):
 
     Parameters
     ----------
-    in_channels : int, default=1088
     n_outputs : int, default=1
     dropout_rate : int, default=0
 
@@ -350,15 +337,20 @@ class PointNetSegHead(nn.Module):
     --------
     >>> head = PointNetSegHead(n_outputs=2)
     >>> x = torch.randn(32, 1088, 400)
-    >>> out = head(x)
-    >>> out.shape
+    >>> head(x).shape
     torch.Size([32, 2])
     """
-    def __init__(self, in_channels=1088, n_outputs=1, dropout_rate=0):
+    def __init__(self, n_outputs=1, dropout_rate=0):
         super().__init__()
 
+        lazy_conv1d_block = nn.Sequential(
+                nn.LazyConv1d(512, kernel_size=1, bias=False),
+                nn.BatchNorm1d(512),
+                nn.ReLU(),
+                )
+
         self.shared_mlp = nn.Sequential(
-                conv1d_block(in_channels, 512, kernel_size=1, bias=False),
+                lazy_conv1d_block,
                 conv1d_block(512, 256, kernel_size=1, bias=False),
                 conv1d_block(256, 128, kernel_size=1, bias=False),
                 )
@@ -374,14 +366,14 @@ class PointNetSegHead(nn.Module):
         r"""
         Parameters
         ----------
-        x : tensor of shape (B, self.in_channels, N).
+        x : tensor of shape (B, C, N).
 
         Returns
         -------
         out : tensor of shape (B, self.n_outputs)
         """
         x = self.shared_mlp(x)  # Shape (B, C, N).
-        
+
         # Perform global pooling.
         x, _ = torch.max(x, 2, keepdim=False)  # Ignore indices.
 
@@ -405,7 +397,7 @@ class PointNet(nn.Module):
     the batch size, ``C`` is the number of input channels  and ``N`` is the
     number of points in each point cloud.
 
-    You can define a ``custom_head`` head as a :class:``torch.nn.Module`` and
+    You can define a ``custom_head`` head as a :class:`torch.nn.Module` and
     pass it to ``head``.
 
     .. warning::
@@ -417,66 +409,42 @@ class PointNet(nn.Module):
     Parameters
     ----------
     head : class:`nn.Module`
-    in_channels : int, default=4
-        See :class:`PointNetBackBone`.
-    embed_dim : int, default=64
-        See :class:`PointNetBackBone`.
-    n_global_features : int, default=1024
-        See :class:`PointNetBackBone`.
-    local_features : bool, default=False
-        See :class:`PointNetBackBone`.
+    local_feats: bool, default=False
+    n_global_feats: int, default=1024
 
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+    See Also
+    --------
+    :class:`PointNetBackBone`
 
     Examples
     --------
-    >>> head = PointNetSegHead(in_channels=64+256, n_outputs=100)
-    >>> pointnet = PointNet(
-    ...     head=head, embed_dim=64,
-    ...     n_global_features=256, local_features=True
-    ...     )
+    >>> head = PointNetSegHead(n_outputs=100)
+    >>> pointnet = PointNet(head=head, local_feats=True, n_global_feats=256)
     >>> x = torch.randn(32, 4, 300)
-    >>> predictions, indices, A = pointnet(x)
-    >>> predictions.shape
+    >>> out, indices = pointnet(x)
+    >>> out.shape
     torch.Size([32, 100])
     >>> indices.shape
     torch.Size([32, 256])
-    >>> A.shape
-    torch.Size([32, 64, 64])
     """
-    def __init__(
-            self, head, in_channels=4,
-            embed_dim=64, n_global_features=1024,
-            local_features=False,
-            ):
+    def __init__(self, head, local_feats=False, n_global_feats=1024):
         super().__init__()
-
-        self.backbone = PointNetBackbone(
-                in_channels=in_channels,
-                embed_dim=embed_dim,
-                n_global_features=n_global_features,
-                local_features=local_features,
-                )
-        
+        self.backbone = PointNetBackbone(local_feats, n_global_feats)
         self.head = head
 
     def forward(self, x):
         r"""
         Parameters
         ----------
-        x : tensor of shape (B, self.in_channels, N)
+        x : tensor of shape (B, C, N)
 
         Returns
         -------
         out : tuple of shape (3,)
             * ``out[0] == head_output``
             * ``out[1] == critical_indices``
-            * ``out[2] == regressed_matrices``
         """
-        features, critical_indices, A = self.backbone(x)
-        output = self.head(features)
+        feats, indices = self.backbone(x)
+        out = self.head(feats)
 
-        return output, critical_indices, A
+        return out, indices

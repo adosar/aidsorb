@@ -88,7 +88,7 @@ def pcd_from_file(filename, features=None):
     return  name, pcd
 
 
-def pcd_from_files(filenames, outname, features=None, shuffle=False, seed=_SEED):
+def pcd_from_files(filenames, outname, features=None):
     r"""
     Create molecular point clouds from a list of files and store them.
 
@@ -104,11 +104,6 @@ def pcd_from_files(filenames, outname, features=None, shuffle=False, seed=_SEED)
         Filename where the data will be stored.
     features: list, optional
         See :func:`pcd_from_file`.
-    shuffle : bool, default=False
-        If ``True``, the point clouds are shuffled.
-    seed : int, default=1
-        Controls the randomness of the ``rng`` used for shuffling. Takes effect
-        only if ``shuffle == True``.
 
     Notes
     -----
@@ -117,10 +112,6 @@ def pcd_from_files(filenames, outname, features=None, shuffle=False, seed=_SEED)
     .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
     fnames = np.fromiter(filenames, dtype=object)
-
-    if shuffle:
-        rng = np.random.default_rng(seed=seed)
-        rng.shuffle(fnames)
 
     # Dictionary with names as keys and pcd's as values.
     savez_dict = {}
@@ -136,7 +127,7 @@ def pcd_from_files(filenames, outname, features=None, shuffle=False, seed=_SEED)
     np.savez_compressed(outname, **savez_dict)
 
 
-def pcd_from_dir(dirname, outname, features=None, shuffle=False, seed=_SEED):
+def pcd_from_dir(dirname, outname, features=None):
     r"""
     Create molecular point clouds from a directory and store them.
 
@@ -151,11 +142,6 @@ def pcd_from_dir(dirname, outname, features=None, shuffle=False, seed=_SEED):
         Name of the file where point clouds will be stored.
     features: list, optional
         See :func:`pcd_from_file`.
-    shuffle : bool, default=False
-        If ``True``, the point clouds are shuffled.
-    seed : int, default=1
-        Controls the randomness of the ``rng`` used for shuffling. Takes effect
-        only if ``shuffle == True``.
 
     Notes
     -----
@@ -163,24 +149,6 @@ def pcd_from_dir(dirname, outname, features=None, shuffle=False, seed=_SEED):
 
     .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
-    fnames = np.fromiter(
-            (os.path.join(dirname, f) for f in os.listdir(dirname)),
-            dtype=object
-            )
+    fnames = (os.path.join(dirname, f) for f in os.listdir(dirname))
 
-    if shuffle:
-        rng = np.random.default_rng(seed=seed)
-        rng.shuffle(fnames)
-
-    # Dictionary with names as keys and pcd's as values.
-    savez_dict = {}
-
-    for f in tqdm(fnames, desc='\033[32mCreating point clouds\033[0m'):
-        try:
-            name, pcd = pcd_from_file(f, features=features)
-            savez_dict[name] = pcd
-        except Exception:
-            pass
-
-    # Store the point clouds.
-    np.savez_compressed(outname, **savez_dict)
+    pcd_from_files(fnames, outname, features)

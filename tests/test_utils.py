@@ -39,29 +39,23 @@ class TestPCDFromFiles(unittest.TestCase):
         self.names = [Path(i).stem for i in self.fnames]
 
     def test_pcd_from_files(self):
-        for shuffle in [True, False]:
-            with self.subTest():
-                pcd_from_files(self.fnames, outname=self.outname, shuffle=shuffle)
-                data = np.load(self.outname, mmap_mode='r')
+        pcd_from_files(self.fnames, outname=self.outname)
+        data = np.load(self.outname, mmap_mode='r')
 
-                self.assertEqual(len(data.files), len(self.names))
+        self.assertEqual(len(data.files), len(self.names))
 
-                if shuffle:
-                    # Stored names must include self.names.
-                    self.assertEqual(set(data.files), set(self.names))
-                else:
-                    # Stored names must follow the order in self.names.
-                    self.assertEqual(data.files, self.names)
+        # Stored names must follow the order in self.names.
+        self.assertEqual(data.files, self.names)
 
-                # Point cloud of IRMOF-1 should include Zirconium (Z=30).
-                self.assertTrue(30 in data['IRMOF-1'][:, -1])
+        # Point cloud of IRMOF-1 should include Zirconium (Z=30).
+        self.assertTrue(30 in data['IRMOF-1'][:, -1])
 
-                # Point cloud of Cu-BTC should not include Zirconium (Z=30).
-                self.assertFalse(30 in data['Cu-BTC'][:, -1])
+        # Point cloud of Cu-BTC should not include Zirconium (Z=30).
+        self.assertFalse(30 in data['Cu-BTC'][:, -1])
 
-                # Check that pcds have the correct shape.
-                self.assertEqual(data['IRMOF-1'].shape, (424, 4))
-                self.assertEqual(data['Cu-BTC'].shape, (624, 4))
+        # Check that pcds have the correct shape.
+        self.assertEqual(data['IRMOF-1'].shape, (424, 4))
+        self.assertEqual(data['Cu-BTC'].shape, (624, 4))
 
     def tearDown(self):
         self.tempdir.cleanup()
@@ -75,22 +69,16 @@ class TestPCDFromDir(unittest.TestCase):
         self.names = [Path(i).stem for i in os.listdir(self.dirname)]
 
     def test_pcd_from_dir(self):
-        for shuffle in [True, False]:
-            with self.subTest():
-                pcd_from_dir(dirname=self.dirname, outname=self.outname, shuffle=shuffle)
-                data = np.load(self.outname, mmap_mode='r')
+        pcd_from_dir(dirname=self.dirname, outname=self.outname)
+        data = np.load(self.outname, mmap_mode='r')
 
-                self.assertEqual(len(data.files), len(self.names))
+        self.assertEqual(len(data.files), len(self.names))
 
-                if shuffle:
-                    # Stored names must equal self.names.
-                    self.assertEqual(set(data.files), set(self.names))
-                else:
-                    # Stored names must follow the order in self.names.
-                    self.assertEqual(data.files, self.names)
+        # Stored names must follow the order in self.names.
+        self.assertEqual(data.files, self.names)
 
-                self.assertEqual(data['IRMOF-1'].shape, (424, 4))
-                self.assertEqual(data['Cu-BTC'].shape, (624, 4))
+        self.assertEqual(data['IRMOF-1'].shape, (424, 4))
+        self.assertEqual(data['Cu-BTC'].shape, (624, 4))
 
     def tearDown(self):
         self.tempdir.cleanup()

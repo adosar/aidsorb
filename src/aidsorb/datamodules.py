@@ -22,7 +22,7 @@ class PCDDataModule(L.LightningDataModule):
         ├──validation.json
         └──test.json
 
-    .. note::
+    .. warning::
         In order to use this module you must have already prepared your data
         with :func:`prepare_data`.
 
@@ -54,7 +54,7 @@ class PCDDataModule(L.LightningDataModule):
     train_batch_size : int, default=64
         Only for ``train_dataloader``. See `DataLoader`_.
     eval_batch_size : int, default=64
-        For ``{validation,test,predict}_dataloader``. See `DataLoader`_.
+        For ``{validation,test}_dataloader``. See `DataLoader`_.
     config_dataloaders : dict, optional
         Valid keyword arguments for ``*_dataloader``. See `DataLoader`_.
 
@@ -180,6 +180,7 @@ class PCDDataModule(L.LightningDataModule):
         return DataLoader(
                 dataset=self.validation_dataset,
                 batch_size=self.eval_batch_size,
+                shuffle=False,
                 **self.config_dataloaders,
                 )
 
@@ -187,5 +188,6 @@ class PCDDataModule(L.LightningDataModule):
         return DataLoader(
                 dataset=self.test_dataset,
                 batch_size=self.eval_batch_size,
+                shuffle=False,
                 **self.config_dataloaders,
                 )
