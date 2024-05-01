@@ -287,7 +287,7 @@ class PointNetClsHead(nn.Module):
     >>> head(x).shape
     torch.Size([64, 4])
     """
-    def __init__(self, in_features=1024, n_outputs=1, dropout_rate=0):
+    def __init__(self, n_outputs=1, dropout_rate=0):
         super().__init__()
 
         self.mlp = nn.Sequential(
