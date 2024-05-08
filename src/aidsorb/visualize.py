@@ -2,14 +2,14 @@ r"""
 Provides helper functions for visualizing molecular point clouds.
 
 .. note::
-    You can alternatively visualize a molecular point cloud with ``ase``:
+    You can alternatively visualize a structure with ``ase``:
 
     .. code-block:: python
 
         from ase.io import read
         from ase.visualize import view
 
-        atoms = read(path/to/file)
+        atoms = read(path_to_file)
         view(atoms)
 """
 
@@ -17,7 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from mendeleev.fetch import fetch_table
-from . _internal import _check_shape_vis, _ptable
+from . _internal import _check_shape, _ptable
 from . utils import split_pcd, pcd_from_file
 
 
@@ -69,7 +69,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
 
     Parameters
     ----------
-    pcd : array of shape (N, 4+C)
+    pcd : array of shape (N, 3+C)
     scheme : {'jmol', 'cpk'}, default='jmol'
         Takes effect only if ``feature_to_color == None``.
     feature_to_color : tuple of shape (2,), optional
@@ -86,8 +86,13 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
 
     .. _colorscale: https://plotly.com/python/builtin-colorscales/
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
+
+    Examples
+    --------
+    >>> pcd = np.random.randint(1, 30, (100, 5))
+    >>> fig = draw_pcd(pcd, feature_to_color=(0, 'x coord'), colorscale='viridis')
     """
-    _check_shape_vis(pcd)
+    _check_shape(pcd)
 
     points = pcd[:, :3]
     atoms = pcd[:, 3]

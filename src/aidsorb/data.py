@@ -1,6 +1,7 @@
 r"""
 Add docstring of the module.
 """
+
 import os
 import json
 from pathlib import Path
@@ -307,7 +308,7 @@ class PCDDataset(Dataset):
 
         .. note::
             For example, if you want to perform classification, here you can
-            pass the one-hot encoder.
+            pass the one-hot encoder (if the dataset is not already preprocessed).
 
     .. _transforms: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
     """

@@ -20,7 +20,7 @@ class PointNetLit(L.LightningModule):
     ----------
     model : :class:`aidsorb.models.PointNet`
     loss : callable
-        The loss function to be optimied during training.
+        The loss function to be optimized during training.
         See `loss functions <https://pytorch.org/docs/stable/nn.html#loss-functions>`_.
     metric : callable
         The performance metric to be monitored.
