@@ -252,13 +252,13 @@ class PointNetBackbone(nn.Module):
         global_feats, critical_indices = torch.max(x, 2, keepdim=False)
 
         if self.local_feats:
-             # Shape (B, self.n_global_feats + 64, N)
-             feats = torch.cat(
-                     (point_feats, global_feats.unsqueeze(-1).repeat(1, 1, n_points)),
-                     dim=1
-                     )
+            # Shape (B, self.n_global_feats + 64, N)
+            feats = torch.cat(
+            (point_feats, global_feats.unsqueeze(-1).repeat(1, 1, n_points)),
+            dim=1
+            )
 
-             return feats, critical_indices
+            return feats, critical_indices
 
         return global_feats, critical_indices
 
@@ -298,7 +298,7 @@ class PointNetClsHead(nn.Module):
                 nn.Dropout(dropout_rate),
                 nn.Linear(256, n_outputs),
                 )
-    
+
     def forward(self, x):
         r"""
         Parameters

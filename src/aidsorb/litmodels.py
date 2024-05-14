@@ -6,7 +6,6 @@ Write the docstring for the module.
 """
 from typing import Callable
 import torch
-from torch.nn.functional import mse_loss
 from torchmetrics.functional import r2_score, mean_absolute_error, mean_squared_error
 import lightning as L
 from aidsorb.models import PointNet
@@ -167,7 +166,7 @@ class PointNetLit(L.LightningModule):
         assert not torch.is_grad_enabled()
 
         if len(batch) == 2:  # Batch with labels.
-            x, y = batch
+            x, _ = batch
         else:
             x = batch  # Batch without labels.
 

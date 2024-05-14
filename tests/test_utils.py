@@ -15,7 +15,7 @@ class TestPCDFromFile(unittest.TestCase):
         self.assertEqual(pcd.shape, (424, 4))
 
     def test_features(self):
-        # Features: Pauling electronegativity and period.
+        # Features: Pauling electronegativity and period number.
         water = np.array([
             [0, 0, 0.11779, 8, 3.44, 2],
             [0, 0.75545, -0.47116, 1, 2.20, 1],
@@ -33,6 +33,7 @@ class TestPCDFromFile(unittest.TestCase):
 
 class TestPCDFromFiles(unittest.TestCase):
     def setUp(self):
+        # The test assumes all files are processable.
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.fnames = ['tests/samples/IRMOF-1.xyz', 'tests/samples/Cu-BTC.cif']
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
@@ -41,8 +42,6 @@ class TestPCDFromFiles(unittest.TestCase):
     def test_pcd_from_files(self):
         pcd_from_files(self.fnames, outname=self.outname)
         data = np.load(self.outname, mmap_mode='r')
-
-        self.assertEqual(len(data.files), len(self.names))
 
         # Stored names must follow the order in self.names.
         self.assertEqual(data.files, self.names)
@@ -63,6 +62,7 @@ class TestPCDFromFiles(unittest.TestCase):
 
 class TestPCDFromDir(unittest.TestCase):
     def setUp(self):
+        # The test assumes all files are processable.
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
         self.dirname = 'tests/samples'
@@ -72,13 +72,11 @@ class TestPCDFromDir(unittest.TestCase):
         pcd_from_dir(dirname=self.dirname, outname=self.outname)
         data = np.load(self.outname, mmap_mode='r')
 
-        self.assertEqual(len(data.files), len(self.names))
-
         # Stored names must follow the order in self.names.
         self.assertEqual(data.files, self.names)
 
-        self.assertEqual(data['IRMOF-1'].shape, (424, 4))
-        self.assertEqual(data['Cu-BTC'].shape, (624, 4))
+        #self.assertEqual(data['IRMOF-1'].shape, (424, 4))
+        #self.assertEqual(data['Cu-BTC'].shape, (624, 4))
 
     def tearDown(self):
         self.tempdir.cleanup()

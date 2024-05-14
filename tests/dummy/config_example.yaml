@@ -1,0 +1,34 @@
+seed_everything: 1  # Workers are seeded as well.
+
+trainer:
+  fast_dev_run: True
+
+data:
+  path_to_X: Null
+  path_to_Y: 'tests/samples.csv'
+  index_col: 'id'
+  labels: ['y3']
+  train_transform_x:
+    class_path: aidsorb.transforms.Centering
+  eval_transform_x:
+    class_path: aidsorb.transforms.Centering
+  train_size: Null
+  train_batch_size: 2
+  eval_batch_size: 2
+  shuffle: True
+  config_dataloaders:
+    collate_fn:
+      class_path: aidsorb.data.Collator
+
+model:
+  loss:
+    class_path: torch.nn.MSELoss
+  metric:
+    class_path: torchmetrics.MeanAbsoluteError
+  model:
+    class_path: aidsorb.models.PointNet
+    init_args:
+      head:
+        class_path: aidsorb.models.PointNetClsHead
+        init_args:
+          dropout_rate: 0.7

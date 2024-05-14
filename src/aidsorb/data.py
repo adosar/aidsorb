@@ -129,8 +129,8 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     -------
     batch : tensor of shape (B, T, *) or (B, *, T)
         ``B == len(pcds)`` is the batch size and ``T`` is the size of the
-        largest point cloud. If ``channels_first == False``, ``batch.shape ==
-        (B, T, *)``. Otherwise, ``batch.shape == (B, *, T)``.
+        largest point cloud in ``pcds``. If ``channels_first`` is ``False``, the
+        batch has shape ``(B, T, *)``. Otherwise, ``(B, *, T)``.
 
     See Also
     --------

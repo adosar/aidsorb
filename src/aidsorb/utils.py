@@ -1,5 +1,5 @@
 r"""
-Provides helper functions for creating molecular point clouds.
+This module provides helper functions for creating and handling molecular point clouds.
 """
 
 import os
@@ -8,13 +8,13 @@ import warnings
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
-from . _internal import _check_shape, _SEED, _ptable
+from . _internal import _check_shape, _ptable
 warnings.filterwarnings('ignore')
 
 
 def split_pcd(pcd):
     r"""
-    Split a point cloud to points and features.
+    Split a point cloud to coordinates and features.
 
     Parameters
     ----------
@@ -24,7 +24,7 @@ def split_pcd(pcd):
     -------
     points_and_features : tuple of shape (2,)
         * ``points_and_features[0] == coords``, array of shape (N, 3).
-        * ``points_and_features[1] == atoms``, array of shape (N, C).
+        * ``points_and_features[1] == features``, array of shape (N, C).
 
     Examples
     --------

@@ -1,3 +1,7 @@
+r"""
+Add module docstring.
+"""
+
 import fire
 from lightning.pytorch.cli import LightningCLI
 from . visualize import draw_pcd_from_file
@@ -11,12 +15,12 @@ def lightning_cli():
     r"""
     Run the :class:`LightningCli`.
     """
-    cli = LightningCLI(PointNetLit, PCDDataModule)
+    LightningCLI(PointNetLit, PCDDataModule)
 
 
 def aidsorb_fire():
     r"""
-    CLI for the AIdsorb package.
+    CLI for the ``AIdsorb`` package.
     """
     fire.Fire({
         'visualize': draw_pcd_from_file,

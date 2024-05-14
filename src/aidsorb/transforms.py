@@ -236,6 +236,6 @@ class RandomErase():
 
         # Indices of points to keep.
         keep_size = len(pcd) - self.n_points
-        indices = new_pcd = np.random.choice(len(pcd), size=keep_size, replace=False)
+        indices = np.random.choice(len(pcd), size=keep_size, replace=False)
 
         return pcd[indices]

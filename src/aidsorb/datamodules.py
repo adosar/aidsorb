@@ -3,7 +3,7 @@ Add module docstring.
 """
 
 import os
-from typing import Callable, Optional
+from typing import Callable
 from pathlib import Path
 import lightning as L
 from torch.utils.data import DataLoader
@@ -45,7 +45,7 @@ class PCDDataModule(L.LightningDataModule):
         Transforms applied to the point clouds.
 
         .. note::
-            These will be applied during validation, testing and prediction.
+            These will be applied during validation and testing.
 
     transform_y : callable, optional
         Transforms applied to the labels.
@@ -116,7 +116,7 @@ class PCDDataModule(L.LightningDataModule):
             self.set_validation_dataset()
 
         if stage in (None, 'test'):
-            # Load the names for testing and prediction.
+            # Load the names for testing.
             self._test_names = get_names(
                     os.path.join(self._path_to_names, 'test.json')
                     )

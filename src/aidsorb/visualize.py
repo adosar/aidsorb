@@ -14,11 +14,9 @@ Provides helper functions for visualizing molecular point clouds.
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-from mendeleev.fetch import fetch_table
 from . _internal import _check_shape, _ptable
-from . utils import split_pcd, pcd_from_file
+from . utils import pcd_from_file
 
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):
@@ -51,6 +49,12 @@ def get_elements(atomic_numbers):
     Returns
     -------
     elements : array-like of shape (N,)
+
+    Examples
+    --------
+    >>> atomic_numbers = np.array([1, 2, 7])
+    >>> get_elements(atomic_numbers)
+    array(['Hydrogen', 'Helium', 'Nitrogen'], dtype=object)
     """
     atomic_numbers = np.array(atomic_numbers)
 
@@ -125,7 +129,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     return fig
 
 
-def draw_pcd_from_file(filename, show=True, **kwargs):
+def draw_pcd_from_file(filename, render=True, **kwargs):
     r"""
     Visualize molecular point cloud from a file.
 
@@ -133,14 +137,14 @@ def draw_pcd_from_file(filename, show=True, **kwargs):
     ----------
     filename : str
         Absolute or relative path to the file.
-    show : bool, default=True
+    render : bool, default=True
         Render the point cloud with ``pio.renderers.default``.
     **kwargs
         Valid keyword arguments for :func:`draw_pcd`.
 
     Returns
     -------
-    render : `plotly.go.Figure`_ if ``show == False``, else ``None``.
+    render : `plotly.go.Figure`_ if ``render == False``, else ``None``.
 
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
 
@@ -151,4 +155,4 @@ def draw_pcd_from_file(filename, show=True, **kwargs):
     _, pcd = pcd_from_file(filename)
     fig = draw_pcd(pcd, **kwargs)
 
-    return fig.show() if show else fig
+    return fig.show() if render else fig
