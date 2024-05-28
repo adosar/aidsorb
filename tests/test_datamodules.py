@@ -9,10 +9,6 @@ from aidsorb.transforms import Centering, RandomRotation
 from aidsorb.datamodules import PCDDataModule
 
 
-def _dummy_trans_y(y):
-    return y - 1
-
-
 class TestPCDDataModule(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
@@ -26,7 +22,7 @@ class TestPCDDataModule(unittest.TestCase):
         self.train_size = 2
         self.train_trans_x = Centering()
         self.eval_trans_x = RandomRotation()
-        self.trans_y = _dummy_trans_y
+        self.trans_y = lambda y: y -1
         self.shuffle = True
         self.train_bs = 3
         self.eval_bs = 2

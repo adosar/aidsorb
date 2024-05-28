@@ -17,24 +17,12 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
     r"""
     Split a source of point clouds in train, validation and test sets.
 
-    Before the split::
-
-        pcd_data
-        └──source.npz
-
-    After the split::
-
-        pcd_data
-        ├──source.npz
-        ├──train.json
-        ├──validation.json
-        └──test.json
-
-    Each ``.json`` file stores the names of the point clouds.
-
     .. warning::
-        No directory is created by :func:`prepare_data`. **All ``.json`` files
-        are stored under the directory containing ``source``**.
+        No directory is created by :func:`prepare_data`. All ``.json`` files
+        are stored under the directory containing ``source``.
+
+    Each ``.json`` file that is created, stores the names of the point clouds
+    that will be used for training, validation and testing.
 
     Parameters
     ----------
@@ -47,6 +35,23 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
         * ``split_ratio[2] == test``.
     seed : int, default=1
         Controls the randomness of the ``rng`` used for splitting.
+
+    Examples
+    --------
+    Before the split::
+
+        pcd_data
+        └──source.npz
+
+    >>> prepare_data('path/to/pcd_data/source.npz')  # doctest: +SKIP
+
+    After the split::
+
+        pcd_data
+        ├──source.npz
+        ├──train.json
+        ├──validation.json
+        └──test.json
     """
     rng = torch.Generator().manual_seed(seed)
     path = Path(source).parent
@@ -87,14 +92,14 @@ def upsample_pcd(pcd, size):
 
     Parameters
     ----------
-    pcd : array of shape (N, *).
+    pcd : tensor of shape (N, C).
         The original point cloud of size ``N``.
     size : int
         The size of the new point cloud.
 
     Returns
     -------
-    new_pcd : array of shape (size, *).
+    new_pcd : tensor of shape (size, C).
 
     Examples
     --------
@@ -117,7 +122,9 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     r"""
     Pad a sequence of variable size point clouds.
 
-    Each point cloud must have shape ``(N, *)``.
+    Each point cloud must have shape ``(N, C)``.
+
+    .. _pad_sequence: https://pytorch.org/docs/stable/generated/torch.nn.utils.rnn.pad_sequence.html
 
     Parameters
     ----------
@@ -127,10 +134,10 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
 
     Returns
     -------
-    batch : tensor of shape (B, T, *) or (B, *, T)
+    batch : tensor of shape (B, T, C) or (B, C, T)
         ``B == len(pcds)`` is the batch size and ``T`` is the size of the
         largest point cloud in ``pcds``. If ``channels_first`` is ``False``, the
-        batch has shape ``(B, T, *)``. Otherwise, ``(B, *, T)``.
+        batch has shape ``(B, T, C)``. Otherwise, ``(B, C, T)``.
 
     See Also
     --------
@@ -180,8 +187,6 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
              [5, 2],
              [3, 8],
              [8, 9]]])
-
-    .. _pad_sequence: https://pytorch.org/docs/stable/generated/torch.nn.utils.rnn.pad_sequence.html
     """
     if mode == 'zeropad':
         batch = pad_sequence(pcds, batch_first=True, padding_value=0)
@@ -202,7 +207,7 @@ class Collator():
     r"""
     Collate point clouds and labels.
 
-    Point clouds are padded before collation. See :func:`pad_pcds`.
+    Point clouds are padded before collation, so they can form a batch.
 
     .. note::
         You should use an instance of this class as ``collate_fn`` if your model
@@ -263,12 +268,12 @@ class Collator():
         ----------
         samples : sequence of tuples
             Each sample is a tuple of tensors ``(pcd, label)`` where
-            ``pcd.shape == (n_points, *)`` and ``label.shape == (n_outputs,)``.
+            ``pcd.shape == (n_points, C)`` and ``label.shape == (n_outputs,)``.
 
         Returns
         -------
         batch : tuple of shape (2,)
-            * ``x == batch[0]`` with shape ``(B, *, T)``, where ``T`` is the size of
+            * ``x == batch[0]`` with shape ``(B, C, T)``, where ``T`` is the size of
             the largest point cloud.
             * ``y == batch[1]`` with shape ``(B, n_outputs)``.
         """
@@ -284,6 +289,12 @@ class PCDDataset(Dataset):
     r"""
     Dataset for point clouds.
 
+    .. tip::
+        For implementing your own transforms have a look at the `transforms`_
+        tutorial.
+
+    .. _transforms: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
+
     Parameters
     ----------
     pcd_names : list
@@ -294,23 +305,16 @@ class PCDDataset(Dataset):
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
     index_col : str, optional
-        Column name of the ``.csv`` file to be used as row labels.
+        Column name of the ``.csv`` file to be used as row labels. The names
+        (values) under this column must follow the same naming scheme as in
+        ``pcd_names``.
     labels : list, optional
         List containing the names of the properties to be predicted. No effect
-        if ``path_to_Y == None``.
+        if ``path_to_Y=None``.
     transform_x : callable, optional
-        Transforms applied to ``sample_x`` (i.e to each point cloud). See
-        `transforms`_ for implementing your own transforms.
+        Transforms applied to ``input`` (i.e to each point cloud).
     transform_y : callable, optional
-        Transforms applied to ``sample_y`` (i.e. to the individual outputs).
-        See `transforms`_ for implementing your own transforms. No effect if
-        ``pcd_Y == None``.
-
-        .. note::
-            For example, if you want to perform classification, here you can
-            pass the one-hot encoder (if the dataset is not already preprocessed).
-
-    .. _transforms: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
+        Transforms applied to ``output``. No effect if ``pcd_Y=None``.
     """
     def __init__(
             self, pcd_names, path_to_X,

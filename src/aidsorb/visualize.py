@@ -15,7 +15,7 @@ Provides helper functions for visualizing molecular point clouds.
 
 import numpy as np
 import plotly.graph_objects as go
-from . _internal import _check_shape, _ptable
+from . _internal import _check_shape_vis, _ptable
 from . utils import pcd_from_file
 
 
@@ -71,16 +71,20 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     each point is colorized based on its atomic number. Otherwise, it is
     colorized based on its ``pcd[i, feat_idx_label[0]`` value.
 
+    .. _colorscale: https://plotly.com/python/builtin-colorscales/
+    .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
+
     Parameters
     ----------
-    pcd : array of shape (N, 3+C)
+    pcd : array of shape (N, 4+C)
     scheme : {'jmol', 'cpk'}, default='jmol'
-        Takes effect only if ``feature_to_color == None``.
+        Takes effect only if ``feature_to_color=None``.
     feature_to_color : tuple of shape (2,), optional
         * ``feature_to_color[0] == idx``, the index of the feature to be colored.
         * ``feature_to_color[1] == label``, the name of the feature for the colorbar.
     colorscale : str, optional
-        Takes effect only if ``feature_to_color != None``. See `colorscale`_.
+        No effect if ``feature_to_color=None``. For available options, see
+        `colorscale`_.
     **kwargs
         Valid keword arguments for `plotly.go.Figure`_.
 
@@ -88,15 +92,12 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     -------
     fig : `plotly.go.Figure`_
 
-    .. _colorscale: https://plotly.com/python/builtin-colorscales/
-    .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
-
     Examples
     --------
     >>> pcd = np.random.randint(1, 30, (100, 5))
     >>> fig = draw_pcd(pcd, feature_to_color=(0, 'x coord'), colorscale='viridis')
     """
-    _check_shape(pcd)
+    _check_shape_vis(pcd)
 
     points = pcd[:, :3]
     atoms = pcd[:, 3]
@@ -144,7 +145,7 @@ def draw_pcd_from_file(filename, render=True, **kwargs):
 
     Returns
     -------
-    render : `plotly.go.Figure`_ if ``render == False``, else ``None``.
+    render : `plotly.go.Figure`_ if ``render=False``, else ``None``.
 
     .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
 

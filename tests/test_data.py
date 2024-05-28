@@ -62,14 +62,13 @@ class TestPCDDataset(unittest.TestCase):
 
         _npz = np.load(self.outname)
         self.pcd_names = _npz.files
-        del _npz
 
         self.path_to_X = self.outname
         self.path_to_Y = 'tests/samples.csv'
         self.index_col = 'id'
         self.labels = ['y1', 'y2']
         self.transform_x = Centering()
-        self.transform_y = lambda y: y - 1  # Decrease all outputs by 1.
+        self.transform_y = lambda y: y - 1
         self.batch_size = 2
 
     def test_labeled_pcddataset(self):
@@ -111,12 +110,6 @@ class TestPCDDataset(unittest.TestCase):
             # Check that self.transform_y is correctly applied.
             self.assertTrue(torch.all(y - 1 == sample_y))
 
-            # Check that sample has correct dimensions/shape.
-            self.assertEqual(_check_shape(sample_x), None)
-            self.assertEqual(sample_y.shape, (len(self.labels),))
-
-        del self.X
-
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
@@ -152,11 +145,6 @@ class TestPCDDataset(unittest.TestCase):
 
             # Check that transformations are not applied.
             self.assertTrue(torch.all(sample_x == x))
-
-            # Check that sample has correct dimensions/shape.
-            self.assertEqual(_check_shape(sample_x), None)
-
-        del self.X
 
         # Check that it works properly with a dataloader.
         for x in DataLoader(

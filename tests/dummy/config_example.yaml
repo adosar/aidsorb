@@ -2,6 +2,7 @@ seed_everything: 1  # Workers are seeded as well.
 
 trainer:
   fast_dev_run: True
+  accelerator: 'cpu'
 
 data:
   path_to_X: Null

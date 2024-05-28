@@ -19,8 +19,9 @@ class TestPCDFromFile(unittest.TestCase):
         water = np.array([
             [0, 0, 0.11779, 8, 3.44, 2],
             [0, 0.75545, -0.47116, 1, 2.20, 1],
-            [0, -0.75545, -0.47116, 1, 2.20, 1],
-            ], dtype='float32')
+            [0, -0.75545, -0.47116, 1, 2.20, 1]],
+            dtype='float32'
+            )
 
         name, pcd = pcd_from_file(
                 'tests/dummy/H2O.xyz',

@@ -401,9 +401,9 @@ class PointNet(nn.Module):
     pass it to ``head``.
 
     .. warning::
-        * If ``local_features == False``, the input to ``custom_head`` must have
+        * If ``local_features=False``, the input to ``custom_head`` must have
         the same shape as in :meth:`PointNetClsHead.forward`.
-        * If ``local_features == True``, the input to ``custom_head`` must have
+        * If ``local_features=True``, the input to ``custom_head`` must have
         the same shape as in :meth:`PointNetSegHead.forward`.
     
     Parameters

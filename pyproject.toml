@@ -38,5 +38,5 @@ Homepage = "https://github.com/adosar/aidsorb"
 Issues = "https://github.com/adosar/aidsorb/issues"
 
 [project.scripts]
-aidsorb = "aidsorb.cli:aidsorb_fire"
-aidsorb-lit = "aidsorb.cli:lightning_cli"
+aidsorb = "aidsorb._cli:aidsorb_fire"
+aidsorb-lit = "aidsorb._cli:lightning_cli"

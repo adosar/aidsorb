@@ -47,7 +47,7 @@ def pcd_from_file(filename, features=None):
     The molecular ``pcd`` has shape ``(N, 4+C)`` where ``N`` is the
     number of atoms, ``pcd[:, :3]`` are the **atomic coordinates**,
     ``pcd[:, 3]`` are the **atomic numbers** and ``pcd[:, 4:]`` any
-    additional ``features``. If ``features == None``, then the only features
+    additional ``features``. If ``features=None``, then the only features
     are the atomic numbers.
 
     Parameters
