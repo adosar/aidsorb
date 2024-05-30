@@ -1,8 +1,37 @@
-r"""
-Write the docstring of the module.
+# This file is part of AIdsorb.
+# Copyright (C) 2024 Antonios P. Sarikas
 
-* Check All docstrings must corrected since the function signatures have changed.
-* Inform users that the modules are lazy initialized.
+# MOXελ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+r"""
+This module provides :class:`torch.nn.Module`'s for building the architecture
+introduced in the PointNet `paper <https://arxiv.org/abs/1612.00593>`_.  It also
+provides :class:`PointNet`, a lightweight version of the original architecture,
+where the ``T-Net``'s for input and feature transforms have been removed.
+
+.. note::
+    :class:`PointNetBackbone`, :class:`PointNetClsHead`,
+    :class:`PointNetSegHead` and :class:`PointNet` have their initial layers
+    *lazy initialized*, so you don't need to specify the input dimensionality.
+
+.. warning::
+    It is recommended to **use batched inputs in all cases**. For example, even
+    if a single ``pcd`` of shape ``(3+C, N)`` is to be processed with
+    :class:`PointNet`, **reshape it to** ``(1, 3+C, N)``. You can do it as
+    ``pcd = pcd.unsqueeze(0)``.
+
+* Check all docstrings since the function signatures have changed.
 """
 
 import warnings
@@ -13,7 +42,7 @@ warnings.filterwarnings('ignore')
 
 def conv1d_block(in_channels, out_channels, **kwargs):
     r"""
-    Return a convolutional block.
+    Return a 1D convolutional block.
 
     The block has the following form::
         block = nn.Sequential(
@@ -21,7 +50,10 @@ def conv1d_block(in_channels, out_channels, **kwargs):
             nn.BatchNorm1d(out_channels),
             nn.ReLU(),
             )
-        
+
+    .. _torch.nn.Conv1d: https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html
+    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
+
     Parameters
     ----------
     in_channels : int
@@ -34,9 +66,6 @@ def conv1d_block(in_channels, out_channels, **kwargs):
     Returns
     -------
     block : `torch.nn.Sequential`_
-
-    .. _torch.nn.Conv1d: https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html
-    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
     """
     block = nn.Sequential(
             nn.Conv1d(in_channels, out_channels, **kwargs),
@@ -57,7 +86,10 @@ def dense_block(in_features, out_features, **kwargs):
             nn.BatchNorm1d(out_features),
             nn.ReLU(),
             )
-        
+
+    .. _torch.nn.Linear: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
+    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
+
     Parameters
     ----------
     in_features : int
@@ -70,9 +102,6 @@ def dense_block(in_features, out_features, **kwargs):
     Returns
     -------
     block : `torch.nn.Sequential`_
-
-    .. _torch.nn.Linear: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
-    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
     """
     block = nn.Sequential(
             nn.Linear(in_features, out_features, **kwargs),
@@ -100,6 +129,8 @@ class TNet(nn.Module):
     embed_dim : int
         The embedding dimension.
 
+    References
+    ----------
     .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
     Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
     Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
@@ -275,6 +306,8 @@ class PointNetClsHead(nn.Module):
     n_outputs : int, default=1
     dropout_rate : float, default=0
 
+    References
+    ----------
     .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
     Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
     Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
@@ -328,6 +361,8 @@ class PointNetSegHead(nn.Module):
     n_outputs : int, default=1
     dropout_rate : int, default=0
 
+    References
+    ----------
     .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
     Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
     Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
@@ -415,6 +450,13 @@ class PointNet(nn.Module):
     See Also
     --------
     :class:`PointNetBackBone`
+
+    References
+    ----------
+    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
 
     Examples
     --------

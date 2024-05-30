@@ -1,5 +1,22 @@
+# This file is part of AIdsorb.
+# Copyright (C) 2024 Antonios P. Sarikas
+
+# MOXελ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 r"""
-Add module docstring.
+This module provides a :class:`lightning.LightningDataModule` that can be used
+with `Pytorch Lightning <https://lightning.ai/docs/pytorch/stable/>`_.
 """
 
 import os
@@ -14,7 +31,7 @@ class PCDDataModule(L.LightningDataModule):
     r"""
     DataModule for point clouds.
 
-    The following directory structure is assumed::
+    The following directory structure is required::
 
         pcd_data
         ├──pcds.npz  <- path_to_X
@@ -26,29 +43,31 @@ class PCDDataModule(L.LightningDataModule):
         In order to use this module you must have already prepared your data
         with :func:`prepare_data`.
 
+    .. _DataLoader: https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
+
     Parameters
     ----------
     path_to_X : str
+        Absolute or relative path to the ``.npz`` file holding the point clouds.
     path_to_Y : str
+        Absolute or relative path to the ``.csv`` file holding the labels of the
+        point clouds.
     index_col : str
+        Column name of the ``.csv`` file to be used as row labels. The names
+        (values) under this column must follow the same naming scheme as in
+        ``pcd_names``.
     labels : list
+        List containing the names of the properties to be predicted. No effect if
+        ``path_to_Y=None``.
     train_size : int, optional
         The number of training samples. By default, all training samples are
         used.
     train_transform_x : callable, optional
-        Transforms applied to the point clouds.
-
-        .. note::
-            These will be applied only during training.
-
+        Transforms applied to ``input`` during training.
     eval_transform_x : callable, optional
-        Transforms applied to the point clouds.
-
-        .. note::
-            These will be applied during validation and testing.
-
+        Transforms applied to ``input`` during validation and testing.
     transform_y : callable, optional
-        Transforms applied to the labels.
+        Transforms applied to ``output``.
     shuffle : bool, default=False
         Only for ``train_dataloader``. See `DataLoader`_.
     train_batch_size : int, default=64
@@ -60,9 +79,7 @@ class PCDDataModule(L.LightningDataModule):
 
     See Also
     --------
-    :class:`aidsorb.data.PCDDataset` : For a description of the parameters.
-
-    .. _DataLoader: https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
+    :class:`aidsorb.data.PCDDataset`
     """
     def __init__(
             self, path_to_X: str, path_to_Y: str,

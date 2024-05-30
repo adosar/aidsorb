@@ -1,5 +1,22 @@
+# This file is part of AIdsorb.
+# Copyright (C) 2024 Antonios P. Sarikas
+
+# MOXελ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 r"""
-This module provides helper functions for creating and handling molecular point clouds.
+This module provides helper functions for creating and handling molecular point
+clouds.
 """
 
 import os
@@ -50,6 +67,8 @@ def pcd_from_file(filename, features=None):
     additional ``features``. If ``features=None``, then the only features
     are the atomic numbers.
 
+    .. _elements_table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
+
     Parameters
     ----------
     filename : str
@@ -70,8 +89,6 @@ def pcd_from_file(filename, features=None):
     * To get a list of the supported chemical file formats visit
     `ase.io.read<https://wiki.fysik.dtu.dk/ase/ase/io/io.html#ase.io.iread>`_.
     Alternatively, you can list them from the command line with ``ase info --formats``.
-
-    .. _elements_table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
     """
     name = Path(filename).stem
     structure = read(filename)
@@ -93,7 +110,9 @@ def pcd_from_files(filenames, outname, features=None):
     Create molecular point clouds from a list of files and store them.
 
     The point clouds are stored in ``.npz`` format as key-value pairs. For more
-    information, check `np.savez`_.
+    information on this format, see `np.savez`_.
+
+    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
 
     Parameters
     ----------
@@ -108,8 +127,6 @@ def pcd_from_files(filenames, outname, features=None):
     Notes
     -----
     Molecules that can't be processed are omitted.
-
-    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
     fnames = np.fromiter(filenames, dtype=object)
 
@@ -132,7 +149,9 @@ def pcd_from_dir(dirname, outname, features=None):
     Create molecular point clouds from a directory and store them.
 
     The point clouds are stored in ``.npz`` format as key-value pairs. For more
-    information, check `np.savez`_.
+    information on this format, see `np.savez`_.
+
+    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
 
     Parameters
     ----------
@@ -146,8 +165,6 @@ def pcd_from_dir(dirname, outname, features=None):
     Notes
     -----
     Molecules that can't be processed are omitted.
-
-    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
     """
     fnames = (os.path.join(dirname, f) for f in os.listdir(dirname))
 

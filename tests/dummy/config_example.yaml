@@ -6,7 +6,7 @@ trainer:
 
 data:
   path_to_X: Null
-  path_to_Y: 'tests/samples.csv'
+  path_to_Y: 'tests/dummy/toy_dataset.csv'
   index_col: 'id'
   labels: ['y3']
   train_transform_x:

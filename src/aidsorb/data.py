@@ -1,5 +1,22 @@
+# This file is part of AIdsorb.
+# Copyright (C) 2024 Antonios P. Sarikas
+
+# MOXελ is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 r"""
-Add docstring of the module.
+This module provides helper functions and classes for preparing datasets and
+handling point clouds of variable sizes.
 """
 
 import os
@@ -273,9 +290,9 @@ class Collator():
         Returns
         -------
         batch : tuple of shape (2,)
-            * ``x == batch[0]`` with shape ``(B, C, T)``, where ``T`` is the size of
+            * ``batch[0] == x`` with shape ``(B, C, T)``, where ``T`` is the size of
             the largest point cloud.
-            * ``y == batch[1]`` with shape ``(B, n_outputs)``.
+            * ``batch[1] == y`` with shape ``(B, n_outputs)``.
         """
         pcds, labels = list(zip(*samples))
         
