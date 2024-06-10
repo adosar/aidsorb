@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -46,7 +46,7 @@ class TestPrepareData(unittest.TestCase):
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
         self.split_ratio = (2, 1, 3)
 
-        pcd_from_dir(dirname='tests/samples', outname=self.outname)
+        pcd_from_dir(dirname='tests/structures', outname=self.outname)
         prepare_data(source=self.outname, split_ratio=self.split_ratio)
 
     def test_overlap_and_ratio(self):
@@ -81,7 +81,7 @@ class TestPCDDataset(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
 
-        pcd_from_dir(dirname='tests/samples', outname=self.outname)
+        pcd_from_dir(dirname='tests/structures', outname=self.outname)
 
         _npz = np.load(self.outname)
         self.pcd_names = _npz.files
@@ -122,8 +122,8 @@ class TestPCDDataset(unittest.TestCase):
             sample_x, sample_y = dataset[i]
 
             # Check that transformations are applied.
-            self.assertFalse(torch.all(sample_x == x))
-            self.assertFalse(torch.all(sample_y == y))
+            self.assertFalse(torch.equal(sample_x, x))
+            self.assertFalse(torch.equal(sample_y, y))
 
             # Check that self.transform_x is correctly applied.
             self.assertTrue(torch.all(
@@ -131,7 +131,7 @@ class TestPCDDataset(unittest.TestCase):
                 ))
 
             # Check that self.transform_y is correctly applied.
-            self.assertTrue(torch.all(y - 1 == sample_y))
+            self.assertTrue(torch.equal(y - 1, sample_y))
 
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
@@ -167,7 +167,7 @@ class TestPCDDataset(unittest.TestCase):
             sample_x = dataset[i]
 
             # Check that transformations are not applied.
-            self.assertTrue(torch.all(sample_x == x))
+            self.assertTrue(torch.equal(sample_x, x))
 
         # Check that it works properly with a dataloader.
         for x in DataLoader(

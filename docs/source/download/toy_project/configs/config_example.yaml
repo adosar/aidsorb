@@ -1,20 +1,20 @@
 seed_everything: 1  # Workers are seeded as well.
 
 trainer:
-  max_epochs: 4
-  #fast_dev_run: True
+  max_epochs: 2
   accelerator: 'cpu'
 
 data:
-  path_to_X: Null
-  path_to_Y: 'tests/dummy/toy_dataset.csv'
+  # The paths must be relative to where aidsorb-lit is called.
+  path_to_X: 'pcd_data/point_clouds.npz'
+  path_to_Y: 'labels/labels.csv'
   index_col: 'id'
   labels: ['y3']
   train_transform_x:
     class_path: aidsorb.transforms.Centering
   eval_transform_x:
     class_path: aidsorb.transforms.Centering
-  train_size: Null
+  train_size: Null  # Use all training data.
   train_batch_size: 2
   eval_batch_size: 2
   shuffle: True

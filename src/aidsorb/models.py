@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -15,23 +15,35 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`torch.nn.Module`'s for building the architecture
-introduced in the PointNet `paper <https://arxiv.org/abs/1612.00593>`_.  It also
-provides :class:`PointNet`, a lightweight version of the original architecture,
-where the ``T-Net``'s for input and feature transforms have been removed.
+This module provides :class:`torch.nn.Module`'s for building the original
+architecture introduced in the [PointNet]_ paper. It also provides
+:class:`PointNet`, a lightweight version of the original architecture, where the
+:class:`TNet`'s for input and feature transforms have been removed.
 
 .. note::
-    :class:`PointNetBackbone`, :class:`PointNetClsHead`,
-    :class:`PointNetSegHead` and :class:`PointNet` have their initial layers
-    *lazy initialized*, so you don't need to specify the input dimensionality.
+    :class:`PointNetBackbone`, :class:`PointNetClsHead` and
+    :class:`PointNetSegHead` have their initial layers *lazy initialized*, so
+    you don't need to specify the input dimensionality.
 
 .. warning::
     It is recommended to **use batched inputs in all cases**. For example, even
     if a single ``pcd`` of shape ``(3+C, N)`` is to be processed with
-    :class:`PointNet`, **reshape it to** ``(1, 3+C, N)``. You can do it as
-    ``pcd = pcd.unsqueeze(0)``.
+    :class:`PointNet`, **reshape it to** ``(1, 3+C, N)``. One way to you can do it
+    is the following: ``pcd = pcd.unsqueeze(0)``.
 
-* Check all docstrings since the function signatures have changed.
+.. todo::
+    Add more architectures for point cloud processing.
+
+.. danger::
+    Check all docstrings.
+
+References
+----------
+
+.. [PointNet] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+                    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+                    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+                    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
 """
 
 import warnings
@@ -45,27 +57,35 @@ def conv1d_block(in_channels, out_channels, **kwargs):
     Return a 1D convolutional block.
 
     The block has the following form::
+
         block = nn.Sequential(
             nn.Conv1d(in_channels, out_channels, **kwargs),
             nn.BatchNorm1d(out_channels),
             nn.ReLU(),
             )
 
-    .. _torch.nn.Conv1d: https://pytorch.org/docs/stable/generated/torch.nn.Conv1d.html
-    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
-
     Parameters
     ----------
     in_channels : int
-        See `torch.nn.Conv1d`_.
     out_channels : int
-        See `torch.nn.Conv1d`_.
     **kwargs
-        Valid keyword arguments for `torch.nn.Conv1d`_.
+        Valid keyword arguments for :class:`torch.nn.Conv1d`.
 
     Returns
     -------
-    block : `torch.nn.Sequential`_
+    block : :class:`torch.nn.Sequential`
+
+    See Also
+    --------
+    :class:`torch.nn.Conv1d` : For a description of the parameters.
+
+    Examples
+    --------
+    >>> block = conv1d_block(4, 128, kernel_size=1)
+    >>> x = torch.randn(32, 4, 100)  # Shape (B, C_in, N).
+    >>> # Shape (B, C_out, N).
+    >>> block(x).shape
+    torch.Size([32, 128, 100])
     """
     block = nn.Sequential(
             nn.Conv1d(in_channels, out_channels, **kwargs),
@@ -81,27 +101,34 @@ def dense_block(in_features, out_features, **kwargs):
     Return a dense block.
 
     The block has the following form::
+
         block = nn.Sequential(
             nn.Linear(in_features, out_features, **kwargs),
             nn.BatchNorm1d(out_features),
             nn.ReLU(),
             )
 
-    .. _torch.nn.Linear: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
-    .. _torch.nn.Sequential: https://pytorch.org/docs/stable/generated/torch.nn.Sequential.html
-
     Parameters
     ----------
     in_features : int
-        See `torch.nn.Linear`_.
     out_features : int
-        See `torch.nn.Linear`_.
     **kwargs
-        Valid keyword arguments for `torch.nn.Linear`_.
+        Valid keyword arguments for :class:`torch.nn.Linear`.
 
     Returns
     -------
-    block : `torch.nn.Sequential`_
+    block : :class:`torch.nn.Sequential`
+
+    See Also
+    --------
+    :class:`torch.nn.Linear` : For a description of the parameters.
+
+    Examples
+    --------
+    >>> block = dense_block(3, 10)
+    >>> x = torch.randn(64, 3)
+    >>> block(x).shape
+    torch.Size([64, 10])
     """
     block = nn.Sequential(
             nn.Linear(in_features, out_features, **kwargs),
@@ -114,8 +141,8 @@ def dense_block(in_features, out_features, **kwargs):
 
 class TNet(nn.Module):
     r"""
-    ``T-Net`` from the ``PointNet`` paper [1]_ for performing the input and
-    feature transform.
+    Spatial transformer network (STN) from the [PointNet]_ paper for performing
+    the input and feature transform.
 
     ``T-Net`` takes as input a (possibly embedded) point cloud of shape ``(dim, N)``
     and regresses a ``(dim, dim)`` matrix. Each point in the point cloud has
@@ -128,13 +155,6 @@ class TNet(nn.Module):
     ----------
     embed_dim : int
         The embedding dimension.
-
-    References
-    ----------
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
 
     Examples
     --------
@@ -166,12 +186,11 @@ class TNet(nn.Module):
 
         Parameters
         ----------
-        x : tensor of shape (B, self.embed_dim, N)
-            See :class:`TNet`.
+        x : tensor of shape (B, embed_dim, N)
 
         Returns
         -------
-        out : tensor of shape (B, self.embed_dim, self.embed_dim)
+        out : tensor of shape (B, embed_dim, embed_dim)
             The regressed matrices.
         """
         # Input has shape (B, self.embed_dim, N).
@@ -196,9 +215,9 @@ class PointNetBackbone(nn.Module):
     r"""
     Backbone of the :class:`PointNet` model.
 
-    This block is responsible for obtaining the *local* and *global*
-    **features**, which can then be passed to a task head for predictions. This
-    block also returns the **critical indices**.
+    This block is responsible for obtaining the *local and global features*,
+    which can then be passed to a task head for predictions. This block also
+    returns the *critical indices*.
 
     The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
     the batch size, ``C`` is the number of input channels  and ``N`` is the
@@ -207,13 +226,11 @@ class PointNetBackbone(nn.Module):
     Parameters
     ----------
     local_feats : bool, default=False
-        If ``True``, the returned features are a concatenation of
-        ``local_features`` and ``global_features``. Otherwise, the
-        ``global_features`` are returned.
+        If ``True``, the returned features are a concatenation of local features
+        and global features. Otherwise, the global features are returned.
     n_global_feats : int, default=1024
-        The number of ``global_features``. These features can be used as input for
-        a task head or concatenated with ``local_features``.
-        
+        The number of global features.
+
     Examples
     --------
     >>> feat = PointNetBackbone(n_global_feats=2048)
@@ -258,7 +275,7 @@ class PointNetBackbone(nn.Module):
         r"""
         Return the *features* and *critical indices*.
 
-        The type of the features is determined by ``self.local_feats``.
+        The type of the features is determined by ``local_feats``.
 
         Parameters
         ----------
@@ -266,7 +283,7 @@ class PointNetBackbone(nn.Module):
 
         Returns
         -------
-        out : tuple of shape (3,)
+        out : tuple of shape (2,)
             * ``out[0] == features``
             * ``out[1] == critical_indices``
         """
@@ -296,7 +313,7 @@ class PointNetBackbone(nn.Module):
 
 class PointNetClsHead(nn.Module):
     r"""
-    The classification head from the ``PointNet`` paper [1]_.
+    The classification head from the [PointNet]_ paper.
 
     .. note::
         This head can be used either for classification or regression.
@@ -305,13 +322,6 @@ class PointNetClsHead(nn.Module):
     ----------
     n_outputs : int, default=1
     dropout_rate : float, default=0
-
-    References
-    ----------
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
 
     Examples
     --------
@@ -334,13 +344,15 @@ class PointNetClsHead(nn.Module):
 
     def forward(self, x):
         r"""
+        Run the forward pass.
+
         Parameters
         ----------
         x : tensor of shape (B, C)
 
         Returns
         -------
-        out : tensor of shape (B, self.n_outputs)
+        out : tensor of shape (B, n_outputs)
         """
         x = self.mlp(x)
 
@@ -349,24 +361,17 @@ class PointNetClsHead(nn.Module):
 
 class PointNetSegHead(nn.Module):
     r"""
-    Modified segmentation head from the ``PointNet`` paper [1]_.
+    Modified segmentation head from the [PointNet]_ paper.
+
+    The final layer is replaced by a global pooling layer followed by a MLP.
 
     .. note::
         This head can be used either for classification or regression.
-
-    The final layer is replaced by a global pooling layer followed by a MLP.
 
     Parameters
     ----------
     n_outputs : int, default=1
     dropout_rate : int, default=0
-
-    References
-    ----------
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
 
     Examples
     --------
@@ -399,13 +404,15 @@ class PointNetSegHead(nn.Module):
 
     def forward(self, x):
         r"""
+        Run the forward pass.
+
         Parameters
         ----------
         x : tensor of shape (B, C, N).
 
         Returns
         -------
-        out : tensor of shape (B, self.n_outputs)
+        out : tensor of shape (B, n_outputs)
         """
         x = self.shared_mlp(x)  # Shape (B, C, N).
 
@@ -419,27 +426,28 @@ class PointNetSegHead(nn.Module):
 
 class PointNet(nn.Module):
     r"""
-    A deep learning architecture for processing point clouds [1]_.
+    A deep learning architecture for processing point clouds.
 
     ``PointNet`` takes as input a point cloud and produces one or more outputs.
     *The type of the task is determined by* ``head``.
 
     Currently implemented heads include:
-    1. :class:`PointNetClsHead`: classification and regression.
-    2. :class:`PointNetSegHead`: classification and regression.
+
+        1. :class:`PointNetClsHead`: classification and regression.
+        2. :class:`PointNetSegHead`: classification and regression.
 
     The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
     the batch size, ``C`` is the number of input channels  and ``N`` is the
     number of points in each point cloud.
 
-    You can define a ``custom_head`` head as a :class:`torch.nn.Module` and
-    pass it to ``head``.
+    .. tip::
+        You can define a ``custom_head`` head as a :class:`torch.nn.Module` and
+        pass it to ``head``.
 
-    .. warning::
-        * If ``local_features=False``, the input to ``custom_head`` must have
-        the same shape as in :meth:`PointNetClsHead.forward`.
-        * If ``local_features=True``, the input to ``custom_head`` must have
-        the same shape as in :meth:`PointNetSegHead.forward`.
+        If ``local_features=False``, the input to ``custom_head`` must have the
+        same shape as in :meth:`PointNetClsHead.forward`. Otherwise, the input
+        to ``custom_head`` must have the same shape as in
+        :meth:`PointNetSegHead.forward`.
     
     Parameters
     ----------
@@ -449,14 +457,8 @@ class PointNet(nn.Module):
 
     See Also
     --------
-    :class:`PointNetBackBone`
-
-    References
-    ----------
-    .. [1] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-    Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-    Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-    USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+    :class:`PointNetBackBone` :
+        For a description of ``local_feats`` and ``n_global_feats``.
 
     Examples
     --------
@@ -476,13 +478,15 @@ class PointNet(nn.Module):
 
     def forward(self, x):
         r"""
+        Run the forward pass.
+
         Parameters
         ----------
         x : tensor of shape (B, C, N)
 
         Returns
         -------
-        out : tuple of shape (3,)
+        out : tuple of shape (2,)
             * ``out[0] == head_output``
             * ``out[1] == critical_indices``
         """

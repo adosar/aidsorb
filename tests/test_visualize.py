@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -28,7 +28,7 @@ from aidsorb import visualize
 
 class TestDrawPCDFromFile(unittest.TestCase):
     def test_draw(self):
-        visualize.draw_pcd_from_file('tests/samples/IRMOF-1.xyz')
+        visualize.draw_pcd_from_file('tests/structures/IRMOF-1.xyz')
 
 
 def load_tests(loader, tests, ignore):

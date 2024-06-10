@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -15,8 +15,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides a :class:`lightning.LightningDataModule` that can be used
-with `Pytorch Lightning <https://lightning.ai/docs/pytorch/stable/>`_.
+This module provides :class:`lightning.pytorch.core.LightningDataModule`'s,
+which can be used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
 """
 
 import os
@@ -29,7 +29,7 @@ from . data import get_names, PCDDataset
 
 class PCDDataModule(L.LightningDataModule):
     r"""
-    DataModule for point clouds.
+    ``LightningDataModule`` for point clouds.
 
     The following directory structure is required::
 
@@ -39,11 +39,9 @@ class PCDDataModule(L.LightningDataModule):
         ├──validation.json
         └──test.json
 
-    .. warning::
-        In order to use this module you must have already prepared your data
-        with :func:`prepare_data`.
-
-    .. _DataLoader: https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader
+    .. tip::
+        Assuming ``pcd_data/pcds.npz`` already exists, you can create the above
+        directory structure with :func:`aidsorb.data.prepare_data`.
 
     Parameters
     ----------
@@ -69,17 +67,27 @@ class PCDDataModule(L.LightningDataModule):
     transform_y : callable, optional
         Transforms applied to ``output``.
     shuffle : bool, default=False
-        Only for ``train_dataloader``. See `DataLoader`_.
-    train_batch_size : int, default=64
-        Only for ``train_dataloader``. See `DataLoader`_.
-    eval_batch_size : int, default=64
-        For ``{validation,test}_dataloader``. See `DataLoader`_.
+        Only for ``train_dataloader``.
+    train_batch_size : int, default=32
+        ``batch_size`` for the train dataloader.
+    eval_batch_size : int, default=32
+        ``batch_size`` for the validation and test dataloaders.
     config_dataloaders : dict, optional
-        Valid keyword arguments for ``*_dataloader``. See `DataLoader`_.
+        Valid keyword arguments for :class:`torch.utils.data.DataLoader`. These
+        are applied to all (train, validation and test) dataloaders. For
+        example::
+
+            config_dataloaders = {
+                'pin_memory': True,
+                'num_workers': 2,
+                }
 
     See Also
     --------
     :class:`aidsorb.data.PCDDataset`
+    :class:`torch.utils.data.DataLoader` :
+        For a description of ``shuffle``, ``batch_size`` and valid ``**kwargs``
+        passed to ``config_dataloaders``.
     """
     def __init__(
             self, path_to_X: str, path_to_Y: str,
@@ -119,6 +127,9 @@ class PCDDataModule(L.LightningDataModule):
         self._path_to_names = Path(self.path_to_X).parent
 
     def setup(self, stage=None):
+        r"""
+        Setup train, validation and test datasets.
+        """
         if stage in (None, 'fit'):
             # Load the names for training and validation.
             self._train_names = get_names(
@@ -142,17 +153,21 @@ class PCDDataModule(L.LightningDataModule):
 
     @property
     def train_names(self):
+        r"""The names of point clouds used for training."""
         return self._train_names
 
     @property
     def val_names(self):
+        r"""The names of point clouds used for validation."""
         return self._val_names
 
     @property
     def test_names(self):
+        r"""The names of point clouds used for testing."""
         return self._test_names
 
     def set_train_dataset(self):
+        r"""Setup the train dataset."""
         self.train_dataset = PCDDataset(
                 pcd_names=self.train_names,
                 path_to_X=self.path_to_X,
@@ -164,6 +179,7 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def set_validation_dataset(self):
+        r"""Setup the validation dataset."""
         self.validation_dataset = PCDDataset(
                 pcd_names=self.val_names,
                 path_to_X=self.path_to_X,
@@ -175,6 +191,7 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def set_test_dataset(self):
+        r"""Setup the validation dataset."""
         self.test_dataset = PCDDataset(
                 pcd_names=self.test_names,
                 path_to_X=self.path_to_X,
@@ -186,6 +203,12 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def train_dataloader(self):
+        r"""
+        Return the train dataloader.
+
+        Can be called only after :meth:`setup` has been called and
+        ``stage=None`` or ``stage='fit'``.
+        """
         return DataLoader(
                 dataset=self.train_dataset,
                 batch_size=self.train_batch_size,
@@ -194,6 +217,12 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def val_dataloader(self):
+        r"""
+        Return the validation dataloader.
+
+        Can be called only after :meth:`setup` has been called and
+        ``stage=None`` or ``stage='fit'``.
+        """
         return DataLoader(
                 dataset=self.validation_dataset,
                 batch_size=self.eval_batch_size,
@@ -202,6 +231,12 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def test_dataloader(self):
+        r"""
+        Return the test dataloader.
+
+        Can be called only after :meth:`setup` has been called and
+        ``stage=None`` or ``stage='test'``.
+        """
         return DataLoader(
                 dataset=self.test_dataset,
                 batch_size=self.eval_batch_size,

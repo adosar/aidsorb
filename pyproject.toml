@@ -31,6 +31,8 @@ dependencies = [
 	"plotly>=5.19.0",
 	"tqdm>=4.66.2",
 	"lightning>=2.2.1",
+    "jsonargparse[signatures]>=4.27.7",
+    "tensorboard>=2.16.2",
 	]
 
 [project.urls]

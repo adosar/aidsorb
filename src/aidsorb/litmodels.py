@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -15,11 +15,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This model provides a :class:`lightning.LightningModule` that can be used with
-`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`_.
+This model provides :class:`lightning.pytorch.core.LightningModule`'s that can be
+used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
 
-.. warning::
-    Use 1 metric in test step.
+.. danger::
+    * Use 1 metric in test step.
+    * Remove unecessary imports.
+
+.. todo:
+    Add support for :class:`torchmetrics.MetricCollection`.
 """
 from typing import Callable
 import torch
@@ -30,7 +34,7 @@ from aidsorb.models import PointNet
 
 class PointNetLit(L.LightningModule):
     r"""
-    Lightning module for :class:`aidsorb.models.PointNet`.
+    ``LightningModule`` for :class:`aidsorb.models.PointNet`.
 
     Parameters
     ----------
@@ -43,7 +47,7 @@ class PointNetLit(L.LightningModule):
         see `metrics <https://lightning.ai/docs/torchmetrics/stable/all-metrics.html>`_.
     lr : float, default=0.001
         The learning rate for :class:`torch.optim.Adam` optimizer.
-    
+
     Examples
     --------
     >>> from aidsorb.models import PointNetClsHead, PointNet
@@ -82,15 +86,28 @@ class PointNetLit(L.LightningModule):
         self.save_hyperparameters(ignore=['model', 'loss', 'metric'])
 
     def forward(self, x):
+        r"""
+        Run forward pass (forward method) of ``model``.
+        """
         return self.model(x)
 
     def training_step(self, batch, batch_idx):
+        r"""
+        Compute and return training loss on a single ``batch`` from the train set.
+
+        Also make and store predictions on this single ``batch``.
+
+        .. note::
+            The ``BatchNorm`` and ``Dropout`` are enabled during the calculation
+            of the train loss, but *are temporarily disabled during
+            predictions, so an accurate estimate of train loss is reported*.
+        """
         assert self.training
         assert torch.is_grad_enabled()
 
         x, y = batch
         y_pred, _ = self(x)
-        loss = self.loss(y_pred, y)
+        loss = self.loss(input=y_pred, target=y)
 
         # Account for BatchNorm and Dropout.
         self.eval()
@@ -105,6 +122,9 @@ class PointNetLit(L.LightningModule):
         return loss
 
     def on_train_epoch_end(self):
+        r"""
+        Log ``train_metric`` calculated  on the whole train set.
+        """
         preds = torch.cat(self.train_step_preds)
         targets = torch.cat(self.train_step_targets)
 
@@ -120,6 +140,9 @@ class PointNetLit(L.LightningModule):
         self.train_step_targets.clear()
 
     def validation_step(self, batch, batch_idx):
+        r"""
+        Make and store predictions on a single ``batch`` from the validation set.
+        """
         assert not self.training
         assert not torch.is_grad_enabled()
 
@@ -131,6 +154,9 @@ class PointNetLit(L.LightningModule):
         self.val_step_targets.append(y)
 
     def on_validation_epoch_end(self):
+        r"""
+        Log ``val_metric`` calculated  on the whole validation set.
+        """
         preds = torch.cat(self.val_step_preds)
         targets = torch.cat(self.val_step_targets)
 
@@ -147,6 +173,9 @@ class PointNetLit(L.LightningModule):
         self.val_step_targets.clear()
         
     def test_step(self, batch, batch_idx):
+        r"""
+        Make and store predictions on a single ``batch`` from the test set.
+        """
         assert not self.training
         assert not torch.is_grad_enabled()
 
@@ -158,6 +187,10 @@ class PointNetLit(L.LightningModule):
         self.test_step_targets.append(y)
 
     def on_test_epoch_end(self):
+        r"""
+        Return a :class:`dict` of ``loss`` and ``metric`` calculated
+        on the whole test set.
+        """
         preds = torch.cat(self.test_step_preds)
         targets = torch.cat(self.test_step_targets)
 
@@ -168,6 +201,7 @@ class PointNetLit(L.LightningModule):
                 }
 
         # Uncomment the following when API stabilizes.
+        # Add support for torchmetrics.Collection.
         #metrics = {
         #        'Metric': self.metric(preds=preds, target=targets),
         #        'Loss': self.loss(preds=preds, target=targets),
@@ -179,6 +213,9 @@ class PointNetLit(L.LightningModule):
         self.test_step_targets.clear()
 
     def predict_step(self, batch, batch_idx):
+        r"""
+        Return predictions on a single ``batch``.
+        """
         assert not self.training
         assert not torch.is_grad_enabled()
 
@@ -192,4 +229,5 @@ class PointNetLit(L.LightningModule):
         return y_pred
 
     def configure_optimizers(self):
+        r""" Return the optimizer."""
         return torch.optim.Adam(self.model.parameters(), lr=self.lr)

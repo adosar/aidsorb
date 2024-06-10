@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -33,7 +33,7 @@ from aidsorb.utils import pcd_from_file, pcd_from_files, pcd_from_dir
 
 class TestPCDFromFile(unittest.TestCase):
     def test_shape(self):
-        name, pcd = pcd_from_file('tests/samples/IRMOF-1.xyz')
+        name, pcd = pcd_from_file('tests/structures/IRMOF-1.xyz')
         self.assertEqual(name, 'IRMOF-1')
         self.assertEqual(pcd.shape, (424, 4))
 
@@ -59,7 +59,7 @@ class TestPCDFromFiles(unittest.TestCase):
     def setUp(self):
         # The test assumes all files are processable.
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
-        self.fnames = ['tests/samples/IRMOF-1.xyz', 'tests/samples/Cu-BTC.cif']
+        self.fnames = ['tests/structures/IRMOF-1.xyz', 'tests/structures/Cu-BTC.cif']
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
         self.names = [Path(i).stem for i in self.fnames]
 
@@ -89,7 +89,7 @@ class TestPCDFromDir(unittest.TestCase):
         # The test assumes all files are processable.
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
-        self.dirname = 'tests/samples'
+        self.dirname = 'tests/structures'
         self.names = [Path(i).stem for i in os.listdir(self.dirname)]
 
     def test_pcd_from_dir(self):

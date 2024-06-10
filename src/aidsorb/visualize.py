@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -17,8 +17,8 @@
 r"""
 This module provides helper functions for visualizing molecular point clouds.
 
-.. note::
-    You can alternatively visualize a structure with ``ase``:
+.. tip::
+    You can alternatively visualize a structure with :mod:`ase`:
 
     .. code-block:: python
 
@@ -37,7 +37,7 @@ from . utils import pcd_from_file
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):
     r"""
-    Convert atomic numbers to colors based on `scheme`.
+    Convert atomic numbers to colors based on ``scheme``.
 
     Parameters
     ----------
@@ -84,11 +84,10 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     Each point ``pcd[i]`` is sized based on its atomic number ``pcd[i, 3]``.
 
     The color of each point is determined by ``feature_to_color``. If ``None``,
-    each point is colorized based on its atomic number. Otherwise, it is
-    colorized based on its ``pcd[i, feat_idx_label[0]`` value.
+    the atomic number of each point determines the color. Otherwise, ``pcd[i,
+    feature_to_color[0]]`` value determines the color.
 
     .. _colorscale: https://plotly.com/python/builtin-colorscales/
-    .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
 
     Parameters
     ----------
@@ -102,11 +101,11 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
         No effect if ``feature_to_color=None``. For available options, see
         `colorscale`_.
     **kwargs
-        Valid keword arguments for `plotly.go.Figure`_.
+        Valid keword arguments for :class:`plotly.graph_objects.Figure`.
 
     Returns
     -------
-    fig : `plotly.go.Figure`_
+    fig : `plotly.graph_objects.Figure`
 
     Examples
     --------
@@ -150,24 +149,18 @@ def draw_pcd_from_file(filename, render=True, **kwargs):
     r"""
     Visualize molecular point cloud from a file.
 
-    .. _plotly.go.Figure: https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html
-
     Parameters
     ----------
     filename : str
         Absolute or relative path to the file.
     render : bool, default=True
-        Render the point cloud with ``pio.renderers.default``.
+        Render the point cloud with :data:`plotly.io.renderers.default`.
     **kwargs
         Valid keyword arguments for :func:`draw_pcd`.
 
     Returns
     -------
-    render : `plotly.go.Figure`_ if ``render=False``, else ``None``.
-
-    See Also
-    --------
-    :func:`draw_pcd`
+    render : :class:`plotly.graph_objects.Figure` if ``render=False``, else ``None``.
     """
     _, pcd = pcd_from_file(filename)
     fig = draw_pcd(pcd, **kwargs)

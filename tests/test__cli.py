@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -30,11 +30,12 @@ class TestCLI(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
-        self.dirname = 'tests/samples'
+        self.dirname = 'tests/structures'
+        self.split_ratio = "'(2, 2, 2)'"
 
     def test_cli(self):
         os.system(f'aidsorb create {self.dirname} {self.outname}')
-        os.system(f'aidsorb prepare {self.outname}')
+        os.system(f'aidsorb prepare {self.outname} --split_ratio {self.split_ratio}')
 
         # Check that the files are correctly created.
         self.assertTrue(os.path.isfile(self.outname))
@@ -44,7 +45,8 @@ class TestCLI(unittest.TestCase):
         # Check that LightningCLI works.
         os.system(f'aidsorb-lit fit \
                 --config=tests/dummy/config_example.yaml \
-                --data.path_to_X={self.outname}'
+                --data.path_to_X={self.outname} \
+                --trainer.default_root_dir={self.tempdir.name}',
                   )
 
     def tearDown(self):

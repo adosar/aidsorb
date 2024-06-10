@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -18,7 +18,14 @@ r"""
 This module provides helper functions and classes for transforming point clouds.
 
 .. note::
-    The ``pcd`` must be a :class:`np.array` and have shape of ``(N, 3+C)``.
+    The ``pcd`` must be a :class:`numpy.ndarray` and have shape of ``(N, 3+C)``.
+
+.. tip::
+    For implementing your own transforms, have a look at the transforms
+    `tutorial`_. For more flexibility, consider implementing them as callable
+    instances of classes.
+
+    .. _tutorial: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
 """
 
 import numpy as np
@@ -33,7 +40,7 @@ def transform_pcd(pcd, tfm):
 
     For molecular point clouds, *only rigid transformations are recommended*.
 
-    ..note::
+    .. note::
         The ``features == pcd[:, 3:]`` are not affected.
 
     Parameters
@@ -84,10 +91,7 @@ def transform_pcd(pcd, tfm):
 
 def center_pcd(pcd):
     r"""
-    Center a point cloud.
-
-    The centering is performed by subtracting the centroid (of the points)
-    ``centroid == points.mean(axis=0)`` from ``points == pcd[:, :3]``.
+    Center the coordinates of a point cloud by subtracting their centroid.
 
     .. note::
         The ``features == pcd[:, 3:]`` are not affected.
@@ -105,6 +109,11 @@ def center_pcd(pcd):
     ------
     ValueError
         If ``pcd`` does not have the expected shape.
+
+    Notes
+    -----
+    The ``pcd`` is centered by subtracting ``centroid == coords.mean(axis=0)``
+    from ``coords == pcd[:, :3]``.
 
     Examples
     --------
@@ -125,12 +134,13 @@ class Centering():
     r"""
     Center the coordinates of a point cloud by subtracting their centroid.
 
-    ..note::
+    .. note::
         The ``features == pcd[:, 3:]`` are not affected.
 
     See Also
     --------
-    :func:`center_pcd`
+    :func:`center_pcd` :
+        For a functional interfance and description of centering.
 
     Examples
     --------
@@ -169,12 +179,8 @@ class RandomRotation():
     r"""
     Randomly rotate the coordinates of a point cloud.
 
-    ..note::
+    .. note::
         The ``features == pcd[:, 3:]`` are not affected.
-
-    See Also
-    --------
-    :func:`transform_pcd`
 
     Examples
     --------
@@ -201,7 +207,7 @@ class Jitter():
     r"""
     Jitter the coordinates of a point cloud by adding standard normal noise.
 
-    ..note::
+    .. note::
         The ``features == pcd[:, 3:]`` are not affected.
 
     Parameters

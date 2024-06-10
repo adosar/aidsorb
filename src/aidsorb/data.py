@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions and classes for preparing datasets and
+This module provides helper functions and classes for creating datasets and
 handling point clouds of variable sizes.
 """
 
@@ -34,12 +34,12 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
     r"""
     Split a source of point clouds in train, validation and test sets.
 
+    Each ``.json`` file that is created, stores the names of the point clouds
+    that will be used for *training*, *validation* and *testing*.
+
     .. warning::
         No directory is created by :func:`prepare_data`. All ``.json`` files
         are stored under the directory containing ``source``.
-
-    Each ``.json`` file that is created, stores the names of the point clouds
-    that will be used for training, validation and testing.
 
     Parameters
     ----------
@@ -47,9 +47,11 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
         Absolute or relative path to the file holding the point clouds.
     split_ratio : sequence, default=(0.8, 0.1, 0.1)
         The sizes or fractions of splits to be produced.
+
         * ``split_ratio[0] == train``.
         * ``split_ratio[1] == validation``.
         * ``split_ratio[2] == test``.
+
     seed : int, default=1
         Controls the randomness of the ``rng`` used for splitting.
 
@@ -109,7 +111,7 @@ def upsample_pcd(pcd, size):
 
     Parameters
     ----------
-    pcd : tensor of shape (N, C).
+    pcd : tensor of shape (N, C)
         The original point cloud of size ``N``.
     size : int
         The size of the new point cloud.
@@ -139,9 +141,7 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     r"""
     Pad a sequence of variable size point clouds.
 
-    Each point cloud must have shape ``(N, C)``.
-
-    .. _pad_sequence: https://pytorch.org/docs/stable/generated/torch.nn.utils.rnn.pad_sequence.html
+    Each point cloud must have shape ``(N_i, C)``.
 
     Parameters
     ----------
@@ -153,13 +153,13 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     -------
     batch : tensor of shape (B, T, C) or (B, C, T)
         ``B == len(pcds)`` is the batch size and ``T`` is the size of the
-        largest point cloud in ``pcds``. If ``channels_first`` is ``False``, the
-        batch has shape ``(B, T, C)``. Otherwise, ``(B, C, T)``.
+        largest point cloud in ``pcds``. If ``channels_first=False``, then the
+        returned batch has shape ``(B, T, C)``. Otherwise, ``(B, C, T)``.
 
     See Also
     --------
-    :func:`usample_pcd` : For a description of ``'upsample'`` mode.
-    `pad_sequence`_ : For a description of ``'zeropad'`` mode.
+    :func:`upsample_pcd` : For a description of ``'upsample'`` mode.
+    :func:`torch.nn.utils.rnn.pad_sequence` : For a description of ``'zeropad'`` mode.
 
     Examples
     --------
@@ -222,22 +222,42 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
 
 class Collator():
     r"""
-    Collate point clouds and labels.
+    Collate a sequence of samples into a ``batch``.
 
     Point clouds are padded before collation, so they can form a batch.
 
-    .. note::
-        You should use an instance of this class as ``collate_fn`` if your model
-        is :class:`models.PointNet`.
+    .. rubric:: Shapes
+
+    * Input: sequence of samples
+
+        Each sample is a tuple of tensors ``(pcd, label)``, where
+        ``pcd`` has shape ``(N_i, C)`` and ``label`` has shape
+        ``(n_outputs,)`` or ``()``.
+
+    * Output: tuple of shape (2,)
+
+        * ``batch[0] == x`` with shape ``(B, C, T)`` if ``channels_first=True``,
+          otherwise ``(B, T, C)``. ``B`` is the batch size and ``T`` is the size
+          of the largest point cloud in the sequence.
+        * ``batch[1] == y`` with shape ``(B, n_outputs)`` or ``(B,)``.
+
+    .. tip::
+        You should use an instance of this class as ``collate_fn`` with
+        ``channels_first=True``, if your model is :class:`aidsorb.models.PointNet`.
+
+    .. todo::
+        Add functionality for collating only point clouds (useful when the
+        dataset is unlabeled).
 
     Parameters
     ----------
     channels_first : bool, default=True
-    mode : {'zeropad', 'sample'}, default='upsample'
+    mode : {'zeropad', 'upsample'}, default='upsample'
 
     See Also
     --------
-    :func:`pad_pcds`
+    :func:`pad_pcds` : For a description of the parameters.
+    :func:`upsample_pcd` : For a description of the parameters.
 
     Examples
     --------
@@ -285,14 +305,15 @@ class Collator():
         ----------
         samples : sequence of tuples
             Each sample is a tuple of tensors ``(pcd, label)`` where
-            ``pcd.shape == (n_points, C)`` and ``label.shape == (n_outputs,)``.
+            ``pcd.shape == (n_points, C)`` and ``label`` has shape
+            ``(n_outputs,)`` or ``()``.
 
         Returns
         -------
         batch : tuple of shape (2,)
-            * ``batch[0] == x`` with shape ``(B, C, T)``, where ``T`` is the size of
-            the largest point cloud.
-            * ``batch[1] == y`` with shape ``(B, n_outputs)``.
+            * ``batch[0] == x`` with shape ``(B, C, T)`` or ``(B, T, C)``, where
+              ``T`` is the size of the largest point cloud.
+            * ``batch[1] == y`` with shape ``(B, n_outputs)`` or ``(B,)``.
         """
         pcds, labels = list(zip(*samples))
         
@@ -304,13 +325,14 @@ class Collator():
 
 class PCDDataset(Dataset):
     r"""
-    Dataset for point clouds.
+    ``Dataset`` for point clouds.
 
     .. tip::
-        For implementing your own transforms have a look at the `transforms`_
-        tutorial.
+        For implementing your own transforms, have a look at the transforms
+        `tutorial`_.  For more flexibility, consider implementing them as
+        callable instances of classes.
 
-    .. _transforms: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
+    .. _tutorial: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
 
     Parameters
     ----------
@@ -329,9 +351,13 @@ class PCDDataset(Dataset):
         List containing the names of the properties to be predicted. No effect
         if ``path_to_Y=None``.
     transform_x : callable, optional
-        Transforms applied to ``input`` (i.e to each point cloud).
+        Transforms applied to ``input``, i.e to each point cloud.
     transform_y : callable, optional
         Transforms applied to ``output``. No effect if ``pcd_Y=None``.
+
+    See Also
+    --------
+    :mod:`aidsorb.transforms` : For available point cloud transformations.
     """
     def __init__(
             self, pcd_names, path_to_X,
@@ -355,6 +381,7 @@ class PCDDataset(Dataset):
 
     @property
     def pcd_names(self):
+        r"""The names of the point clouds."""
         return self._pcd_names
 
     def __len__(self):

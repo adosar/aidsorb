@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -39,9 +39,9 @@ def split_pcd(pcd):
 
     Returns
     -------
-    points_and_features : tuple of shape (2,)
-        * ``points_and_features[0] == coords``, array of shape (N, 3).
-        * ``points_and_features[1] == features``, array of shape (N, C).
+    coords_and_features : tuple of shape (2,)
+        * ``coords_and_features[0] == coords``, array of shape (N, 3).
+        * ``coords_and_features[1] == features``, array of shape (N, C).
 
     Examples
     --------
@@ -64,17 +64,17 @@ def pcd_from_file(filename, features=None):
     The molecular ``pcd`` has shape ``(N, 4+C)`` where ``N`` is the
     number of atoms, ``pcd[:, :3]`` are the **atomic coordinates**,
     ``pcd[:, 3]`` are the **atomic numbers** and ``pcd[:, 4:]`` any
-    additional ``features``. If ``features=None``, then the only features
+    **additional** ``features``. If ``features=None``, then the only features
     are the atomic numbers.
 
-    .. _elements_table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
+    .. _periodic table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
 
     Parameters
     ----------
     filename : str
         Absolute or relative path to the file.
     features : list of str, optional
-        All ``float`` properties from `elements_table`_ are supported.
+        All ``float`` properties from `periodic table`_ are supported.
 
     Returns
     -------
@@ -85,10 +85,15 @@ def pcd_from_file(filename, features=None):
     Notes
     -----
     * The ``name`` of the molecule is the ``basename`` of ``filename`` with its
-    suffix removed.
-    * To get a list of the supported chemical file formats visit
-    `ase.io.read<https://wiki.fysik.dtu.dk/ase/ase/io/io.html#ase.io.iread>`_.
-    Alternatively, you can list them from the command line with ``ase info --formats``.
+      suffix removed.
+    * To get a list of the supported chemical file formats see
+      :func:`ase.io.read`. Alternatively, you can list them from the command line
+      with: ``ase info --formats``.
+
+    Examples
+    --------
+    >>> # xyz coordinates + atomic number + electronegativity + radius.
+    >>> name, pcd = pcd_from_file('path/to/file', features=['en_pauling', 'atomic_radius']) # doctest: +SKIP
     """
     name = Path(filename).stem
     structure = read(filename)
@@ -110,9 +115,7 @@ def pcd_from_files(filenames, outname, features=None):
     Create molecular point clouds from a list of files and store them.
 
     The point clouds are stored in ``.npz`` format as key-value pairs. For more
-    information on this format, see `np.savez`_.
-
-    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
+    information on this format, see :func:`numpy.savez`.
 
     Parameters
     ----------
@@ -127,13 +130,22 @@ def pcd_from_files(filenames, outname, features=None):
     Notes
     -----
     Molecules that can't be processed are omitted.
+
+    Examples
+    --------
+    >>> # Create and store the point clouds.
+    >>> outname = 'path/to/pcds.npz'
+    >>> pcd_from_files(['path/to/mol1.xyz', 'path/to/mol2.cif'], outname=outname)  # doctest: +SKIP
+    >>> # Load back and access the point clouds.
+    >>> pcds = np.load(outname, mmap_mode='r')  # doctest: +SKIP
+    >>> mol1_pcd = pcds['mol1']  # doctest: +SKIP
     """
     fnames = np.fromiter(filenames, dtype=object)
 
     # Dictionary with names as keys and pcd's as values.
     savez_dict = {}
 
-    for f in tqdm(fnames, desc='\033[32mCreating point clouds\033[0m'):
+    for f in tqdm(fnames, desc='\033[32mCreate point clouds\033[0m'):
         try:
             name, pcd = pcd_from_file(f, features=features)
             savez_dict[name] = pcd
@@ -149,9 +161,7 @@ def pcd_from_dir(dirname, outname, features=None):
     Create molecular point clouds from a directory and store them.
 
     The point clouds are stored in ``.npz`` format as key-value pairs. For more
-    information on this format, see `np.savez`_.
-
-    .. _np.savez: https://numpy.org/doc/stable/reference/generated/numpy.savez.html
+    information on this format, see :func:`numpy.savez`.
 
     Parameters
     ----------
@@ -165,6 +175,15 @@ def pcd_from_dir(dirname, outname, features=None):
     Notes
     -----
     Molecules that can't be processed are omitted.
+
+    Examples
+    --------
+    >>> # Create and store the point clouds.
+    >>> outname = 'path/to/pcds.npz'
+    >>> pcd_from_dir('path/to/dir', outname=outname)  # doctest: +SKIP
+    >>> # Load back and access the point clouds.
+    >>> pcds = np.load(outname, mmap_mode='r')  # doctest: +SKIP
+    >>> mol1_pcd = pcds['mol1']  # doctest: +SKIP
     """
     fnames = (os.path.join(dirname, f) for f in os.listdir(dirname))
 

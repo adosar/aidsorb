@@ -1,7 +1,7 @@
 # This file is part of AIdsorb.
 # Copyright (C) 2024 Antonios P. Sarikas
 
-# MOXελ is free software: you can redistribute it and/or modify
+# AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -38,7 +38,7 @@ class TestPCDDataModule(unittest.TestCase):
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
         self.split_ratio = [3, 1, 2]
 
-        pcd_from_dir(dirname='tests/samples', outname=self.outname)
+        pcd_from_dir(dirname='tests/structures', outname=self.outname)
         prepare_data(source=self.outname, split_ratio=self.split_ratio)
 
         # Arguments for the datamodule.
