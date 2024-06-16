@@ -145,7 +145,7 @@ def pcd_from_files(filenames, outname, features=None):
     # Dictionary with names as keys and pcd's as values.
     savez_dict = {}
 
-    for f in tqdm(fnames, desc='\033[32mCreate point clouds\033[0m'):
+    for f in tqdm(fnames, desc='\033[32mCreating point clouds\033[0m'):
         try:
             name, pcd = pcd_from_file(f, features=features)
             savez_dict[name] = pcd

@@ -17,7 +17,7 @@ There are two available commands:
 
 	.. tab-item:: aidsorb-lit
 
-		For the machine learning part. Currently, only PointNet is supported.
+		For the deep learning part. Currently, only PointNet is supported.
 
 		.. code-block::
 

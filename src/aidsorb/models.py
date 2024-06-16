@@ -15,10 +15,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`torch.nn.Module`'s for building the original
-architecture introduced in the [PointNet]_ paper. It also provides
-:class:`PointNet`, a lightweight version of the original architecture, where the
-:class:`TNet`'s for input and feature transforms have been removed.
+This module provides deep learning architectures for point cloud processing.
+
+All architectures are implemented as :class:`torch.nn.Module`'s. Currently, the
+module provides the basic blocks for  for building the architecture
+introduced in the [PointNet]_ paper. It also provides :class:`PointNet`, a
+lightweight version of the original architecture, where the :class:`TNet`'s for
+input and feature transforms have been removed.
 
 .. note::
     :class:`PointNetBackbone`, :class:`PointNetClsHead` and
@@ -296,11 +299,11 @@ class PointNetBackbone(nn.Module):
 
         x = self.shared_mlp_2(x)
 
-        # Shape (B, self.n_global_feats).
+        # Shape (B, n_global_feats).
         global_feats, critical_indices = torch.max(x, 2, keepdim=False)
 
         if self.local_feats:
-            # Shape (B, self.n_global_feats + 64, N)
+            # Shape (B, n_global_feats + 64, N)
             feats = torch.cat(
             (point_feats, global_feats.unsqueeze(-1).repeat(1, 1, n_points)),
             dim=1

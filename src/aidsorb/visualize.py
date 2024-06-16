@@ -18,15 +18,22 @@ r"""
 This module provides helper functions for visualizing molecular point clouds.
 
 .. tip::
-    You can alternatively visualize a structure with :mod:`ase`:
 
-    .. code-block:: python
+    To visualize a molecular point cloud from the CLI:
 
-        from ase.io import read
-        from ase.visualize import view
+        .. code-block:: console
+            
+            $ aidsorb visualize path/to/structure
 
-        atoms = read('path/to/file')
-        view(atoms)
+    You can also visualize a structure with :mod:`ase`:
+
+        .. code-block:: python
+
+            from ase.io import read
+            from ase.visualize import view
+
+            atoms = read('path/to/file')
+            view(atoms)
 """
 
 import numpy as np

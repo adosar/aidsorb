@@ -5,8 +5,10 @@ mendeleev==0.15.0
 plotly>=5.19.0
 tqdm>=4.66.2
 lightning>=2.2.1
+jsonargparse[signatures]>=4.27.7
 # For the documentation
 sphinx
 renku-sphinx-theme
 sphinx-copybutton
 sphinx-design
+sphinx-gallery

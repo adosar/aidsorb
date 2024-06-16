@@ -12,45 +12,62 @@
 About
 =====
 
-**AIdsorb** is a :fa:`python; fa-fade` Python package for **Machine Learning on
+**AIdsorb** is a :fa:`python; fa-fade` Python package for **Deep Learning on
 molecular point clouds**.
 
-* What is a point cloud?
-* Why it useful in chemistry?
-* Why it useful in porous materials (voxels etc.)?
-* Do not be fooled by the name.
+.. grid:: 4
 
-Objective
----------
+       .. grid-item::
 
-Add a small synopsis of the aim of AIdsorb.
+               .. button-link:: https://github.com/adosar/aidsorb
+                       :color: primary
+                       :align: center
 
-.. grid:: 3
+                       :octicon:`mark-github` Source code
 
-	.. grid-item::
+       .. grid-item::
 
-		.. button-link:: https://github.com/adosar/aidsorb
-			:color: primary
-			:align: center
+               .. button-ref:: installation
+                       :ref-type: doc
+                       :color: primary
+                       :align: center
 
-			:octicon:`mark-github` Source code
+                       🚀 Get started
 
-	.. grid-item::
+       .. grid-item::
 
-		.. button-ref:: installation
-			:ref-type: doc
-			:color: primary
-			:align: center
+               .. button-link:: https://example.com
+                       :color: primary
+                       :align: center
 
-			🚀 Get started
+                       📦 PyPI package
 
-	.. grid-item::
+       .. grid-item::
 
-		.. button-link:: https://example.com
-			:color: primary
-			:align: center
+               .. button-link:: https://example.com
+                       :color: primary
+                       :align: center
 
-			:octicon:`telescope` AIdsorb paper
+                       :octicon:`telescope` AIdsorb paper
+
+**AIdsorb** aims to provide a **fast, easy-to-use and reproduce** interface
+for:
+
+* 📥 **Creating molecular point clouds**
+* 🤖 **Training DL algorithms**
+
+.. raw:: html
+    :file: images/pcd_plotly.html
+
+.. rubric:: Why molecular point clouds?
+
+A *molecular point cloud*, being essentially a *set of atomic positions, atomic
+numbers and any additional information*, provides a natural and efficient way to
+represent molecular structures and chemical systems in a machine understandable
+format. This in turns allows us to perform DL directly on raw chemical
+information, removing the need for manual feature extraction. The above point
+cloud represents IRMOF-1. You can hover :fa:`arrow-pointer; fa-beat-fade` over
+the figure to play with it.
 
 Citing AIdsorb
 --------------
@@ -131,14 +148,15 @@ only <https://spdx.org/licenses/GPL-3.0-only.html>`.
 
 
 .. toctree::
-	:maxdepth: 1
-	:caption: Contents
+    :maxdepth: 1
+    :caption: Contents
 
-	installation
-	tutorial
-	cli
-	api
-	changelog
+    installation
+    tutorial
+    cli
+    api
+    auto_examples/index
+    changelog
 
 
 Indices and tables

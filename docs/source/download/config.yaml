@@ -1,16 +1,21 @@
 seed_everything: 1  # Workers are seeded as well.
 
+# Here you setup the Trainer.
 trainer:
   max_epochs: 2
-  accelerator: 'cpu'
+  accelerator: 'gpu'
 
+# Here you setup the DataModule (PCDDataModule).
+# For more information see aidsorb.datamodules.
 data:
   # The paths must be relative to where aidsorb-lit is called.
-  path_to_X: 'pcd_data/point_clouds.npz'
-  path_to_Y: 'labels/labels.csv'
+  # Consider using absolute paths.
+  path_to_X: 'path/to/pcds/pcds.npz'
+  path_to_Y: 'path/to/labels.csv'
   index_col: 'id'
-  labels: ['y3']
+  labels: ['y1, y3']
   train_transform_x:
+    # Here you can pass transformations for augmentation.
     class_path: aidsorb.transforms.Centering
   eval_transform_x:
     class_path: aidsorb.transforms.Centering
@@ -22,6 +27,8 @@ data:
     collate_fn:
       class_path: aidsorb.data.Collator
 
+# Here you setup the LightningModule (PointNetLit).
+# For more information see aidsorb.litmodels.
 model:
   loss:
     class_path: torch.nn.MSELoss
@@ -34,3 +41,4 @@ model:
         class_path: aidsorb.models.PointNetClsHead
         init_args:
           dropout_rate: 0.7
+          n_outputs: 2

@@ -9,6 +9,7 @@
 from urllib.parse import quote
 import sys, os
 import subprocess
+from plotly.io._sg_scraper import plotly_sg_scraper
 
 sys.path.insert(0, os.path.abspath('../../src'))
 
@@ -30,7 +31,7 @@ extensions = [
         'sphinx.ext.autosummary',
         'sphinx_design',
         'sphinx_copybutton',
-        #'nbsphinx',
+        'sphinx_gallery.gen_gallery',
         ]
 
 copybutton_exclude = '.linenos, .gp'
@@ -39,21 +40,27 @@ autodoc_inherit_docstrings = False
 autosectionlabel_prefix_document = True
 
 templates_path = ['_templates']
-exclude_patterns = ['_autosummary/*']
+#exclude_patterns = ['_autosummary/*']
 
-#intersphinx_mapping = {
-#        'python': ('https://docs.python.org/3', None),
-#        'numpy': ('https://numpy.org/doc/stable/', None),
-#        'pytorch': ('https://pytorch.org/docs/stable', None),
-#        'lightning': ('https://lightning.ai/docs/pytorch/stable/', None),
-#        'ase': ('https://wiki.fysik.dtu.dk/ase/', None),
-#        'plotly': ('https://plotly.com/python-api-reference/', None),
-#        }
+sphinx_gallery_conf = {
+     'examples_dirs': 'examples',   # path to your example scripts
+     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+     'ignore_pattern': r'{/.*\.xyz, /.*\.cif}',
+     'image_scrapers': (plotly_sg_scraper,),
+}
+
+intersphinx_mapping = {
+        'python': ('https://docs.python.org/3', None),
+        'numpy': ('https://numpy.org/doc/stable/', None),
+        'pytorch': ('https://pytorch.org/docs/stable', None),
+        'lightning': ('https://lightning.ai/docs/pytorch/stable/', None),
+        'ase': ('https://wiki.fysik.dtu.dk/ase/', None),
+        'plotly': ('https://plotly.com/python-api-reference/', None),
+        }
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-#html_theme = 'sphinx_rtd_theme'
 html_theme = 'renku'
 html_static_path = ['_static']
 html_logo = 'images/aidsorb_logo_dark.svg'

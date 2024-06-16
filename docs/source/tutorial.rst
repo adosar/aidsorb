@@ -5,13 +5,15 @@
     **This tutorial covers the most common use cases of AIdsorb**. For more
     advanced usage, you should consult the :doc:`api`.
 
+.. _Introduction:
+
 Introduction
 ------------
 
 *What is a point cloud?*
 
-    A point cloud is a *set of 3D coordinates* and (optionally) *associated
-    features*. More formally:
+    A point cloud is a *set of 3D data points*, i.e. a *set of 3D coordinates
+    and (optionally) *associated features*. More formally:
 
     .. math::
         \mathcal{P} = \{
@@ -22,8 +24,8 @@ Introduction
         \quad
         \mathbf{p}_i \in \mathbb{R}^{3+C}
 
-    where :math:`N` is the number of points in the cloud and :math:`C` is the
-    number of features.
+    where :math:`N` is the number of points in the point cloud and :math:`C` is
+    the number of (per point) features.
 
     In AIdsorb, a point cloud is represented as a :class:`numpy.ndarray` of
     shape ``(N, 3+C)``:
@@ -56,144 +58,219 @@ Introduction
     4:]`` any **additional features**. If ``C == 0``, then the only features are the
     atomic numbers.
 
+Deep learning on molecular point clouds
+---------------------------------------
 
-Create and visualize a molecular point cloud
---------------------------------------------
-
-For this part of the tutorial: :download:`IRMOF-1.xyz
-<../../tests/structures/IRMOF-1.xyz>`.
-
-Create a molecular point cloud::
-
-    >>> from aidsorb.utils import pcd_from_file
-    >>> mol_name, pcd = pcd_from_file('path/to/IRMOF-1.xyz')
-
-Visualize it:
-
-.. tab-set::
-
-    .. tab-item:: Python
-        
-        .. code-block::
-
-            >>> from aidsorb.visualize import draw_pcd
-            >>> draw_pcd(pcd)
-
-    .. tab-item:: CLI
-        
-        .. code-block:: console
-
-            $ aidsorb visualize path/to/IRMOF-1.xyz
-
-
-..
-    .. raw:: html
-        :file: images/pcd_plotly.html
-
-Hover your pointer :fa:`arrow-pointer; fa-beat-fade` over the figure to play with it!
-
-Machine learning on molecular point clouds
-------------------------------------------
-
-For this part of the tutorial: :download:`toy_project.zip
-<download/toy_project.zip>`.
-
-For performing machine learning with AIdsorb, the following components are
-needed:
+For creating molecular point clouds and performing deep learning with
+AIdsorb, the following components are needed:
 
 * A directory containing files of **molecular structures**.
 * A ``.csv`` file containing the **labels of the molecular structures**.
-* A ``.yaml`` **configuration file** for orchestrating the training part.
+* A ``.yaml`` **configuration file** for orchestrating the ML part.
 
-*and you are solely responsible for them*.
+.. note::
+    You are solely responsible for these 3 components.
 
-After downloading and unzipping the file, you will get a directory structure
-populated with these 3 components:
+Data preparation
+^^^^^^^^^^^^^^^^
+
+.. rubric:: Create and store the point clouds
+
+Assuming your molecular structures are stored under a directory named
+``structures`` and the directory ``path/to/pcds`` exists:
+
+.. tab-set::
+
+    .. tab-item:: CLI
+
+        .. code-block:: console
+
+            $ aidsorb create path/to/structures path/to/pcds/pcds.npz -f "['en_pauling']"
+
+    .. tab-item:: Python
+
+        .. code-block:: python
+
+            from aidsorb.utils import pcd_from_dir
+
+            # We add electronegativity as additional feature.
+            pcd_from_dir(
+                dirname='path/to/structures',
+                outname='path/to/pcds/pcds.npz',
+                features=['en_pauling'],
+            )
+
+.. rubric:: Split data into train, validation and test sets
+
+.. tab-set::
+
+    .. tab-item:: CLI
+
+        .. code-block:: console
+
+            $ aidsorb prepare path/to/pcds/pcds.npz --split_ratio "(0.7, 0.1, 0.2)" --seed 1
+
+    .. tab-item:: Python
+
+        .. code-block:: python
+
+            from aidsorb.data import prepare_data
+
+            # Split the data into (train, val, test).
+            prepare_data(
+                source='path/to/pcds/pcds.npz',
+                split_ratio=(0.7, 0.1, 0.2),
+                seed=1,
+            )
+
+Now the ``path/to/pcds`` directory is populated with the following files:
 
 .. code-block:: console
 
-    $ tree toy_project
-    toy_project
-    ├── configs
-    │   └── config_example.yaml
-    ├── labels
-    │   └── labels.csv
-    ├── pcd_data  # This directory will be populated later by AIdsorb.
-    └── structures
-        ├── ala_phe_ala.pdb
-        ├── COF-5.cif
-        └── ...
+    $ tree path/to/pcds
+    pcds/
+    ├── pcds.npz
+    ├── test.json
+    ├── train.json
+    └── validation.json
 
-.. note::
-    **The above directory structure is not required by AIdsorb**. It is just there
-    for illustration purposes only, to help you organize better your project.
+* The ``pcds.npz`` file which stores the point clouds.
+* Three ``.json`` files which store the names of the structures for
+  training, validation and testing.
 
-Prepare the data
-^^^^^^^^^^^^^^^^
+Train and test
+^^^^^^^^^^^^^^
 
-Create the point clouds:
+🎉 All you need is a ``.yaml`` and some... ⌨️  keystrokes!
 
-    .. tab-set::
-    
-        .. tab-item:: CLI
+.. tab-set::
 
-            .. code-block:: console
+    .. tab-item:: Train
+        
+        .. code-block:: console
+            
+            aidsorb-lit fit --config=config.yaml
 
-                $ aidsorb create toy_project/structures toy_project/pcd_data/point_clouds.npz -f "['en_pauling']"
+    .. tab-item:: Test
+        
+        .. code-block:: console
+            
+            aidsorb-lit test --config=cofnig.yaml --ckpt_path=path/to/ckpt
 
-        .. tab-item:: Python
+    .. tab-item:: config.yaml
+        
+        .. literalinclude:: download/config.yaml
+            :language: yaml
 
-            .. code-block:: python
+    .. tab-item:: labels.csv
+        
+        .. literalinclude:: download/labels.csv
+            :language: yaml
 
-                from aidsorb.utils import pcd_from_dir
+.. seealso::
+    The documentation for the `LightningCLI
+    <https://lightning.ai/docs/pytorch/stable/cli/lightning_cli.html>`_, in case
+    you are not familiar with PyTorch Lightning and YAML.
 
-                # We add electronegativity as additional feature.
-                pcd_from_dir(
-                    dirname='toy_project/structures',
-                    outname='toy_project/pcd_data/point_clouds.npz',
-                    features=['en_pauling'],
-                )
+.. _Summing up:
 
-Split the point clouds into train, validation and test sets:
+Summing up
+^^^^^^^^^^
 
-    .. tab-set::
-    
-        .. tab-item:: CLI
+.. code-block:: console
 
-            .. code-block:: console
+    $ aidsorb create path/to/inp path/to/out  # Create point clouds
+    $ aidsorb prepare path/to/out  # Split point clouds
+    $ aidsorb-lit fit --config=path/to/config.yaml  # Train
+    $ aidsorb-lit test --config=path/to/config.yaml --ckpt_path=path/to/ckpt  # Test
 
-                $ aidsorb prepare toy_project/pcd_data/point_clouds.npz --split_ratio "(0.33
+Questions
+---------
 
-        .. tab-item:: Python
+Can I use point clouds not created with AIdsorb?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-            .. code-block:: python
+Yes! The only requirement is to store them in ``.npz`` format (see
+:func:`numpy.savez`) file and respect the shapes described in
+:ref:`Introduction`. Then, you can proceed as described :ref:`earlier <Summing
+up>` (omitting the point clouds creation part).
 
-                from aidsorb.utils import pcd_from_dir
+.. _aidsorb_with_pytorch_and_lightning:
 
-                # We add electronegativity as additional feature.
-                pcd_from_dir(
-                    dirname='toy_project/structures',
-                    outname='toy_project/pcd_data/point_clouds.npz',
-                    features=['en_pauling'],
-                )
-..
-    Can I use other point clouds
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Can I do DL without the CLI?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    Train the algorithm
-    ^^^^^^^^^^^^^^^^^^^
+Of course! Although you are encouraged to use the :doc:`cli`, you can also use AIdsorb with
+plain :bdg-link-primary:`PyTorch <https://pytorch.org/>` or
+:bdg-link-primary:`PyTorch Lightning
+<https://lightning.ai/docs/pytorch/stable/>`.
 
-    Can I use vanilla PyTorch?
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. seealso::
 
-    Add this later with faking retarded rst sucking dicks.
+    For PyTorch:
 
-    Add a link to :download:`IRMOF-1.xyz <../../tests/samples/IRMOF-1.xyz>`
+    * :class:`aidsorb.data.PCDDataSet`
+    * :class:`aidsorb.models.PointNet`
 
-    ADd an octicon :fab:`python;fa-lg fa-bounce`.
+    For PyTorch Lightning:
 
-    .. toctree::
-        :maxdepth: 2
-        :name: Put a faking name to use a role
+    * :class:`aidsorb.datamodules.PCDDataModule`
+    * :class:`aidsorb.litmodels.PointNetLit`
 
-        download/fooba
+
+.. tab-set::
+
+    .. tab-item:: PyTorch
+
+        .. code-block:: python
+
+            from torch.utils.data import DataLoader
+            from aidsorb.data import PCDDataset, Collator, get_names
+            from aidsorb.models import PointNet
+
+            # Create the datasets.
+            train_ds = PCDDataset(pcd_names=get_names('path/to/train.json', ...)
+            val_ds = PCDDataset(pcd_names=get_names('path/to/validation.json', ...)
+
+            # Create the dataloaders.
+            train_dl = DataLoader(train_ds, ..., collate_fn=Collator(...))
+            val_dl = DataLoader(val_ds, ..., collate_fn=Collator(...))
+
+            # Instatiate the model.
+            model = PointNet(...)
+
+            # Your code goes here.
+            ...
+
+    .. tab-item:: PyTorch Lightning
+
+        .. code-block:: python
+
+            import lightning as L
+            from aidsorb.data import Collator
+            from aidsorb.datamodules import PCDDataModule
+            from aidsorb.litmodels import PointNetLit
+
+            # Instantiate the datamodule.
+            dm = PCDDataModule(..., collate_fn=Collator(...))
+
+            # Instantiate the litmodel.
+            litmodel = PointNetLit(...)
+
+            # Instantiate the trainer.
+            trainer = L.Trainer(...)
+
+            # Your code goes here.
+            ...
+
+Can I predict directly from the CLI?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Currently, this feature is not available (see :ref:`index:TODO`).
+
+.. button-ref:: auto_examples/index
+	:ref-type: doc
+	:color: primary
+	:align: center
+	
+	What's next?

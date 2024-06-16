@@ -18,16 +18,11 @@ r"""
 This model provides :class:`lightning.pytorch.core.LightningModule`'s that can be
 used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
 
-.. danger::
-    * Use 1 metric in test step.
-    * Remove unecessary imports.
-
 .. todo:
     Add support for :class:`torchmetrics.MetricCollection`.
 """
 from typing import Callable
 import torch
-from torchmetrics.functional import r2_score, mean_absolute_error, mean_squared_error
 import lightning as L
 from aidsorb.models import PointNet
 
@@ -194,18 +189,11 @@ class PointNetLit(L.LightningModule):
         preds = torch.cat(self.test_step_preds)
         targets = torch.cat(self.test_step_targets)
 
-        metrics = {
-                'r2_score': r2_score(preds=preds, target=targets),
-                'mae': mean_absolute_error(preds=preds, target=targets),
-                'mse': mean_squared_error(preds=preds, target=targets),
-                }
-
-        # Uncomment the following when API stabilizes.
         # Add support for torchmetrics.Collection.
-        #metrics = {
-        #        'Metric': self.metric(preds=preds, target=targets),
-        #        'Loss': self.loss(preds=preds, target=targets),
-        #        }
+        metrics = {
+                'Metric': self.metric(preds=preds, target=targets),
+                'Loss': self.loss(input=preds, target=targets),
+                }
 
         self.log_dict(metrics)
 
