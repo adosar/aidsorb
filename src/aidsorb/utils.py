@@ -137,7 +137,7 @@ def pcd_from_files(filenames, outname, features=None):
     >>> outname = 'path/to/pcds.npz'
     >>> pcd_from_files(['path/to/mol1.xyz', 'path/to/mol2.cif'], outname=outname)  # doctest: +SKIP
     >>> # Load back and access the point clouds.
-    >>> pcds = np.load(outname, mmap_mode='r')  # doctest: +SKIP
+    >>> pcds = np.load(outname)  # doctest: +SKIP
     >>> mol1_pcd = pcds['mol1']  # doctest: +SKIP
     """
     fnames = np.fromiter(filenames, dtype=object)
@@ -182,7 +182,7 @@ def pcd_from_dir(dirname, outname, features=None):
     >>> outname = 'path/to/pcds.npz'
     >>> pcd_from_dir('path/to/dir', outname=outname)  # doctest: +SKIP
     >>> # Load back and access the point clouds.
-    >>> pcds = np.load(outname, mmap_mode='r')  # doctest: +SKIP
+    >>> pcds = np.load(outname)  # doctest: +SKIP
     >>> mol1_pcd = pcds['mol1']  # doctest: +SKIP
     """
     fnames = (os.path.join(dirname, f) for f in os.listdir(dirname))

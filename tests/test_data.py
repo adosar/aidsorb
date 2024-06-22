@@ -50,7 +50,7 @@ class TestPrepareData(unittest.TestCase):
         prepare_data(source=self.outname, split_ratio=self.split_ratio)
 
     def test_overlap_and_ratio(self):
-        names = np.load(self.outname, mmap_mode='r').files
+        names = np.load(self.outname).files
         
         train_names = get_names(os.path.join(self.tempdir.name, 'train.json'))
         val_names = get_names(os.path.join(self.tempdir.name, 'validation.json'))
@@ -95,7 +95,7 @@ class TestPCDDataset(unittest.TestCase):
         self.batch_size = 2
 
     def test_labeled_pcddataset(self):
-        self.X = np.load(self.outname, mmap_mode='r')
+        self.X = np.load(self.outname)
         self.Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
 
         dataset = PCDDataset(
@@ -146,7 +146,7 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(y.dtype, torch.float)
 
     def test_unlabeled_pcddataset(self):
-        self.X = np.load(self.outname, mmap_mode='r')
+        self.X = np.load(self.outname)
 
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
@@ -186,7 +186,3 @@ class TestPCDDataset(unittest.TestCase):
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(data))
     return tests
-
-
-if __name__ == '__main__':
-    unittest.main()

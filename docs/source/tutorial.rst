@@ -13,7 +13,7 @@ Introduction
 *What is a point cloud?*
 
     A point cloud is a *set of 3D data points*, i.e. a *set of 3D coordinates
-    and (optionally) *associated features*. More formally:
+    and (optionally) associated features*. More formally:
 
     .. math::
         \mathcal{P} = \{
@@ -209,7 +209,7 @@ plain :bdg-link-primary:`PyTorch <https://pytorch.org/>` or
 
     For PyTorch:
 
-    * :class:`aidsorb.data.PCDDataSet`
+    * :class:`aidsorb.data.PCDDataset`
     * :class:`aidsorb.models.PointNet`
 
     For PyTorch Lightning:

@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Add module docstring.
+This module provides helper functions for the CLI.
 """
 
 import fire
@@ -29,14 +29,14 @@ from . litmodels import PointNetLit
 
 def lightning_cli():
     r"""
-    Run the :class:`LightningCli`.
+    CLI for deep learning on molecular point clouds.
     """
     LightningCLI(PointNetLit, PCDDataModule)
 
 
 def aidsorb_fire():
     r"""
-    CLI for the ``AIdsorb`` package.
+    CLI for creating, preparing and visualizing molecular point clouds.
     """
     fire.Fire({
         'visualize': draw_pcd_from_file,

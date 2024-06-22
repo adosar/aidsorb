@@ -34,7 +34,7 @@ extensions = [
         'sphinx_gallery.gen_gallery',
         ]
 
-copybutton_exclude = '.linenos, .gp'
+copybutton_exclude = '.linenos, .gp, .go'
 todo_include_todos = True
 autodoc_inherit_docstrings = False
 autosectionlabel_prefix_document = True

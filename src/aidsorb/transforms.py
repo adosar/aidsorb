@@ -239,6 +239,9 @@ class RandomErase():
     r"""
     Randomly erase a number of points from the point cloud.
 
+    .. todo::
+        Consider implementing as fraction of points to be erased.
+
     Parameters
     ----------
     n_points : int, default=5

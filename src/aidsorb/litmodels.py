@@ -93,9 +93,9 @@ class PointNetLit(L.LightningModule):
         Also make and store predictions on this single ``batch``.
 
         .. note::
-            The ``BatchNorm`` and ``Dropout`` are enabled during the calculation
-            of the train loss, but *are temporarily disabled during
-            predictions, so an accurate estimate of train loss is reported*.
+            The ``BatchNorm`` and ``Dropout`` are set in inference mode during
+            predictions, so an accurate estimate of training performance is
+            reported.
         """
         assert self.training
         assert torch.is_grad_enabled()
@@ -118,7 +118,7 @@ class PointNetLit(L.LightningModule):
 
     def on_train_epoch_end(self):
         r"""
-        Log ``train_metric`` calculated  on the whole train set.
+        Log ``metric`` calculated  on the whole train set.
         """
         preds = torch.cat(self.train_step_preds)
         targets = torch.cat(self.train_step_targets)
@@ -150,7 +150,7 @@ class PointNetLit(L.LightningModule):
 
     def on_validation_epoch_end(self):
         r"""
-        Log ``val_metric`` calculated  on the whole validation set.
+        Log ``metric`` calculated  on the whole validation set.
         """
         preds = torch.cat(self.val_step_preds)
         targets = torch.cat(self.val_step_targets)

@@ -74,7 +74,7 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
     """
     rng = torch.Generator().manual_seed(seed)
     path = Path(source).parent
-    pcds = np.load(source, mmap_mode='r')
+    pcds = np.load(source)
 
     train, val, test = random_split(pcds.files, split_ratio, generator=rng)
 
@@ -127,8 +127,12 @@ def upsample_pcd(pcd, size):
     tensor([[2, 4, 5, 6],
             [2, 4, 5, 6],
             [2, 4, 5, 6]])
-    >>> upsample_pcd(pcd, 1)  # No upsampling.
-    tensor([[2, 4, 5, 6]])
+
+    >>> # No upsampling.
+    >>> pcd = torch.randn(100, 4)
+    >>> new_pcd = upsample_pcd(pcd, len(pcd))
+    >>> torch.equal(pcd, new_pcd)
+    True
     """
     n_samples = size - len(pcd)
     indices = torch.from_numpy(np.random.choice(len(pcd), n_samples))
@@ -294,6 +298,20 @@ class Collator():
     >>> y
     tensor([[1., 2.],
             [7., 3.]])
+
+    >>> # Label has shape (), i.e. is scalar.
+    >>> sample1 = (torch.tensor([[3, 4, 3, 2]]), torch.tensor(0))
+    >>> sample2 = (torch.tensor([[2, 4, 8, 2], [9, 4, 1, 8]]), torch.tensor(1))
+    >>> collate_fn = Collator(channels_first=False, mode='zeropad')
+    >>> x, y = collate_fn((sample1, sample2))
+    >>> x
+    tensor([[[3, 4, 3, 2],
+             [0, 0, 0, 0]],
+    <BLANKLINE>
+            [[2, 4, 8, 2],
+             [9, 4, 1, 8]]])
+    >>> y
+    tensor([0, 1])
     """
     def __init__(self, channels_first=True, mode='upsample'):
         self.channels_first = channels_first
@@ -390,7 +408,7 @@ class PCDDataset(Dataset):
     def __getitem__(self, idx):
         # Account for np.load and multiprocessing.
         if self.X is None:
-            self.X = np.load(self.path_to_X, mmap_mode='r')
+            self.X = np.load(self.path_to_X)
         if self.Y is None and self.path_to_Y is not None:
             self.Y = pd.read_csv(
                     self.path_to_Y,

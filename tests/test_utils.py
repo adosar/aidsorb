@@ -65,7 +65,7 @@ class TestPCDFromFiles(unittest.TestCase):
 
     def test_pcd_from_files(self):
         pcd_from_files(self.fnames, outname=self.outname)
-        data = np.load(self.outname, mmap_mode='r')
+        data = np.load(self.outname)
 
         # Stored names must follow the order in self.names.
         self.assertEqual(data.files, self.names)
@@ -94,7 +94,7 @@ class TestPCDFromDir(unittest.TestCase):
 
     def test_pcd_from_dir(self):
         pcd_from_dir(dirname=self.dirname, outname=self.outname)
-        data = np.load(self.outname, mmap_mode='r')
+        data = np.load(self.outname)
 
         # Stored names must follow the order in self.names.
         self.assertEqual(data.files, self.names)
@@ -109,7 +109,3 @@ class TestPCDFromDir(unittest.TestCase):
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(utils))
     return tests
-
-
-if __name__ == '__main__':
-    unittest.main()

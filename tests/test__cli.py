@@ -51,7 +51,3 @@ class TestCLI(unittest.TestCase):
 
     def tearDown(self):
         self.tempdir.cleanup()
-
-
-if __name__ == '__main__':
-    unittest.main()
