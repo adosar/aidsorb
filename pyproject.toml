@@ -7,6 +7,11 @@ where = ["src"]
 
 [tool.setuptools_scm]
 
+[tool.pylint.main]
+jobs = 0
+disable = ["C"]
+fail-under = 8
+
 [project]
 name = "aidsorb"
 dynamic = ["version"]

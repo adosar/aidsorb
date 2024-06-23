@@ -22,7 +22,6 @@ Command: python -m unittest tests.test_transforms
 """
 
 import doctest
-import unittest
 from aidsorb import transforms
 
 

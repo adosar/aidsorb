@@ -6,7 +6,6 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-from urllib.parse import quote
 import sys, os
 import subprocess
 from plotly.io._sg_scraper import plotly_sg_scraper

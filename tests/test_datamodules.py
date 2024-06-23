@@ -24,7 +24,7 @@ Command: python -m unittest tests.test_datamodules
 import os
 import unittest
 import tempfile
-from itertools import combinations, product
+from itertools import combinations
 from torch.utils.data import RandomSampler, SequentialSampler
 from aidsorb.utils import pcd_from_dir
 from aidsorb.data import prepare_data, Collator

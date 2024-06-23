@@ -22,7 +22,6 @@ Command: python -m unittest tests.test_litmodels
 """
 
 import doctest
-import unittest
 from aidsorb import litmodels
 
 

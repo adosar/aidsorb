@@ -58,6 +58,14 @@ Introduction
     4:]`` any **additional features**. If ``C == 0``, then the only features are the
     atomic numbers.
 
+
+.. tip::
+    You can visualize a molecular point cloud with:
+
+    .. code-block:: console
+
+        $ aidsorb visualize path/to/structure
+
 Deep learning on molecular point clouds
 ---------------------------------------
 
@@ -66,7 +74,7 @@ AIdsorb, the following components are needed:
 
 * A directory containing files of **molecular structures**.
 * A ``.csv`` file containing the **labels of the molecular structures**.
-* A ``.yaml`` **configuration file** for orchestrating the ML part.
+* A ``.yaml`` **configuration file** for orchestrating the DL part.
 
 .. note::
     You are solely responsible for these 3 components.

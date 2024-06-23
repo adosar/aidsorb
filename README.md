@@ -1,39 +1,67 @@
-AIdsorb is a Python package for processing molecular point clouds.
+<h1 align="center">
+  <img alt="Logo" src="https://raw.githubusercontent.com/adosar/trial/master/docs/source/images/aidsorb_logo_light.svg"/>
+</h1>
 
-Currently, only the `PointNet`  [^1] architecture is implemented and can be
-found under `src/aidsorb/models.py`. In this implementation, the input `T-Net`
-transformation from the original paper is not applied, *since is it is not
-guaranteed to be a rigid one*.
+<h4 align="center">
+
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue?style=for-the-badge&logo=python&logoColor=white&labelColor=black)
+![License GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-gold?style=for-the-badge&logo=license&logoColor=cyan&labelColor=black)
+![Linux](https://img.shields.io/badge/linux-black?style=for-the-badge&logo=linux&logoColor=cyan)
+
+</h4>
+
+
+**AIdsorb** is a Python package for **deep learning on molecular point clouds**.
+
+**AIdsorb** aims to provide a **fast, easy-to-use and reproduce** interface for:
+
+-   📥 **Creating molecular point clouds**
+    
+-   🤖 **Training DL algorithms on molecular point clouds**
+
+
+<p align="center">
+  <img alt="Point cloud" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/pcd.gif" width="25%"/>
+</p>
 
 ## ⚙️  Installation
-> Currently not available in PyPI.
+> [!IMPORTANT] 
+> It is strongly recommended to **perform the installation inside a virtual environment**.
 
-**It is strongly recommended to perform the installation inside a virtual environment**.
+Assuming an activated virtual environment:
 ```bash
-git clone https://github.com/adosar/aidsorb && cd aidsorb
-(venvir) pip install -e .
+pip install aidsorb
 ```
 
-## 📖 Usage
-You can create molecular point clouds form a directory containing molecular
-files and save them in a `.npz` file.
+## 🚀 Usage
+> [!NOTE] 
+> Refer to the 📚 Documentation for more information.
 
-```python
-from aidsorb.utils import pcd_from_dir
-pcd_from_dir('/path/to/dir', file='point_clouds.npz')
-```
+Here is a summary of what you can do from the command line:
 
-## 📇 TODO
-* Add atoms featurization
-* Add more architectures
+1. Visualize a molecular point cloud:
+	```bash
+	aidsorb visualize path/to/structure
+	```
+
+2.  Create and prepare point clouds:
+	```bash
+	aidsorb create path/to/inp path/to/out  # Create point clouds
+	aidsorb prepare path/to/out  # Split point clouds to train, val and test
+	```
+	where `path/to/inp` is a directory containing molecular structures.
+	
+3. Train and test a model:
+	```bash
+	aidsorb-lit fit --config=path/to/config.yaml
+	aidsorb-lit test --config=path/to/config.yaml --ckpt_path=path/to/ckpt
+	```
+	Currently, only [PointNet](https://arxiv.org/abs/1612.00593) is supported.
 
 ## 📰 Citing AIdsorb
-> Currently N/A.
+If you use AIdsorb in your research, please consider citing the following work:
+	
+	Currently, not available.
 
 ## 📑 License
-MOXελ is released under the [GNU General Public License v3.0 only](https://spdx.org/licenses/GPL-3.0-only.html).
-
-[^1]: R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,USA,
-2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+AIdosrb is released under the [GNU General Public License v3.0 only](https://spdx.org/licenses/GPL-3.0-only.html).

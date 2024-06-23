@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-**AIdsorb** is a :fa:`python; fa-fade` Python package for **Deep Learning on
+**AIdsorb** is a :fa:`python; fa-fade` Python package for **deep learning on
 molecular point clouds**.
 
 

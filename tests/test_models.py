@@ -22,7 +22,6 @@ Command: python -m unittest tests.test_models
 """
 
 import doctest
-import unittest
 from aidsorb import models
 
 

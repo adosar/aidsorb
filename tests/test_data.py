@@ -31,7 +31,6 @@ import torch
 import pandas as pd
 from torch.utils.data import DataLoader
 from aidsorb import data
-from aidsorb._internal import _check_shape
 from aidsorb.utils import pcd_from_dir
 from aidsorb.transforms import Centering
 from aidsorb.data import (

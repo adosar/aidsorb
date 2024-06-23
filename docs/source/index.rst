@@ -12,7 +12,7 @@
 About
 =====
 
-**AIdsorb** is a :fa:`python; fa-fade` Python package for **Deep Learning on
+**AIdsorb** is a :fa:`python; fa-fade` Python package for **deep learning on
 molecular point clouds**.
 
 .. grid:: 4

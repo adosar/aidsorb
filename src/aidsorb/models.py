@@ -37,9 +37,6 @@ input and feature transforms have been removed.
 .. todo::
     Add more architectures for point cloud processing.
 
-.. danger::
-    Check all docstrings.
-
 References
 ----------
 
@@ -429,7 +426,8 @@ class PointNetSegHead(nn.Module):
 
 class PointNet(nn.Module):
     r"""
-    A deep learning architecture for processing point clouds.
+    Vanilla version from the [PointNet]_ paper where :class:`TNet`'s have been
+    removed.
 
     ``PointNet`` takes as input a point cloud and produces one or more outputs.
     *The type of the task is determined by* ``head``.
