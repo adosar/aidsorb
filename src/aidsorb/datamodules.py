@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`lightning.pytorch.core.LightningDataModule`'s,
+This module provides :class:`~lightning.pytorch.core.LightningDataModule`'s,
 which can be used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
 """
 
@@ -41,7 +41,7 @@ class PCDDataModule(L.LightningDataModule):
 
     .. tip::
         Assuming ``pcd_data/pcds.npz`` already exists, you can create the above
-        directory structure with :func:`aidsorb.data.prepare_data`.
+        directory structure with :func:`~aidsorb.data.prepare_data`.
 
     Parameters
     ----------
@@ -73,7 +73,7 @@ class PCDDataModule(L.LightningDataModule):
     eval_batch_size : int, default=32
         ``batch_size`` for the validation and test dataloaders.
     config_dataloaders : dict, optional
-        Valid keyword arguments for :class:`torch.utils.data.DataLoader`. These
+        Valid keyword arguments for :class:`~torch.utils.data.DataLoader`. These
         are applied to all (train, validation and test) dataloaders. For
         example::
 
@@ -84,8 +84,8 @@ class PCDDataModule(L.LightningDataModule):
 
     See Also
     --------
-    :class:`aidsorb.data.PCDDataset`
-    :class:`torch.utils.data.DataLoader` :
+    :class:`~aidsorb.data.PCDDataset`
+    :class:`~torch.utils.data.DataLoader` :
         For a description of ``shuffle``, ``batch_size`` and valid ``**kwargs``
         passed to ``config_dataloaders``.
     """

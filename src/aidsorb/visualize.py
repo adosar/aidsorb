@@ -101,7 +101,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     pcd : array of shape (N, 4+C)
     scheme : {'jmol', 'cpk'}, default='jmol'
         Takes effect only if ``feature_to_color=None``.
-    feature_to_color : tuple of shape (2,), optional
+    feature_to_color : tuple of length 2, optional
         * ``feature_to_color[0] == idx``, the index of the feature to be colored.
         * ``feature_to_color[1] == label``, the name of the feature for the colorbar.
     colorscale : str, optional
@@ -112,7 +112,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
 
     Returns
     -------
-    fig : `plotly.graph_objects.Figure`
+    fig : :class:`~plotly.graph_objects.Figure`
 
     Examples
     --------
@@ -167,7 +167,7 @@ def draw_pcd_from_file(filename, render=True, **kwargs):
 
     Returns
     -------
-    render : :class:`plotly.graph_objects.Figure` if ``render=False``, else ``None``.
+    render : :class:`~plotly.graph_objects.Figure` if ``render=False``, else ``None``.
     """
     _, pcd = pcd_from_file(filename)
     fig = draw_pcd(pcd, **kwargs)

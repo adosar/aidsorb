@@ -18,7 +18,7 @@ r"""
 This module provides helper functions and classes for transforming point clouds.
 
 .. note::
-    The ``pcd`` must be a :class:`numpy.ndarray` and have shape of ``(N, 3+C)``.
+    The ``pcd`` must be a :class:`~numpy.ndarray` and have shape of ``(N, 3+C)``.
 
 .. tip::
     For implementing your own transforms, have a look at the transforms
@@ -130,7 +130,7 @@ def center_pcd(pcd):
     return pcd - centroid
 
 
-class Centering():
+class Center():
     r"""
     Center the coordinates of a point cloud by subtracting their centroid.
 
@@ -145,12 +145,12 @@ class Centering():
     Examples
     --------
     >>> x = np.array([[1., 2., 3., 4., 5.]])
-    >>> center = Centering()
+    >>> center = Center()
     >>> center(x)
     array([[0., 0., 0., 4., 5.]])
 
     >>> x = np.array([[1., 4.]])
-    >>> center = Centering()
+    >>> center = Center()
     >>> center(x)
     Traceback (most recent call last):
         ...
@@ -240,7 +240,7 @@ class RandomErase():
     Randomly erase a number of points from the point cloud.
 
     .. todo::
-        Consider implementing as fraction of points to be erased.
+        Consider adding the option for a fraction of points to be erased.
 
     Parameters
     ----------

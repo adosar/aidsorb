@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This model provides :class:`lightning.pytorch.core.LightningModule`'s that can be
+This model provides :class:`~lightning.pytorch.core.LightningModule`'s that can be
 used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
 
 .. todo:
@@ -27,13 +27,14 @@ import lightning as L
 from aidsorb.models import PointNet
 
 
-class PointNetLit(L.LightningModule):
+class PointLit(L.LightningModule):
     r"""
-    ``LightningModule`` for :class:`aidsorb.models.PointNet`.
+    ``LightningModule`` for :class:`aidsorb.models`.
 
     Parameters
     ----------
-    model : :class:`aidsorb.models.PointNet`
+    model : :class:`torch.nn.Module`
+        Currently, only :class:`~aidsorb.models.PointNet` is supported.
     loss : callable
         The loss function to be optimized during training. For valid options,
         see `loss functions <https://pytorch.org/docs/stable/nn.html#loss-functions>`_.
@@ -41,22 +42,23 @@ class PointNetLit(L.LightningModule):
         The performance metric to be monitored. For valid options,
         see `metrics <https://lightning.ai/docs/torchmetrics/stable/all-metrics.html>`_.
     lr : float, default=0.001
-        The learning rate for :class:`torch.optim.Adam` optimizer.
+        The learning rate for :class:`~torch.optim.Adam` optimizer.
 
     Examples
     --------
-    >>> from aidsorb.models import PointNetClsHead, PointNet
+    >>> from aidsorb.modules import PointNetClsHead
+    >>> from aidsorb.models import PointNet
     >>> from torch.nn.functional import mse_loss  # For regression.
     >>> from torchmetrics.functional import r2_score  # For regression.
     >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
-    >>> pointnetlit = PointNetLit(model=model, loss=mse_loss, metric=r2_score)
+    >>> pointnetlit = PointLit(model=model, loss=mse_loss, metric=r2_score)
     >>> x = torch.randn(32, 5, 100)
-    >>> y_pred, _ = pointnetlit(x)  # Ignore critical indices.
-    >>> y_pred.shape
+    >>> out = pointnetlit(x)  # Ignore critical indices.
+    >>> out.shape
     torch.Size([32, 10])
     """
     def __init__(
-            self, model: PointNet,
+            self, model: torch.nn.Module,
             loss: Callable, metric: Callable,
             lr: float=1e-3
             ):
@@ -101,13 +103,13 @@ class PointNetLit(L.LightningModule):
         assert torch.is_grad_enabled()
 
         x, y = batch
-        y_pred, _ = self(x)
+        y_pred = self(x)
         loss = self.loss(input=y_pred, target=y)
 
         # Account for BatchNorm and Dropout.
         self.eval()
         with torch.no_grad():
-            preds, _ = self(x)
+            preds = self(x)
         self.train()
 
         # Store for epoch-level operations.
@@ -142,7 +144,7 @@ class PointNetLit(L.LightningModule):
         assert not torch.is_grad_enabled()
 
         x, y = batch
-        preds, _ = self(x)
+        preds = self(x)
 
         # Store for epoch-level operations.
         self.val_step_preds.append(preds)
@@ -175,7 +177,7 @@ class PointNetLit(L.LightningModule):
         assert not torch.is_grad_enabled()
 
         x, y = batch
-        preds, _ = self(x)
+        preds = self(x)
 
         # Store for epoch-level operations.
         self.test_step_preds.append(preds)
@@ -208,11 +210,11 @@ class PointNetLit(L.LightningModule):
         assert not torch.is_grad_enabled()
 
         if len(batch) == 2:  # Batch with labels.
-            x, _ = batch
+            x = batch
         else:
             x = batch  # Batch without labels.
 
-        y_pred, _ = self(x)
+        y_pred = self(x)
 
         return y_pred
 

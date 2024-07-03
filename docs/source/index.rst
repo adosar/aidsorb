@@ -50,7 +50,7 @@ molecular point clouds**.
 
                        :octicon:`telescope` AIdsorb paper
 
-**AIdsorb** aims to provide a **fast, easy-to-use and reproduce** interface
+**AIdsorb** aims to provide a **simple, easy-to-use and reproduce** interface
 for:
 
 * 📥 **Creating molecular point clouds**
@@ -100,6 +100,10 @@ only <https://spdx.org/licenses/GPL-3.0-only.html>`.
 
 Citing AIdsorb
 --------------
+
+.. admonition:: Citation
+
+    Here is the text for citation.
 
 If you use AIdosrb in your research, please consider citing the following work::
 

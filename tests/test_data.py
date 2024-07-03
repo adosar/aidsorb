@@ -32,7 +32,7 @@ import pandas as pd
 from torch.utils.data import DataLoader
 from aidsorb import data
 from aidsorb.utils import pcd_from_dir
-from aidsorb.transforms import Centering
+from aidsorb.transforms import Center
 from aidsorb.data import (
         get_names, prepare_data, PCDDataset,
         pad_pcds, Collator
@@ -89,7 +89,7 @@ class TestPCDDataset(unittest.TestCase):
         self.path_to_Y = 'tests/dummy/toy_dataset.csv'
         self.index_col = 'id'
         self.labels = ['y1', 'y2']
-        self.transform_x = Centering()
+        self.transform_x = Center()
         self.transform_y = lambda y: y - 1
         self.batch_size = 2
 

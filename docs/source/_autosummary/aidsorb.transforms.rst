@@ -2,6 +2,6 @@
 ==================
 
 .. automodule:: aidsorb.transforms
-	:members:
-	:undoc-members:
-	:show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:

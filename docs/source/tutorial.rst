@@ -223,7 +223,7 @@ plain :bdg-link-primary:`PyTorch <https://pytorch.org/>` or
     For PyTorch Lightning:
 
     * :class:`aidsorb.datamodules.PCDDataModule`
-    * :class:`aidsorb.litmodels.PointNetLit`
+    * :class:`aidsorb.litmodels.PointLit`
 
 
 .. tab-set::
@@ -257,13 +257,14 @@ plain :bdg-link-primary:`PyTorch <https://pytorch.org/>` or
             import lightning as L
             from aidsorb.data import Collator
             from aidsorb.datamodules import PCDDataModule
-            from aidsorb.litmodels import PointNetLit
+            from aidsorb.models import PointNet
+            from aidsorb.litmodels import PointLit
 
             # Instantiate the datamodule.
             dm = PCDDataModule(..., collate_fn=Collator(...))
 
             # Instantiate the litmodel.
-            litmodel = PointNetLit(...)
+            litmodel = PointLit(model=PointNet(...), ...)
 
             # Instantiate the trainer.
             trainer = L.Trainer(...)

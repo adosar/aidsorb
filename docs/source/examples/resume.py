@@ -5,7 +5,7 @@ Coming back after model training
 
 # %%
 # After training a model, you might want to test its performance, make
-# predictions or do whatever you want with it, such as continue training.
+# predictions or do whatever you want with it.
 #
 # .. note::
 #     This example assummes:
@@ -20,7 +20,7 @@ import torch
 import lightning as L
 from lightning.pytorch.cli import LightningCLI, LightningArgumentParser
 from aidsorb.datamodules import PCDDataModule
-from aidsorb.litmodels import PointNetLit
+from aidsorb.litmodels import PointLit
 from aidsorb.visualize import draw_pcd
 
 # %%
@@ -53,9 +53,10 @@ def load_from_config(filename):
     del config_dict['seed_everything'], config_dict['ckpt_path']
 
     parser = LightningArgumentParser()
-    parser.add_class_arguments(PointNetLit, 'model', fail_untyped=False)
+    parser.add_class_arguments(PointLit, 'model', fail_untyped=False)
     parser.add_class_arguments(PCDDataModule, 'data', fail_untyped=False)
     parser.add_class_arguments(L.Trainer, 'trainer', fail_untyped=False)
+
     config = parser.parse_object(config_dict)
     objects = parser.instantiate_classes(config)
 

@@ -24,7 +24,7 @@ Coming back after model training
 .. GENERATED FROM PYTHON SOURCE LINES 7-17
 
 After training a model, you might want to test its performance, make
-predictions or do whatever you want with it, such as continue training.
+predictions or do whatever you want with it.
 
 .. note::
     This example assummes:
@@ -44,7 +44,7 @@ predictions or do whatever you want with it, such as continue training.
     import lightning as L
     from lightning.pytorch.cli import LightningCLI, LightningArgumentParser
     from aidsorb.datamodules import PCDDataModule
-    from aidsorb.litmodels import PointNetLit
+    from aidsorb.litmodels import PointLit
     from aidsorb.visualize import draw_pcd
 
 
@@ -60,7 +60,7 @@ with the same settings as in the ``.yaml`` configuration file. For more
 information 👉 `here
 <https://github.com/Lightning-AI/pytorch-lightning/discussions/10363#discussioncomment-2326235>`_.
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-64
+.. GENERATED FROM PYTHON SOURCE LINES 36-65
 
 .. code-block:: Python
 
@@ -84,16 +84,17 @@ information 👉 `here
         del config_dict['seed_everything'], config_dict['ckpt_path']
 
         parser = LightningArgumentParser()
-        parser.add_class_arguments(PointNetLit, 'model', fail_untyped=False)
+        parser.add_class_arguments(PointLit, 'model', fail_untyped=False)
         parser.add_class_arguments(PCDDataModule, 'data', fail_untyped=False)
         parser.add_class_arguments(L.Trainer, 'trainer', fail_untyped=False)
+
         config = parser.parse_object(config_dict)
         objects = parser.instantiate_classes(config)
 
         return config, objects.trainer, objects.model, objects.data
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 65-68
+.. GENERATED FROM PYTHON SOURCE LINES 66-69
 
 .. code-block:: Python
 
@@ -101,12 +102,12 @@ information 👉 `here
     config, trainer, litmodel, dm = load_from_config('path/to/logs/config.yaml')
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 71-73
+.. GENERATED FROM PYTHON SOURCE LINES 72-74
 
 Restoring model's state 
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-77
+.. GENERATED FROM PYTHON SOURCE LINES 74-78
 
 .. code-block:: Python
 
@@ -115,7 +116,7 @@ Restoring model's state
     model_weights = {k: v for k, v in ckpt['state_dict'].items() if k.startswith('model.')}
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 78-84
+.. GENERATED FROM PYTHON SOURCE LINES 79-85
 
 .. code-block:: Python
 
@@ -126,7 +127,7 @@ Restoring model's state
     litmodel(x);
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 85-89
+.. GENERATED FROM PYTHON SOURCE LINES 86-90
 
 .. code-block:: Python
 
@@ -135,7 +136,7 @@ Restoring model's state
     litmodel.load_state_dict(model_weights)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-96
+.. GENERATED FROM PYTHON SOURCE LINES 91-97
 
 .. code-block:: Python
 
@@ -146,12 +147,12 @@ Restoring model's state
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 97-99
+.. GENERATED FROM PYTHON SOURCE LINES 98-100
 
 Measure performance and make predictions
 ----------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 99-103
+.. GENERATED FROM PYTHON SOURCE LINES 100-104
 
 .. code-block:: Python
 
@@ -160,7 +161,7 @@ Measure performance and make predictions
     trainer.test(litmodel, dm)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 104-110
+.. GENERATED FROM PYTHON SOURCE LINES 105-111
 
 .. code-block:: Python
 

@@ -11,9 +11,9 @@ data:
   index_col: 'id'
   labels: ['y3']
   train_transform_x:
-    class_path: aidsorb.transforms.Centering
+    class_path: aidsorb.transforms.Center
   eval_transform_x:
-    class_path: aidsorb.transforms.Centering
+    class_path: aidsorb.transforms.Center
   train_size: Null
   train_batch_size: 2
   eval_batch_size: 2
@@ -31,6 +31,6 @@ model:
     class_path: aidsorb.models.PointNet
     init_args:
       head:
-        class_path: aidsorb.models.PointNetClsHead
+        class_path: aidsorb.modules.PointNetClsHead
         init_args:
           dropout_rate: 0.7

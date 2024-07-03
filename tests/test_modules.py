@@ -15,31 +15,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions for the CLI.
+Unit tests for the aidsorb.modules module.
+
+Run from: project's root directory
+Command: python -m unittest tests.test_modules
 """
 
-import fire
-from lightning.pytorch.cli import LightningCLI
-from . visualize import draw_pcd_from_file
-from . utils import pcd_from_dir
-from . data import prepare_data
-from . datamodules import PCDDataModule
-from . litmodels import PointLit
+import doctest
+from aidsorb import modules
 
 
-def lightning_cli():
-    r"""
-    CLI for the deep learning part.
-    """
-    LightningCLI(PointLit, PCDDataModule)
-
-
-def aidsorb_fire():
-    r"""
-    CLI for creating, preparing and visualizing molecular point clouds.
-    """
-    fire.Fire({
-        'visualize': draw_pcd_from_file,
-        'create': pcd_from_dir,
-        'prepare': prepare_data,
-        })
+def load_tests(loader, tests, ignore):
+    tests.addTests(doctest.DocTestSuite(modules))
+    return tests

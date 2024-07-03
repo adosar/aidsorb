@@ -39,7 +39,7 @@ def split_pcd(pcd):
 
     Returns
     -------
-    coords_and_features : tuple of shape (2,)
+    coords_and_features : tuple of length 2
         * ``coords_and_features[0] == coords``, array of shape (N, 3).
         * ``coords_and_features[1] == features``, array of shape (N, C).
 
@@ -69,6 +69,9 @@ def pcd_from_file(filename, features=None):
 
     .. _periodic table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
 
+    .. todo::
+        Add option to drop hydrogen atoms for reducing size of point clouds.
+
     Parameters
     ----------
     filename : str
@@ -78,7 +81,7 @@ def pcd_from_file(filename, features=None):
 
     Returns
     -------
-    name_and_pcd : tuple of shape (2,)
+    name_and_pcd : tuple of length 2
         * ``name_and_pcd[0] == name``.
         * ``name_and_pcd[1] == pcd``.
 

@@ -12,6 +12,10 @@ jobs = 0
 disable = ["C"]
 fail-under = 8
 
+[tool.coverage.run]
+source = ["src/aidsorb"]
+omit = ["src/aidsorb/**/_*.py"]
+
 [project]
 name = "aidsorb"
 dynamic = ["version"]
@@ -30,12 +34,12 @@ classifiers = [
 ]
 
 dependencies = [
-	"ase>=3.22.1",
-	"fire>=0.5.0",
-	"mendeleev==0.15.0",
-	"plotly>=5.19.0",
-	"tqdm>=4.66.2",
-	"lightning>=2.2.1",
+    "ase>=3.22.1",
+    "fire>=0.5.0",
+    "mendeleev==0.15.0",
+    "plotly>=5.19.0",
+    "tqdm>=4.66.2",
+    "lightning>=2.2.1",
     "jsonargparse[signatures]>=4.27.7",
 	]
 

@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img alt="Logo" src="https://raw.githubusercontent.com/adosar/trial/master/docs/source/images/aidsorb_logo_light.svg"/>
+  <img alt="AIdsorb logo" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/aidsorb_logo_light.svg" width=50%/>
 </h1>
 
 <h4 align="center">
@@ -13,16 +13,12 @@
 
 **AIdsorb** is a Python package for **deep learning on molecular point clouds**.
 
-**AIdsorb** aims to provide a **fast, easy-to-use and reproduce** interface for:
+This package aims to provide a **fast, easy-to-use and reproduce** interface for:
 
 -   📥 **Creating molecular point clouds**
     
 -   🤖 **Training DL algorithms on molecular point clouds**
 
-
-<p align="center">
-  <img alt="Point cloud" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/pcd.gif" width="25%"/>
-</p>
 
 ## ⚙️  Installation
 > [!IMPORTANT] 
@@ -43,6 +39,11 @@ Here is a summary of what you can do from the command line:
 	```bash
 	aidsorb visualize path/to/structure
 	```
+
+<p align="center">
+  <img alt="Point cloud" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/pcd.gif" width="25%"/>
+</p>
+
 
 2.  Create and prepare point clouds:
 	```bash

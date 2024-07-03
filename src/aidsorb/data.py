@@ -238,7 +238,7 @@ class Collator():
         ``pcd`` has shape ``(N_i, C)`` and ``label`` has shape
         ``(n_outputs,)`` or ``()``.
 
-    * Output: tuple of shape (2,)
+    * Output: tuple of length 2
 
         * ``batch[0] == x`` with shape ``(B, C, T)`` if ``channels_first=True``,
           otherwise ``(B, T, C)``. ``B`` is the batch size and ``T`` is the size
@@ -246,8 +246,8 @@ class Collator():
         * ``batch[1] == y`` with shape ``(B, n_outputs)`` or ``(B,)``.
 
     .. tip::
-        You should use an instance of this class as ``collate_fn`` with
-        ``channels_first=True``, if your model is :class:`aidsorb.models.PointNet`.
+        Use an instance of this class as ``collate_fn`` with
+        ``channels_first=True``, if your model is :class:`~aidsorb.models.PointNet`.
 
     .. todo::
         Add functionality for collating only point clouds (useful when the
@@ -328,7 +328,7 @@ class Collator():
 
         Returns
         -------
-        batch : tuple of shape (2,)
+        batch : tuple of length 2
             * ``batch[0] == x`` with shape ``(B, C, T)`` or ``(B, T, C)``, where
               ``T`` is the size of the largest point cloud.
             * ``batch[1] == y`` with shape ``(B, n_outputs)`` or ``(B,)``.

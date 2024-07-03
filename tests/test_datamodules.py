@@ -28,7 +28,7 @@ from itertools import combinations
 from torch.utils.data import RandomSampler, SequentialSampler
 from aidsorb.utils import pcd_from_dir
 from aidsorb.data import prepare_data, Collator
-from aidsorb.transforms import Centering, RandomRotation
+from aidsorb.transforms import Center, RandomRotation
 from aidsorb.datamodules import PCDDataModule
 
 
@@ -43,7 +43,7 @@ class TestPCDDataModule(unittest.TestCase):
 
         # Arguments for the datamodule.
         self.train_size = 2
-        self.train_trans_x = Centering()
+        self.train_trans_x = Center()
         self.eval_trans_x = RandomRotation()
         self.trans_y = lambda y: y -1
         self.shuffle = True

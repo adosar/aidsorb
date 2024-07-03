@@ -2,6 +2,6 @@
 ============
 
 .. automodule:: aidsorb.data
-	:members:
-	:undoc-members:
-	:show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
