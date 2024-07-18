@@ -13,7 +13,7 @@
 
 **AIdsorb** is a Python package for **deep learning on molecular point clouds**.
 
-This package aims to provide a **fast, easy-to-use and reproduce** interface for:
+This package aims to provide a **simple, easy-to-use and reproduce** interface for:
 
 -   📥 **Creating molecular point clouds**
     
@@ -40,9 +40,11 @@ Here is a summary of what you can do from the command line:
 	aidsorb visualize path/to/structure
 	```
 
+<!---
 <p align="center">
   <img alt="Point cloud" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/pcd.gif" width="25%"/>
 </p>
+--->
 
 
 2.  Create and prepare point clouds:

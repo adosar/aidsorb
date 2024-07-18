@@ -7,7 +7,7 @@ trainer:
   accelerator: 'gpu'
 
 # Here you setup the DataModule (PCDDataModule).
-# For more information see aidsorb.datamodules.
+# For more information 👉 aidsorb.datamodules
 data:
   # The paths must be relative to where aidsorb-lit is called.
   # Consider using absolute paths.
@@ -17,9 +17,9 @@ data:
   labels: ['y1, y3']
   train_transform_x:
     # Here you can pass transformations for augmentation.
-    class_path: aidsorb.transforms.Centering
+    class_path: aidsorb.transforms.Center
   eval_transform_x:
-    class_path: aidsorb.transforms.Centering
+    class_path: aidsorb.transforms.Center
   train_size: Null  # Use all training data.
   train_batch_size: 2
   eval_batch_size: 2
@@ -28,8 +28,8 @@ data:
     collate_fn:
       class_path: aidsorb.data.Collator
 
-# Here you setup the LightningModule (PointNetLit).
-# For more information see aidsorb.litmodels.
+# Here you setup the LightningModule (PointLit).
+# For more information 👉 aidsorb.litmodels
 model:
   loss:
     class_path: torch.nn.MSELoss

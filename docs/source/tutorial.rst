@@ -16,9 +16,7 @@ Introduction
     and (optionally) associated features*. More formally:
 
     .. math::
-        \mathcal{P} = \{
-            \mathbf{p}_1, \mathbf{p}_2, \dotsc, \mathbf{p}_3
-        \}_{i=1}^N
+        \mathcal{P} = \{\mathbf{p}_1, \mathbf{p}_2, \dots, \mathbf{p}_N\}
         \quad
         \text{and}
         \quad

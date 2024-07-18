@@ -53,7 +53,7 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
 
     Returns
     -------
-    colors : array-like of shape (N,)
+    colors : array of shape (N,)
     """
     atomic_numbers = np.array(atomic_numbers)
     scheme += '_color'
@@ -71,7 +71,7 @@ def get_elements(atomic_numbers):
 
     Returns
     -------
-    elements : array-like of shape (N,)
+    elements : array of shape (N,)
 
     Examples
     --------

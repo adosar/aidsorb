@@ -44,14 +44,15 @@ def conv1d_block(in_channels, out_channels, **kwargs):
     The block has the following form::
 
         block = nn.Sequential(
-            nn.Conv1d(in_channels, out_channels, **kwargs),
+            conv_layer,
             nn.BatchNorm1d(out_channels),
             nn.ReLU(),
             )
 
     Parameters
     ----------
-    in_channels : int
+    in_channels : int or None
+        If ``None``, the ``conv_layer`` is lazy initialized.
     out_channels : int
     **kwargs
         Valid keyword arguments for :class:`torch.nn.Conv1d`.
@@ -66,13 +67,23 @@ def conv1d_block(in_channels, out_channels, **kwargs):
 
     Examples
     --------
-    >>> block = conv1d_block(4, 128, kernel_size=1)
     >>> x = torch.randn(32, 4, 100)  # Shape (B, C_in, N).
+    >>> block = conv1d_block(4, 128, kernel_size=1)
     >>> block(x).shape  # Shape (B, C_out, N).
     torch.Size([32, 128, 100])
+
+    >>> # Lazy initialized.
+    >>> block = conv1d_block(None, 16, kernel_size=1)
+    >>> block(x).shape
+    torch.Size([32, 16, 100])
     """
+    if in_channels is not None:
+        conv_layer = nn.Conv1d(in_channels, out_channels, **kwargs)
+    else:
+        conv_layer = nn.LazyConv1d(out_channels, **kwargs)
+
     block = nn.Sequential(
-            nn.Conv1d(in_channels, out_channels, **kwargs),
+            conv_layer,
             nn.BatchNorm1d(out_channels),
             nn.ReLU(),
             )
@@ -87,14 +98,15 @@ def dense_block(in_features, out_features, **kwargs):
     The block has the following form::
 
         block = nn.Sequential(
-            nn.Linear(in_features, out_features, **kwargs),
+            linear_layer,
             nn.BatchNorm1d(out_features),
             nn.ReLU(),
             )
 
     Parameters
     ----------
-    in_features : int
+    in_features : int or None
+        If ``None``, the ``linear_layer`` is lazy initialized.
     out_features : int
     **kwargs
         Valid keyword arguments for :class:`torch.nn.Linear`.
@@ -109,13 +121,23 @@ def dense_block(in_features, out_features, **kwargs):
 
     Examples
     --------
+    >>> x = torch.randn(64, 3)  # Shape (B, in_features).
     >>> block = dense_block(3, 10)
-    >>> x = torch.randn(64, 3)
-    >>> block(x).shape
+    >>> block(x).shape  # Shape (B, out_features).
     torch.Size([64, 10])
+
+    >>> # Lazy initialized.
+    >>> block = dense_block(None, 16)
+    >>> block(x).shape
+    torch.Size([64, 16])
     """
+    if in_features is not None:
+        linear_layer = nn.Linear(in_features, out_features, **kwargs)
+    else:
+        linear_layer = nn.LazyLinear(out_features, **kwargs)
+
     block = nn.Sequential(
-            nn.Linear(in_features, out_features, **kwargs),
+            linear_layer,
             nn.BatchNorm1d(out_features),
             nn.ReLU(),
             )
@@ -240,17 +262,13 @@ class PointNetBackbone(nn.Module):
 
         # First shared MLP.
         self.shared_mlp_1 = nn.Sequential(
-                nn.LazyConv1d(64, kernel_size=1, bias=False),
-                nn.BatchNorm1d(64),
-                nn.ReLU(),
+                conv1d_block(None, 64, kernel_size=1, bias=False),
                 conv1d_block(64, 64, kernel_size=1, bias=False),
                 )
 
         # Second shared MLP.
         self.shared_mlp_2 = nn.Sequential(
-                nn.LazyConv1d(64, kernel_size=1, bias=False),
-                nn.BatchNorm1d(64),
-                nn.ReLU(),
+                conv1d_block(64, 64, kernel_size=1, bias=False),
                 conv1d_block(64, 128, kernel_size=1, bias=False),
                 conv1d_block(128, n_global_feats, kernel_size=1, bias=False),
                 )
@@ -318,9 +336,7 @@ class PointNetClsHead(nn.Module):
         super().__init__()
 
         self.mlp = nn.Sequential(
-                nn.LazyLinear(512, bias=False),
-                nn.BatchNorm1d(512),
-                nn.ReLU(),
+                dense_block(None, 512, bias=False),
                 dense_block(512, 256, bias=False),
                 nn.Dropout(dropout_rate),
                 nn.Linear(256, n_outputs),
@@ -367,23 +383,16 @@ class PointNetSegHead(nn.Module):
     def __init__(self, n_outputs=1, dropout_rate=0):
         super().__init__()
 
-        lazy_conv1d_block = nn.Sequential(
-                nn.LazyConv1d(512, kernel_size=1, bias=False),
-                nn.BatchNorm1d(512),
-                nn.ReLU(),
-                )
-
         self.shared_mlp = nn.Sequential(
-                lazy_conv1d_block,
+                conv1d_block(None, 512, kernel_size=1, bias=False),
                 conv1d_block(512, 256, kernel_size=1, bias=False),
                 conv1d_block(256, 128, kernel_size=1, bias=False),
                 )
 
         self.mlp = nn.Sequential(
-                dense_block(128, 64, bias=False),
-                dense_block(64, 32, bias=False),
+                dense_block(128, 128, bias=False),
                 nn.Dropout(dropout_rate),
-                nn.Linear(32, n_outputs),
+                nn.Linear(128, n_outputs),
                 )
 
     def forward(self, x):

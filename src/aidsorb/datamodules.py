@@ -31,13 +31,14 @@ class PCDDataModule(L.LightningDataModule):
     r"""
     ``LightningDataModule`` for point clouds.
 
-    The following directory structure is required::
+    .. note::
+        The following directory structure is assumed::
 
-        pcd_data
-        ├──pcds.npz  <- path_to_X
-        ├──train.json
-        ├──validation.json
-        └──test.json
+            pcd_data
+            ├──pcds.npz        <-- path_to_X
+            ├──train.json
+            ├──validation.json
+            └──test.json
 
     .. tip::
         Assuming ``pcd_data/pcds.npz`` already exists, you can create the above
@@ -50,6 +51,10 @@ class PCDDataModule(L.LightningDataModule):
     path_to_Y : str
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
+
+        .. warning::
+            The comma ``,`` is assumed as the field separator.
+
     index_col : str
         Column name of the ``.csv`` file to be used as row labels. The names
         (values) under this column must follow the same naming scheme as in

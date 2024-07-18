@@ -38,8 +38,13 @@ def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
     that will be used for *training*, *validation* and *testing*.
 
     .. warning::
-        No directory is created by :func:`prepare_data`. All ``.json`` files
-        are stored under the directory containing ``source``.
+        * No directory is created by :func:`prepare_data`. All ``.json`` files
+          are stored under the directory containing ``source``.
+        * Splitting doesn't support stratification. If your dataset is small and
+          you want to perform classification, consider using
+          `train_test_split`_.
+
+    .. _train_test_split: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
 
     Parameters
     ----------
@@ -156,10 +161,10 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     Returns
     -------
     batch : tensor of shape (B, T, C) or (B, C, T)
-        ``B == len(pcds)`` is the batch size and ``T`` is the size of the
-        largest point cloud in ``pcds``. If ``channels_first=False``, then the
-        returned batch has shape ``(B, T, C)``. Otherwise, ``(B, C, T)``.
-
+         If ``channels_first=False``, then ``batch`` has shape ``(B, T, C)``,
+         where  ``B == len(pcds)`` is the batch size and ``T`` is the size of
+         the largest point cloud in ``pcds``. Otherwise, ``(B, C, T)``.
+         
     See Also
     --------
     :func:`upsample_pcd` : For a description of ``'upsample'`` mode.
@@ -361,6 +366,10 @@ class PCDDataset(Dataset):
     path_to_Y : str, optional
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
+
+        .. warning::
+            The comma ``,`` is assumed as the field separator.
+
     index_col : str, optional
         Column name of the ``.csv`` file to be used as row labels. The names
         (values) under this column must follow the same naming scheme as in
@@ -371,7 +380,7 @@ class PCDDataset(Dataset):
     transform_x : callable, optional
         Transforms applied to ``input``, i.e to each point cloud.
     transform_y : callable, optional
-        Transforms applied to ``output``. No effect if ``pcd_Y=None``.
+        Transforms applied to ``output``. No effect if ``path_to_Y=None``.
 
     See Also
     --------

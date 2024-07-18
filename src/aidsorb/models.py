@@ -19,7 +19,7 @@ This module provides deep learning architectures for point cloud processing.
 
 .. note::
     Currently, only :class:`PointNet` is implemented, a lightweight version of
-    the original architecture, where the :class:`~aidsorb.modules.TNet`'s for
+    the original architecture where the :class:`~aidsorb.modules.TNet`'s for
     input and feature transforms have been removed.
 
 .. warning::
@@ -55,8 +55,8 @@ class PointNet(nn.Module):
 
     Currently implemented heads include:
 
-        1. :class:`~aidsorb.modules.PointNetClsHead`: classification and regression.
-        2. :class:`~aidsorb.modules.PointNetSegHead`: classification and regression.
+        1. :class:`.PointNetClsHead`: classification and regression.
+        2. :class:`.PointNetSegHead`: classification and regression.
 
     The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
     the batch size, ``C`` is the number of input channels  and ``N`` is the
@@ -67,9 +67,9 @@ class PointNet(nn.Module):
         pass it to ``head``.
 
         If ``local_features=False``, the input to ``custom_head`` must have the
-        same shape as in :meth:`aidsorb.modules.PointNetClsHead.forward`.
+        same shape as in :meth:`.PointNetClsHead.forward`.
         Otherwise, the input to ``custom_head`` must have the same shape as in
-        :meth:`aidsorb.modules.PointNetSegHead.forward`.
+        :meth:`.PointNetSegHead.forward`.
     
     Parameters
     ----------

@@ -64,8 +64,8 @@ for:
 A *molecular point cloud*, being essentially a *set of atomic positions, atomic
 numbers and any additional information*, provides a natural and efficient way to
 represent molecular structures and chemical systems in a machine understandable
-format. This in turns allows us to perform DL directly on raw chemical
-information, removing the need for manual feature extraction.
+format. This in turns allows us to **perform DL directly on raw chemical
+information**, removing the need for manual feature extraction.
 
 The above point cloud represents IRMOF-1. You can hover :fa:`arrow-pointer;
 fa-beat-fade` over the figure to play with it.
@@ -78,7 +78,7 @@ TODO
     .. card:: Extend the :doc:`cli`
         :text-align: center
 
-        Allow users to make predictions from the command line.
+        Enable users to make predictions from the command line.
 
     .. card:: Add more architectures
         :text-align: center
@@ -98,8 +98,8 @@ License
 AIdsorb is released under the :bdg-link-primary:`GNU General Public License v3.0
 only <https://spdx.org/licenses/GPL-3.0-only.html>`.
 
-Citing AIdsorb
---------------
+Citing
+------
 
 .. admonition:: Citation
 

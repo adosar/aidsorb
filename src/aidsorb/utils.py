@@ -39,18 +39,25 @@ def split_pcd(pcd):
 
     Returns
     -------
-    coords_and_features : tuple of length 2
-        * ``coords_and_features[0] == coords``, array of shape (N, 3).
-        * ``coords_and_features[1] == features``, array of shape (N, C).
+    coords_and_feats : tuple of length 2
+        * ``coords_and_feats[0] == coords``, array of shape (N, 3).
+        * ``coords_and_feats[1] == feats``, array of shape (N, C).
 
     Examples
     --------
     >>> pcd = np.random.randn(25, 7)  # Point cloud with 4 features.
-    >>> points, features = split_pcd(pcd)
-    >>> points.shape
+    >>> coords, feats = split_pcd(pcd)
+    >>> coords.shape
     (25, 3)
-    >>> features.shape
+    >>> feats.shape
     (25, 4)
+
+    >>> pcd = np.random.randn(15, 3)  # Point cloud with no features.
+    >>> coords, feats = split_pcd(pcd)
+    >>> coords.shape
+    (15, 3)
+    >>> feats.shape
+    (15, 0)
     """
     _check_shape(pcd)
 

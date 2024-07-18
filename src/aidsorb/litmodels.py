@@ -153,6 +153,10 @@ class PointLit(L.LightningModule):
     def on_validation_epoch_end(self):
         r"""
         Log ``metric`` calculated  on the whole validation set.
+
+        .. tip::
+            You can use ``'val_metric'`` as the quantity to `monitor
+            <https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.ModelCheckpoint.html#modelcheckpoint>`_.
         """
         preds = torch.cat(self.val_step_preds)
         targets = torch.cat(self.val_step_targets)

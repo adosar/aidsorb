@@ -3,26 +3,45 @@
 :octicon:`terminal` CLI
 =======================
 
-There are two available commands:
+There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
 
 .. tab-set::
 
-	.. tab-item:: aidsorb
+    .. tab-item:: aidsorb
 
-		For creating, visualizing point clouds and preparing data sets.
+        For creating, preparing and visualizing molecular point clouds.
 
-		.. code-block::
+        +------------+--------------------------------------------------------------+
+        | Subcommand | Short description                                            |
+        +============+==============================================================+
+        | create     | Create point clouds from a directory containing structures.  |
+        +------------+--------------------------------------------------------------+
+        | prepare    | Split point clouds intro train, validation and test sets.    |
+        +------------+--------------------------------------------------------------+
+        | visualize  | Visualize point cloud of a structure.                        |
+        +------------+--------------------------------------------------------------+
 
-			$ aidsorb [<subcommand>] --help
+        For more information::
 
-	.. tab-item:: aidsorb-lit
+            $ aidsorb [<subcommand>] --help
 
-		For the deep learning part. Currently, only PointNet is supported.
+    .. tab-item:: aidsorb-lit
 
-		.. code-block::
+        For the deep learning part.
 
-			$ aidsorb-lit [<subcommand>] --help
+        +------------+--------------------------------------------------------------+
+        | Subcommand | Short description                                            |
+        +============+==============================================================+
+        | fit        | Train a DL architecture.                                     |
+        +------------+--------------------------------------------------------------+
+        | validate   | Evaluate the model on the validation set.                    |
+        +------------+--------------------------------------------------------------+
+        | test       | Evaluate the model on the test set.                          |
+        +------------+--------------------------------------------------------------+
+        | predict    | Currently, not available (see :ref:`index:TODO`).            |
+        +------------+--------------------------------------------------------------+
 
-.. note::
-    The ``predict`` subcommand of ``aidsorb-lit`` is currently not available
-    (see :ref:`index:TODO`).
+        For more information::
+
+            $ aidsorb-lit [<subcommand>] --help
+

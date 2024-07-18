@@ -73,8 +73,8 @@ class TestPCDFromFiles(unittest.TestCase):
         # Point cloud of IRMOF-1 should include Zirconium (Z=30).
         self.assertTrue(30 in data['IRMOF-1'][:, -1])
 
-        # Point cloud of Cu-BTC should not include Zirconium (Z=30).
-        self.assertFalse(30 in data['Cu-BTC'][:, -1])
+        # Point cloud of Cu-BTC should include Copper (Z=29).
+        self.assertTrue(29 in data['Cu-BTC'][:, -1])
 
         # Check that pcds have the correct shape.
         self.assertEqual(data['IRMOF-1'].shape, (424, 4))
