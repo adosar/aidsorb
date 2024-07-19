@@ -18,10 +18,9 @@ Coming back after model training
 import yaml
 import torch
 import lightning as L
-from lightning.pytorch.cli import LightningCLI, LightningArgumentParser
+from lightning.pytorch.cli import LightningArgumentParser
 from aidsorb.datamodules import PCDDataModule
 from aidsorb.litmodels import PointLit
-from aidsorb.visualize import draw_pcd
 
 # %%
 # The following function let us recreate:
@@ -80,7 +79,7 @@ model_weights = {k: v for k, v in ckpt['state_dict'].items() if k.startswith('mo
 # Due to lazy initialization we need to pass a dummy input with correct shape.
 in_channels = 5  # For xyz + Z + 1 additional feature.
 x = torch.randn(32, in_channels, 100)
-litmodel(x);
+litmodel(x)
 
 # %%
 
@@ -91,7 +90,7 @@ litmodel.load_state_dict(model_weights)
 
 # Set the model in inference mode.
 litmodel.eval()
-litmodel.training
+print(litmodel.training)
 
 
 # %%

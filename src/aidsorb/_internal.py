@@ -18,7 +18,8 @@ r"""
 This module provides helper functions and data for use in other modules.
 """
 
-from mendeleev.fetch import fetch_table
+from importlib.resources import files
+import pandas as pd
 
 
 def _check_shape(array):
@@ -64,5 +65,5 @@ def _check_shape_vis(array):
 _SEED = 1
 
 # Load the periodic table.
-_ptable = fetch_table('elements')
-_ptable.set_index('atomic_number', inplace=True)
+with files('aidsorb.pkg_data').joinpath('periodic_table.csv').open() as fhand:
+    _ptable = pd.read_csv(fhand, index_col='atomic_number')

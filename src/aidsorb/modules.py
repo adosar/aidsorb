@@ -247,7 +247,7 @@ class PointNetBackbone(nn.Module):
     >>> indices.shape
     torch.Size([32, 2048])
 
-    >>> feat = PointNetBackbone(n_global_feats=1024, local_feats=True)
+    >>> feat = PointNetBackbone(local_feats=True, n_global_feats=1024)
     >>> x = torch.randn((16, 4, 239))
     >>> features, indices = feat(x)
     >>> features.shape

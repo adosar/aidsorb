@@ -34,7 +34,7 @@ predictions or do whatever you want with it.
         * Training was performed with AIdsorb :doc:`../cli` or :ref:`AIdsorb +
           PyTorch Lightning <aidsorb_with_pytorch_and_lightning>`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 17-26
+.. GENERATED FROM PYTHON SOURCE LINES 17-25
 
 .. code-block:: Python
 
@@ -42,13 +42,12 @@ predictions or do whatever you want with it.
     import yaml
     import torch
     import lightning as L
-    from lightning.pytorch.cli import LightningCLI, LightningArgumentParser
+    from lightning.pytorch.cli import LightningArgumentParser
     from aidsorb.datamodules import PCDDataModule
     from aidsorb.litmodels import PointLit
-    from aidsorb.visualize import draw_pcd
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 27-36
+.. GENERATED FROM PYTHON SOURCE LINES 26-35
 
 The following function let us recreate:
 
@@ -60,7 +59,7 @@ with the same settings as in the ``.yaml`` configuration file. For more
 information 👉 `here
 <https://github.com/Lightning-AI/pytorch-lightning/discussions/10363#discussioncomment-2326235>`_.
 
-.. GENERATED FROM PYTHON SOURCE LINES 36-65
+.. GENERATED FROM PYTHON SOURCE LINES 35-64
 
 .. code-block:: Python
 
@@ -94,7 +93,7 @@ information 👉 `here
         return config, objects.trainer, objects.model, objects.data
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 66-69
+.. GENERATED FROM PYTHON SOURCE LINES 65-68
 
 .. code-block:: Python
 
@@ -102,12 +101,12 @@ information 👉 `here
     config, trainer, litmodel, dm = load_from_config('path/to/logs/config.yaml')
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 72-74
+.. GENERATED FROM PYTHON SOURCE LINES 71-73
 
 Restoring model's state 
 -----------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 74-78
+.. GENERATED FROM PYTHON SOURCE LINES 73-77
 
 .. code-block:: Python
 
@@ -116,7 +115,7 @@ Restoring model's state
     model_weights = {k: v for k, v in ckpt['state_dict'].items() if k.startswith('model.')}
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 79-85
+.. GENERATED FROM PYTHON SOURCE LINES 78-84
 
 .. code-block:: Python
 
@@ -124,10 +123,10 @@ Restoring model's state
     # Due to lazy initialization we need to pass a dummy input with correct shape.
     in_channels = 5  # For xyz + Z + 1 additional feature.
     x = torch.randn(32, in_channels, 100)
-    litmodel(x);
+    litmodel(x)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 86-90
+.. GENERATED FROM PYTHON SOURCE LINES 85-89
 
 .. code-block:: Python
 
@@ -136,23 +135,23 @@ Restoring model's state
     litmodel.load_state_dict(model_weights)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-97
+.. GENERATED FROM PYTHON SOURCE LINES 90-96
 
 .. code-block:: Python
 
 
     # Set the model in inference mode.
     litmodel.eval()
-    litmodel.training
+    print(litmodel.training)
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 98-100
+.. GENERATED FROM PYTHON SOURCE LINES 97-99
 
 Measure performance and make predictions
 ----------------------------------------
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-104
+.. GENERATED FROM PYTHON SOURCE LINES 99-103
 
 .. code-block:: Python
 
@@ -161,7 +160,7 @@ Measure performance and make predictions
     trainer.test(litmodel, dm)
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-111
+.. GENERATED FROM PYTHON SOURCE LINES 104-110
 
 .. code-block:: Python
 
