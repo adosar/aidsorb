@@ -142,7 +142,7 @@ Restoring model's state
 
     # Set the model in inference mode.
     litmodel.eval()
-    print(litmodel.training)
+    print(f'Model in inference mode: {not litmodel.training}')
 
 
 

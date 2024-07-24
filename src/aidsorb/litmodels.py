@@ -24,7 +24,6 @@ used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorc
 from typing import Callable
 import torch
 import lightning as L
-from aidsorb.models import PointNet
 
 
 class PointLit(L.LightningModule):
@@ -34,7 +33,7 @@ class PointLit(L.LightningModule):
     Parameters
     ----------
     model : :class:`torch.nn.Module`
-        Currently, only :class:`~aidsorb.models.PointNet` is supported.
+        Currently, only :class:`~aidsorb.models.PointNet` is available.
     loss : callable
         The loss function to be optimized during training. For valid options,
         see `loss functions <https://pytorch.org/docs/stable/nn.html#loss-functions>`_.
@@ -214,7 +213,7 @@ class PointLit(L.LightningModule):
         assert not torch.is_grad_enabled()
 
         if len(batch) == 2:  # Batch with labels.
-            x = batch
+            x, _ = batch
         else:
             x = batch  # Batch without labels.
 

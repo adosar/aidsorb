@@ -18,19 +18,15 @@ r"""
 This module provides helper functions for the CLI.
 """
 
-import fire
-from lightning.pytorch.cli import LightningCLI
-from . visualize import draw_pcd_from_file
-from . utils import pcd_from_dir
-from . data import prepare_data
-from . datamodules import PCDDataModule
-from . litmodels import PointLit
-
 
 def lightning_cli():
     r"""
     CLI for the deep learning part.
     """
+    from lightning.pytorch.cli import LightningCLI
+    from . datamodules import PCDDataModule
+    from . litmodels import PointLit
+
     LightningCLI(PointLit, PCDDataModule)
 
 
@@ -38,6 +34,11 @@ def aidsorb_fire():
     r"""
     CLI for creating, preparing and visualizing molecular point clouds.
     """
+    import fire
+    from . visualize import draw_pcd_from_file
+    from . utils import pcd_from_dir
+    from . data import prepare_data
+
     fire.Fire({
         'visualize': draw_pcd_from_file,
         'create': pcd_from_dir,

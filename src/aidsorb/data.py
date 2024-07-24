@@ -22,6 +22,7 @@ handling point clouds of variable sizes.
 import os
 import json
 from pathlib import Path
+from typing import Sequence
 import numpy as np
 import pandas as pd
 import torch
@@ -30,7 +31,7 @@ from torch.nn.utils.rnn import pad_sequence
 from . _internal import _SEED
 
 
-def prepare_data(source, split_ratio=(0.8, 0.1, 0.1), seed=_SEED):
+def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_SEED):
     r"""
     Split a source of point clouds in train, validation and test sets.
 
@@ -341,7 +342,7 @@ class Collator():
         pcds, labels = list(zip(*samples))
         
         x = pad_pcds(pcds, channels_first=self.channels_first, mode=self.mode)
-        y = torch.stack(labels)  # Shape (B, n_outputs).
+        y = torch.stack(labels)
 
         return x, y
 

@@ -152,7 +152,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     return fig
 
 
-def draw_pcd_from_file(filename, render=True, **kwargs):
+def draw_pcd_from_file(filename: str, render: bool=True, **kwargs):
     r"""
     Visualize molecular point cloud from a file.
 

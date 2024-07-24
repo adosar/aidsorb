@@ -23,7 +23,7 @@ Introduction
         \mathbf{p}_i \in \mathbb{R}^{3+C}
 
     where :math:`N` is the number of points in the point cloud and :math:`C` is
-    the number of (per point) features.
+    the number of (per-point) features.
 
     In AIdsorb, a point cloud is represented as a :class:`numpy.ndarray` of
     shape ``(N, 3+C)``:
@@ -155,13 +155,13 @@ Train and test
         
         .. code-block:: console
             
-            aidsorb-lit fit --config=config.yaml
+            $ aidsorb-lit fit --config=config.yaml
 
     .. tab-item:: Test
         
         .. code-block:: console
             
-            aidsorb-lit test --config=cofnig.yaml --ckpt_path=path/to/ckpt
+            $ aidsorb-lit test --config=cofnig.yaml --ckpt_path=path/to/ckpt
 
     .. tab-item:: config.yaml
         

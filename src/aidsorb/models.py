@@ -41,11 +41,10 @@ References
 """
 
 import torch
-from torch import nn
 from . modules import PointNetBackbone
 
 
-class PointNet(nn.Module):
+class PointNet(torch.nn.Module):
     r"""
     Vanilla version from the [PointNet]_ paper where :class:`TNet`'s have been
     removed.
@@ -73,9 +72,9 @@ class PointNet(nn.Module):
     
     Parameters
     ----------
-    head : class:`nn.Module`
-    local_feats: bool, default=False
-    n_global_feats: int, default=1024
+    head : :class:`torch.nn.Module`
+    local_feats : bool, default=False
+    n_global_feats : int, default=1024
 
     See Also
     --------
@@ -93,7 +92,7 @@ class PointNet(nn.Module):
     torch.Size([32, 100])
 
     >>> # Get the critical indices.
-    >>> _, indices = pointnet.backbone(x)  # Ignore the returned features.
+    >>> _, indices = pointnet.backbone(x)  # Ignore returned features.
     >>> indices.shape
     torch.Size([32, 256])
     """

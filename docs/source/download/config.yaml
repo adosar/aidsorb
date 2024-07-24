@@ -1,7 +1,6 @@
 seed_everything: 1  # Workers are seeded as well.
 
 # Here you setup the Trainer.
-# https://lightning.ai/docs/pytorch/stable/common/trainer.html#trainer-class-api
 trainer:
   max_epochs: 2
   accelerator: 'gpu'
@@ -43,3 +42,17 @@ model:
         init_args:
           dropout_rate: 0.7
           n_outputs: 2
+
+# Here you setup the optimizer.
+optimizer:
+  class_path: torch.optim.SGD
+  init_args:
+    lr: 0.001
+    momentum: 0.0
+
+# Here you setup the learning rate scheduler.
+lr_scheduler:
+  class_path: torch.optim.lr_scheduler.StepLR
+  init_args:
+    step_size: null
+    gamma: 0.1

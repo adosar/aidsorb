@@ -31,11 +31,11 @@ class TestCLI(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
         self.dirname = 'tests/structures'
-        self.split_ratio = "'(2, 2, 2)'"
+        self.split_ratio = (2, 2, 2)
 
     def test_cli(self):
         os.system(f'aidsorb create {self.dirname} {self.outname}')
-        os.system(f'aidsorb prepare {self.outname} --split_ratio {self.split_ratio}')
+        os.system(f'aidsorb prepare {self.outname} --split_ratio "{self.split_ratio}"')
 
         # Check that the files are correctly created.
         self.assertTrue(os.path.isfile(self.outname))

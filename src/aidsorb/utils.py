@@ -166,7 +166,7 @@ def pcd_from_files(filenames, outname, features=None):
     np.savez_compressed(outname, **savez_dict)
 
 
-def pcd_from_dir(dirname, outname, features=None):
+def pcd_from_dir(dirname: str, outname: str, features: list=None):
     r"""
     Create molecular point clouds from a directory and store them.
 

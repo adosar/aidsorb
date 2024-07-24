@@ -80,7 +80,7 @@ TODO
 
         Enable users to make predictions from the command line.
 
-    .. card:: Add more architectures
+    .. card:: Support more architectures
         :text-align: center
 
         This might require the usage of
@@ -90,7 +90,12 @@ TODO
     .. card:: Extend featurization
         :text-align: center
 
-        Add more featurization options.
+        Add more featurization options. These should be fast!
+
+    .. card:: Add pretrained models
+        :text-align: center
+
+        Enable users to fine-tune models trained on large data.
 
 License
 -------
@@ -161,7 +166,6 @@ If you use AIdosrb in your research, please consider citing the following work::
     cli
     api
     auto_examples/index
-    changelog
 
 
 Indices and tables
