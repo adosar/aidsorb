@@ -175,25 +175,6 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     --------
     >>> x1 = torch.tensor([[1, 2, 3, 4]])
     >>> x2 = torch.tensor([[2, 5, 3, 8], [0, 2, 8, 9]])
-    >>> batch = pad_pcds((x1, x2), channels_first=False, mode='zeropad')
-    >>> batch
-    tensor([[[1, 2, 3, 4],
-             [0, 0, 0, 0]],
-    <BLANKLINE>
-            [[2, 5, 3, 8],
-             [0, 2, 8, 9]]])
-
-    >>> batch = pad_pcds((x1, x2), channels_first=True, mode='zeropad')
-    >>> batch
-    tensor([[[1, 0],
-             [2, 0],
-             [3, 0],
-             [4, 0]],
-    <BLANKLINE>
-            [[2, 0],
-             [5, 2],
-             [3, 8],
-             [8, 9]]])
 
     >>> batch = pad_pcds((x1, x2), channels_first=False)
     >>> batch
@@ -209,6 +190,26 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
              [2, 2],
              [3, 3],
              [4, 4]],
+    <BLANKLINE>
+            [[2, 0],
+             [5, 2],
+             [3, 8],
+             [8, 9]]])
+
+    >>> batch = pad_pcds((x1, x2), channels_first=False, mode='zeropad')
+    >>> batch
+    tensor([[[1, 2, 3, 4],
+             [0, 0, 0, 0]],
+    <BLANKLINE>
+            [[2, 5, 3, 8],
+             [0, 2, 8, 9]]])
+
+    >>> batch = pad_pcds((x1, x2), channels_first=True, mode='zeropad')
+    >>> batch
+    tensor([[[1, 0],
+             [2, 0],
+             [3, 0],
+             [4, 0]],
     <BLANKLINE>
             [[2, 0],
              [5, 2],
@@ -273,6 +274,7 @@ class Collator():
     --------
     >>> sample1 = (torch.tensor([[1, 4, 5, 2]]), torch.tensor([1., 2.]))
     >>> sample2 = (torch.tensor([[0, 4, 0, 2], [2, 4, 1, 8]]), torch.tensor([7., 3.]))
+
     >>> collate_fn = Collator()
     >>> x, y = collate_fn((sample1, sample2))
     >>> x.shape

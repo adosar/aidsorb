@@ -46,7 +46,17 @@ class TestCLI(unittest.TestCase):
         os.system(f'aidsorb-lit fit \
                 --config=tests/dummy/config_example.yaml \
                 --data.path_to_X={self.outname} \
-                --trainer.default_root_dir={self.tempdir.name}',
+                --trainer.default_root_dir={self.tempdir.name}'
+                  )
+
+        os.system(f'aidsorb-lit validate \
+                --config={self.tempdir.name}/lightning_logs/version_0/config.yaml \
+                --ckpt_path={self.tempdir.name}/lightning_logs/version_0/checkpoints/best.ckpt'
+                  )
+
+        os.system(f'aidsorb-lit test \
+                --config={self.tempdir.name}/lightning_logs/version_0/config.yaml \
+                --ckpt_path={self.tempdir.name}/lightning_logs/version_0/checkpoints/best.ckpt'
                   )
 
     def tearDown(self):

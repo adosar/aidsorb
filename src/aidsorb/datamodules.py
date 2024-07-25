@@ -148,6 +148,14 @@ class PCDDataModule(L.LightningDataModule):
             self.set_train_dataset()
             self.set_validation_dataset()
 
+        if stage in (None, 'validate'):
+            # Load the names for validation.
+            self._val_names = get_names(
+                    os.path.join(self._path_to_names, 'validation.json')
+                    )
+
+            self.set_validation_dataset()
+
         if stage in (None, 'test'):
             # Load the names for testing.
             self._test_names = get_names(
@@ -212,7 +220,7 @@ class PCDDataModule(L.LightningDataModule):
         Return the train dataloader.
 
         Can be called only after :meth:`setup` has been called and
-        ``stage=None`` or ``stage='fit'``.
+        ``stage={None|fit}``.
         """
         return DataLoader(
                 dataset=self.train_dataset,
@@ -226,7 +234,7 @@ class PCDDataModule(L.LightningDataModule):
         Return the validation dataloader.
 
         Can be called only after :meth:`setup` has been called and
-        ``stage=None`` or ``stage='fit'``.
+        ``stage={None|fit|validate``.
         """
         return DataLoader(
                 dataset=self.validation_dataset,
@@ -240,7 +248,7 @@ class PCDDataModule(L.LightningDataModule):
         Return the test dataloader.
 
         Can be called only after :meth:`setup` has been called and
-        ``stage=None`` or ``stage='test'``.
+        ``stage={None|test}``.
         """
         return DataLoader(
                 dataset=self.test_dataset,

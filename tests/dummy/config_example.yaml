@@ -1,9 +1,16 @@
 seed_everything: 1  # Workers are seeded as well.
 
 trainer:
-  max_epochs: 4
-  #fast_dev_run: True
+  max_epochs: 2
   accelerator: 'cpu'
+  callbacks:
+     class_path: lightning.pytorch.callbacks.ModelCheckpoint
+     init_args:
+       filename: 'best'
+       save_top_k: 1
+       monitor: 'val_metric'
+       mode: 'max'
+       save_last: True
 
 data:
   path_to_X: Null
