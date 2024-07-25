@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img alt="AIdsorb logo" src="https://github.com/adosar/aidsorb/blob/master/docs/source/images/aidsorb_logo_light.svg" width=40%/>
+  <img alt="AIdsorb logo" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/aidsorb_logo_light.svg" width=40%/>
 </h1>
 
 <p align="center">
@@ -10,8 +10,10 @@
   <img alt="Static Badge" src="https://img.shields.io/badge/Python%203.11%2B-black?style=for-the-badge&logo=python&logoColor=cyan&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2F">
   <img alt="Static Badge" src="https://img.shields.io/badge/GPL--3.0--only-black?style=for-the-badge&logo=gnu&logoColor=cyan&link=https%3A%2F%2Fspdx.org%2Flicenses%2FGPL-3.0-only.html">
   <img alt="Static Badge" src="https://img.shields.io/badge/Linux-black?style=for-the-badge&logo=linux&logoColor=cyan">
-  <img alt="Static Badge" src="https://img.shields.io/badge/Pytorch-black?style=for-the-badge&logo=pytorch&logoColor=cyan&link=https%3A%2F%2Fpytorch.org%2F">
-  <img alt="Static Badge" src="https://img.shields.io/badge/Pytorch%20Lightning-black?style=for-the-badge&logo=lightning&logoColor=cyan&link=https%3A%2F%2Flightning.ai%2Fdocs%2Fpytorch%2Fstable%2F">
+  <!--- <img alt="Static Badge" src="https://img.shields.io/badge/Pytorch-black?style=for-the-badge&logo=pytorch&logoColor=cyan&link=https%3A%2F%2Fpytorch.org%2F"> --->
+  <!--- <img alt="Static Badge" src="https://img.shields.io/badge/Pytorch%20Lightning-black?style=for-the-badge&logo=lightning&logoColor=cyan&link=https%3A%2F%2Flightning.ai%2Fdocs%2Fpytorch%2Fstable%2F"> --->
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/unittest.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Tests&labelColor=black">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pylint.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Lint&labelColor=black">
 </h4>
 
 **AIdsorb** is a Python package for **deep learning on molecular point clouds**.
@@ -22,6 +24,11 @@ This package aims to provide a **simple, easy-to-use and reproduce** interface f
     
 -   🤖 **Training DL algorithms on molecular point clouds**
 
+<p align="center">
+  <img alt="IRMOF-1" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/IRMOF-1.gif" width="25%"/>
+  <img alt="Cu-BTC" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/Cu-BTC.gif" width="25%"/>
+  <img alt="UiO-66" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/UiO-66.gif" width="25%"/>
+</p>
 
 ## ⚙️  Installation
 > [!IMPORTANT] 
@@ -35,6 +42,7 @@ pip install aidsorb
 ## 🚀 Usage
 > [!NOTE] 
 > Refer to the 📚 Documentation for more information.
+> It will be available soon.
 
 Here is a summary of what you can do from the command line:
 
