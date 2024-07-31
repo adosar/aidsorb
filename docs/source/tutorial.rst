@@ -165,12 +165,12 @@ Train and test
 
     .. tab-item:: config.yaml
         
-        .. literalinclude:: download/config.yaml
+        .. literalinclude:: examples/config.yaml
             :language: yaml
 
     .. tab-item:: labels.csv
         
-        .. literalinclude:: download/labels.csv
+        .. literalinclude:: examples/labels.csv
             :language: yaml
 
 .. seealso::

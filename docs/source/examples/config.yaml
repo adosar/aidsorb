@@ -33,15 +33,18 @@ model:
   loss:
     class_path: torch.nn.MSELoss
   metric:
-    class_path: torchmetrics.MeanAbsoluteError
+    class_path: torchmetrics.MetricCollection
+    init_args:
+      metrics:
+        r2: {class_path: torchmetrics.R2Score}
+        mae: {class_path: torchmetrics.MeanAbsoluteError}
   model:
     class_path: aidsorb.models.PointNet
     init_args:
       head:
-        class_path: aidsorb.models.PointNetClsHead
+        class_path: aidsorb.modules.PointNetClsHead
         init_args:
           dropout_rate: 0.7
-          n_outputs: 2
 
 # Here you setup the optimizer.
 optimizer:

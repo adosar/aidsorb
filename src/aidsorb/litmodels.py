@@ -15,20 +15,21 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This model provides :class:`~lightning.pytorch.core.LightningModule`'s that can be
+This module provides :class:`~lightning.pytorch.core.LightningModule`'s that can be
 used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
-
-.. todo:
-    Add support for :class:`torchmetrics.MetricCollection`.
 """
 from typing import Callable
 import torch
+import torchmetrics
 import lightning as L
 
 
 class PointLit(L.LightningModule):
     r"""
-    ``LightningModule`` for :class:`aidsorb.models`.
+    :class:`~lightning.LightningModule` for :class:`aidsorb.models`.
+
+    .. _loss functions: https://pytorch.org/docs/stable/nn.html#loss-functions
+    .. _monitor: https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.ModelCheckpoint.html#modelcheckpoint
 
     Parameters
     ----------
@@ -36,10 +37,24 @@ class PointLit(L.LightningModule):
         Currently, only :class:`~aidsorb.models.PointNet` is available.
     loss : callable
         The loss function to be optimized during training. For valid options,
-        see `loss functions <https://pytorch.org/docs/stable/nn.html#loss-functions>`_.
-    metric : callable
-        The performance metric to be monitored. For valid options,
-        see `metrics <https://lightning.ai/docs/torchmetrics/stable/all-metrics.html>`_.
+        see `loss functions`_.
+    metric : :class:`torchmetrics.MetricCollection`
+        The performance metric(s) to be logged and optionally monitored.
+
+        .. note::
+            The ``metric`` is logged on epoch-level.
+
+        .. tip::
+            You can use ``'val_<MetricName>'`` as the quantity to `monitor`_.
+            For example, if ``metric=MetricCollection(R2Score(),
+            MeanAbsoluteError())`` and you want to monitor
+            :class:`~torchmetrics.R2Score`, configure the
+            :class:`~lightning.pytorch.callbacks.ModelCheckpoint` as following::
+
+                from lightning.pytorch.callbacks import ModelCheckpoint
+
+                checkpoint_callback = ModelCheckpoint(monitor='val_R2Score', mode='max', ...)
+
     lr : float, default=0.001
         The learning rate for :class:`~torch.optim.Adam` optimizer.
 
@@ -47,39 +62,40 @@ class PointLit(L.LightningModule):
     --------
     >>> from aidsorb.modules import PointNetClsHead
     >>> from aidsorb.models import PointNet
-    >>> from torch.nn.functional import mse_loss  # For regression.
-    >>> from torchmetrics.functional import r2_score  # For regression.
+    >>> from torch.nn import MSELoss
+    >>> from torchmetrics import MetricCollection, R2Score, MeanAbsoluteError as MAE
+
     >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
-    >>> pointnetlit = PointLit(model=model, loss=mse_loss, metric=r2_score)
+    >>> loss, metric = MSELoss(), MetricCollection(R2Score(), MAE())
+    >>> litmodel = PointLit(model=model, loss=loss, metric=metric)
+
     >>> x = torch.randn(32, 5, 100)
-    >>> out = pointnetlit(x)  # Ignore critical indices.
+    >>> out = litmodel(x)
     >>> out.shape
     torch.Size([32, 10])
     """
     def __init__(
             self, model: torch.nn.Module,
-            loss: Callable, metric: Callable,
+            loss: Callable, metric: torchmetrics.MetricCollection,
             lr: float=1e-3
             ):
         super().__init__()
 
         self.model = model
         self.lr = lr
-        
         self.loss = loss
         self.metric = metric
 
+        """
+        Consider ignoring nn.Modules in future version's for reducing the size
+        of checkpoints (in case of very large models).
+        """
+        self.save_hyperparameters()
+
         # For epoch-level operations.
-        self.train_step_preds = []
-        self.train_step_targets = []
-
-        self.val_step_preds = []
-        self.val_step_targets = []
-
-        self.test_step_preds = []
-        self.test_step_targets = []
-
-        self.save_hyperparameters(ignore=['model', 'loss', 'metric'])
+        self.train_metric = metric.clone(prefix='train_')
+        self.val_metric = metric.clone(prefix='val_')
+        self.test_metric = metric.clone(prefix='test_')
 
     def forward(self, x):
         r"""
@@ -91,7 +107,7 @@ class PointLit(L.LightningModule):
         r"""
         Compute and return training loss on a single ``batch`` from the train set.
 
-        Also make and store predictions on this single ``batch``.
+        Also, make predictions that will be used on epoch-level operations.
 
         .. note::
             The ``BatchNorm`` and ``Dropout`` are set in inference mode during
@@ -111,33 +127,16 @@ class PointLit(L.LightningModule):
             preds = self(x)
         self.train()
 
-        # Store for epoch-level operations.
-        self.train_step_preds.append(preds.detach())
-        self.train_step_targets.append(y)
+        # Log metric on epoch-level.
+        self.train_metric.update(preds=preds, target=y)
+        self.log_dict(self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
 
         return loss
 
-    def on_train_epoch_end(self):
-        r"""
-        Log ``metric`` calculated  on the whole train set.
-        """
-        preds = torch.cat(self.train_step_preds)
-        targets = torch.cat(self.train_step_targets)
-
-        metric = self.metric(preds=preds, target=targets)
-
-        self.log('train_metric', metric, prog_bar=True)
-        self.logger.experiment.add_scalars(
-                'learning_curve', {'train_acc': metric},
-                global_step=self.global_step,
-                )
-
-        self.train_step_preds.clear()
-        self.train_step_targets.clear()
-
     def validation_step(self, batch, batch_idx):
         r"""
-        Make and store predictions on a single ``batch`` from the validation set.
+        Make predictions on a single ``batch`` from the validation set for epoch-level
+        operations.
         """
         assert not self.training
         assert not torch.is_grad_enabled()
@@ -145,36 +144,14 @@ class PointLit(L.LightningModule):
         x, y = batch
         preds = self(x)
 
-        # Store for epoch-level operations.
-        self.val_step_preds.append(preds)
-        self.val_step_targets.append(y)
+        # Log metric on epoch-level.
+        self.val_metric.update(preds=preds, target=y)
+        self.log_dict(self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
 
-    def on_validation_epoch_end(self):
-        r"""
-        Log ``metric`` calculated  on the whole validation set.
-
-        .. tip::
-            You can use ``'val_metric'`` as the quantity to `monitor
-            <https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.ModelCheckpoint.html#modelcheckpoint>`_.
-        """
-        preds = torch.cat(self.val_step_preds)
-        targets = torch.cat(self.val_step_targets)
-
-        metric = self.metric(preds=preds, target=targets)
-
-        self.log('hp_metric', metric)
-        self.log('val_metric', metric, prog_bar=True)
-        self.logger.experiment.add_scalars(
-                'learning_curve', {'val_acc': metric},
-                global_step=self.global_step,
-                )
-
-        self.val_step_preds.clear()
-        self.val_step_targets.clear()
-        
     def test_step(self, batch, batch_idx):
         r"""
-        Make and store predictions on a single ``batch`` from the test set.
+        Make predictions on a single ``batch`` from the test set for epoch-level
+        operations.
         """
         assert not self.training
         assert not torch.is_grad_enabled()
@@ -182,28 +159,9 @@ class PointLit(L.LightningModule):
         x, y = batch
         preds = self(x)
 
-        # Store for epoch-level operations.
-        self.test_step_preds.append(preds)
-        self.test_step_targets.append(y)
-
-    def on_test_epoch_end(self):
-        r"""
-        Return a :class:`dict` of ``loss`` and ``metric`` calculated
-        on the whole test set.
-        """
-        preds = torch.cat(self.test_step_preds)
-        targets = torch.cat(self.test_step_targets)
-
-        # Add support for torchmetrics.Collection.
-        metrics = {
-                'Metric': self.metric(preds=preds, target=targets),
-                'Loss': self.loss(input=preds, target=targets),
-                }
-
-        self.log_dict(metrics)
-
-        self.test_step_preds.clear()
-        self.test_step_targets.clear()
+        # Log metric on epoch-level.
+        self.test_metric.update(preds=preds, target=y)
+        self.log_dict(self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
 
     def predict_step(self, batch, batch_idx):
         r"""
@@ -217,9 +175,7 @@ class PointLit(L.LightningModule):
         else:
             x = batch  # Batch without labels.
 
-        y_pred = self(x)
-
-        return y_pred
+        return self(x)
 
     def configure_optimizers(self):
         r""" Return the optimizer."""

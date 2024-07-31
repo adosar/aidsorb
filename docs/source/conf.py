@@ -8,6 +8,7 @@
 
 import sys, os
 import subprocess
+from importlib.metadata import version as get_version
 from plotly.io._sg_scraper import plotly_sg_scraper
 
 sys.path.insert(0, os.path.abspath('../../src'))
@@ -15,7 +16,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 project = 'AIdsorb'
 copyright = '2024, Antonios P. Sarikas'
 author = 'Antonios P. Sarikas'
-release = f'{subprocess.check_output("git describe", shell=True).decode("ASCII").strip()}'
+release = get_version('aidsorb')
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -53,6 +54,7 @@ intersphinx_mapping = {
         'numpy': ('https://numpy.org/doc/stable/', None),
         'pytorch': ('https://pytorch.org/docs/stable', None),
         'lightning': ('https://lightning.ai/docs/pytorch/stable/', None),
+        'torchmetrics': ('https://lightning.ai/docs/torchmetrics/stable/', None),
         'ase': ('https://wiki.fysik.dtu.dk/ase/', None),
         'plotly': ('https://plotly.com/python-api-reference/', None),
         }

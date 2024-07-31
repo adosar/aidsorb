@@ -70,7 +70,7 @@ class TestPCDFromFiles(unittest.TestCase):
         # Stored names must follow the order in self.names.
         self.assertEqual(data.files, self.names)
 
-        # Point cloud of IRMOF-1 should include Zirconium (Z=30).
+        # Point cloud of IRMOF-1 should include Zinc (Z=30).
         self.assertTrue(30 in data['IRMOF-1'][:, -1])
 
         # Point cloud of Cu-BTC should include Copper (Z=29).
@@ -99,8 +99,8 @@ class TestPCDFromDir(unittest.TestCase):
         # Stored names must follow the order in self.names.
         self.assertEqual(data.files, self.names)
 
-        #self.assertEqual(data['IRMOF-1'].shape, (424, 4))
-        #self.assertEqual(data['Cu-BTC'].shape, (624, 4))
+        self.assertEqual(data['IRMOF-1'].shape, (424, 4))
+        self.assertEqual(data['Cu-BTC'].shape, (624, 4))
 
     def tearDown(self):
         self.tempdir.cleanup()

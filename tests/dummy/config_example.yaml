@@ -8,7 +8,7 @@ trainer:
      init_args:
        filename: 'best'
        save_top_k: 1
-       monitor: 'val_metric'
+       monitor: 'val_r2'
        mode: 'max'
        save_last: True
 
@@ -33,7 +33,11 @@ model:
   loss:
     class_path: torch.nn.MSELoss
   metric:
-    class_path: torchmetrics.MeanAbsoluteError
+    class_path: torchmetrics.MetricCollection
+    init_args:
+      metrics:
+        r2: {class_path: torchmetrics.R2Score}
+        mae: {class_path: torchmetrics.MeanAbsoluteError}
   model:
     class_path: aidsorb.models.PointNet
     init_args:

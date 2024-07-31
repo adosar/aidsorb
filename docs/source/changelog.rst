@@ -1,4 +1,4 @@
 :octicon:`log` Changelog
 ========================
 
-Currently, empty.
+Populate this before releasing the first version.

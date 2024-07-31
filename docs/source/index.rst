@@ -114,6 +114,22 @@ If you use AIdosrb in your research, please consider citing the following work::
 
 	Currently, not available.
 
+Contributing
+------------
+
+We welcome contributions from the community to help improve and expand this
+project! You can start by 🛠️ `opening an issue
+<https://github.com/adosar/aidsorb/issues>`_ for:
+
+* 🐛 Reporting bugs
+* 🌟 Suggesting new features
+* 📚 Improving documentation
+* 🎨 Adding your example to the :doc:`Gallery <auto_examples/index>`
+
+We appreciate your efforts to submit well-documented :octicon:`git-pull-request`
+`pull requests <https://github.com/adosar/aidsorb/pulls>`_ and participate in
+discussions. 💪 Together, we can make this project even better!
+
 ..
     Credits
     -------
@@ -166,6 +182,7 @@ If you use AIdosrb in your research, please consider citing the following work::
     cli
     api
     auto_examples/index
+    changelog
 
 
 Indices and tables

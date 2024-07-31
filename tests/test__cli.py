@@ -24,6 +24,7 @@ Command: python -m unittest tests.test__cli
 import os
 import tempfile
 import unittest
+from aidsorb.litmodels import PointLit
 
 
 class TestCLI(unittest.TestCase):
@@ -32,6 +33,7 @@ class TestCLI(unittest.TestCase):
         self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
         self.dirname = 'tests/structures'
         self.split_ratio = (2, 2, 2)
+        self.path_to_logs = f'{self.tempdir.name}/lightning_logs/version_0'
 
     def test_cli(self):
         os.system(f'aidsorb create {self.dirname} {self.outname}')
@@ -49,15 +51,14 @@ class TestCLI(unittest.TestCase):
                 --trainer.default_root_dir={self.tempdir.name}'
                   )
 
-        os.system(f'aidsorb-lit validate \
-                --config={self.tempdir.name}/lightning_logs/version_0/config.yaml \
-                --ckpt_path={self.tempdir.name}/lightning_logs/version_0/checkpoints/best.ckpt'
-                  )
+        for mode in ['validate', 'test']:
+            os.system(f'aidsorb-lit {mode} \
+                    --config={self.path_to_logs}/config.yaml \
+                    --ckpt_path={self.path_to_logs}/checkpoints/best.ckpt'
+                      )
 
-        os.system(f'aidsorb-lit test \
-                --config={self.tempdir.name}/lightning_logs/version_0/config.yaml \
-                --ckpt_path={self.tempdir.name}/lightning_logs/version_0/checkpoints/best.ckpt'
-                  )
+        # Check that model can be loaded back from checkpoint.
+        PointLit.load_from_checkpoint(f'{self.path_to_logs}/checkpoints/best.ckpt')
 
     def tearDown(self):
         self.tempdir.cleanup()

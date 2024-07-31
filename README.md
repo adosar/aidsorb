@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <img src="https://readme-typing-svg.demolab.com?font=Roboto+Slab&weight=700&duration=3000&pause=1000&color=FFFFFF&background=000000&center=true&vCenter=true&height=40&lines=%F0%9F%9A%80+Simple%2C+easy+to+use+and+reproduce;%F0%9F%94%A5+Supports+Pytorch;%E2%9A%A1+Supports+Pytorch+Lightning;%F0%9F%8E%89+A+.yaml+is+all+you+need!" />
+  <img src="https://readme-typing-svg.demolab.com?font=Roboto+Slab&weight=700&duration=3000&pause=1000&color=FFFFFF&background=000000&center=true&vCenter=true&height=40&lines=%F0%9F%9A%80+Simple%2C+easy+to+use+and+reproduce;%F0%9F%94%A5+Supports+PyTorch;%E2%9A%A1+Supports+PyTorch+Lightning;%F0%9F%8E%89+A+.yaml+is+all+you+need!" />
 </p>
 
 <h4 align="center">
@@ -65,10 +65,24 @@ Here is a summary of what you can do from the command line:
 	```
 	Currently, only [PointNet](https://arxiv.org/abs/1612.00593) is supported.
 
-## 📰 Citing AIdsorb
+## 📰 Citing
 If you use AIdsorb in your research, please consider citing the following work:
 	
 	Currently, not available.
+
+## 📰 Contributing
+
+We welcome contributions from the community to help improve and expand this
+project! You can start by 🛠️ [opening an issue](https://github.com/adosar/aidsorb/issues) for:
+
+* 🐛 Reporting bugs
+* 🌟 Suggesting new features
+* 📚 Improving documentation
+* 🎨 Adding your example to the Gallery
+
+We appreciate your efforts to submit well-documented 🔃 [pull
+requests](https://github.com/adosar/aidsorb/pulls) and participate in
+discussions. 💪 Together, we can make this project even better!
 
 ## 📑 License
 AIdosrb is released under the [GNU General Public License v3.0 only](https://spdx.org/licenses/GPL-3.0-only.html).

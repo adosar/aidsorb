@@ -44,6 +44,9 @@ class PCDDataModule(L.LightningDataModule):
         Assuming ``pcd_data/pcds.npz`` already exists, you can create the above
         directory structure with :func:`~aidsorb.data.prepare_data`.
 
+    .. todo::
+        Add support for ``predict_dataloader``.
+
     Parameters
     ----------
     path_to_X : str
@@ -74,13 +77,13 @@ class PCDDataModule(L.LightningDataModule):
     shuffle : bool, default=False
         Only for ``train_dataloader``.
     train_batch_size : int, default=32
-        ``batch_size`` for the train dataloader.
+        ``batch_size`` for train dataloader.
     eval_batch_size : int, default=32
         ``batch_size`` for the validation and test dataloaders.
     config_dataloaders : dict, optional
         Valid keyword arguments for :class:`~torch.utils.data.DataLoader`. These
-        are applied to all (train, validation and test) dataloaders. For
-        example::
+        are applied to all dataloaders, i.e.
+        ``{train,validation,test}_dataloader``. For example::
 
             config_dataloaders = {
                 'pin_memory': True,
@@ -234,7 +237,7 @@ class PCDDataModule(L.LightningDataModule):
         Return the validation dataloader.
 
         Can be called only after :meth:`setup` has been called and
-        ``stage={None|fit|validate``.
+        ``stage={None|fit|validate}``.
         """
         return DataLoader(
                 dataset=self.validation_dataset,

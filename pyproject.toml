@@ -41,7 +41,7 @@ dependencies = [
     "pandas>=2.2.0",
     "lightning>=2.2.1",
     "jsonargparse[signatures]>=4.27.7",
-	]
+]
 
 [project.urls]
 Homepage = "https://github.com/adosar/aidsorb"
