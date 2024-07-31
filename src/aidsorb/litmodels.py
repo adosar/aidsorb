@@ -86,11 +86,8 @@ class PointLit(L.LightningModule):
         self.loss = loss
         self.metric = metric
 
-        """
-        Consider ignoring nn.Modules in future version's for reducing the size
-        of checkpoints (in case of very large models).
-        """
-        self.save_hyperparameters()
+        # Ignore nn.Modules for reducing the size of checkpoints.
+        self.save_hyperparameters(ignore=['model', 'loss', 'metric'])
 
         # For epoch-level operations.
         self.train_metric = metric.clone(prefix='train_')

@@ -57,8 +57,5 @@ class TestCLI(unittest.TestCase):
                     --ckpt_path={self.path_to_logs}/checkpoints/best.ckpt'
                       )
 
-        # Check that model can be loaded back from checkpoint.
-        PointLit.load_from_checkpoint(f'{self.path_to_logs}/checkpoints/best.ckpt')
-
     def tearDown(self):
         self.tempdir.cleanup()

@@ -41,6 +41,7 @@ dependencies = [
     "pandas>=2.2.0",
     "lightning>=2.2.1",
     "jsonargparse[signatures]>=4.27.7",
+    "numpy<=1.26.4",  # Temporarily, for avoiding dependency conflicts.
 ]
 
 [project.urls]
