@@ -7,7 +7,6 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 import sys, os
-import subprocess
 from importlib.metadata import version as get_version
 from plotly.io._sg_scraper import plotly_sg_scraper
 
@@ -37,17 +36,18 @@ extensions = [
 copybutton_exclude = '.linenos, .gp, .go'
 todo_include_todos = True
 autodoc_inherit_docstrings = False
+autodoc_typehints = 'none'
 autosectionlabel_prefix_document = True
 
 templates_path = ['_templates']
 #exclude_patterns = ['_autosummary/*']
 
 sphinx_gallery_conf = {
-     'examples_dirs': 'examples',   # path to your example scripts
-     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
-     'ignore_pattern': r'{/.*\.xyz, /.*\.cif}',
-     'image_scrapers': (plotly_sg_scraper),
-}
+         'examples_dirs': 'examples',  # path to your example scripts
+         'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+         'ignore_pattern': r'{/.*\.xyz, /.*\.cif}',
+         'image_scrapers': (plotly_sg_scraper),
+         }
 
 intersphinx_mapping = {
         'python': ('https://docs.python.org/3', None),
@@ -59,15 +59,19 @@ intersphinx_mapping = {
         'plotly': ('https://plotly.com/python-api-reference/', None),
         }
 
+# For commonly used links.
+rst_epilog = '''
+.. |pytorch| replace:: :bdg-link-primary:`PyTorch <https://pytorch.org/>`
+.. |lightning| replace:: :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`
+.. |pyg| replace:: :bdg-link-primary:`PyTorch Geometric <https://pytorch-geometric.readthedocs.io/en/latest/index.html>`
+.. |license| replace:: :bdg-link-primary:`GNU General Public License v3.0 only <https://spdx.org/licenses/GPL-3.0-only.html>`
+'''
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'renku'
 html_static_path = ['_static']
 html_logo = 'images/aidsorb_logo_dark.svg'
-html_theme_options = {
-        'logo_only': True
-        }
-html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
-]
+html_theme_options = {'logo_only': True}
+html_css_files = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"]

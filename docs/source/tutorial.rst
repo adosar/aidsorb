@@ -206,10 +206,8 @@ up>` (omitting the point clouds creation part).
 Can I do DL without the CLI?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Of course! Although you are encouraged to use the :doc:`cli`, you can also use AIdsorb with
-plain :bdg-link-primary:`PyTorch <https://pytorch.org/>` or
-:bdg-link-primary:`PyTorch Lightning
-<https://lightning.ai/docs/pytorch/stable/>`.
+Of course! Although you are encouraged to use the :doc:`cli`, you can also use
+AIdsorb with plain |pytorch| or |lightning|.
 
 .. seealso::
 

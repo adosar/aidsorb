@@ -19,11 +19,13 @@ import yaml
 import torch
 import lightning as L
 from lightning.pytorch.cli import LightningArgumentParser
+from torch.utils.data import DataLoader
+from aidsorb.data import PCDDataset
 from aidsorb.datamodules import PCDDataModule
 from aidsorb.litmodels import PointLit
 
 # %%
-# The following function let us recreate:
+# The following snipper let us instantiate:
 # 
 # * Trainer
 # * LightningModule (litmodel)
@@ -33,37 +35,32 @@ from aidsorb.litmodels import PointLit
 # information 👉 `here
 # <https://github.com/Lightning-AI/pytorch-lightning/discussions/10363#discussioncomment-2326235>`_.
 
-def load_from_config(filename):
-    r"""
-    Load configuration, trainer, model and datamodule from a ``.yaml`` file.
+# %%
+# .. note::
+#     You are responsible for restoring the model's state (the weights of the model).
 
-    .. note::
-        You are responsible for restoring the model's state (the weights of the model).
+with open(filename, 'r') as f:
+    config_dict = yaml.safe_load(f)
 
-    Parameters
-    ----------
-    filename: str
-        Absolute or relative path to the ``.yaml`` configuration file.
-    """
-    with open(filename, 'r') as f:
-        config_dict = yaml.safe_load(f)
+# They are not needed during inference.
+config_dict['trainer']['logger'] = False
+del config_dict['seed_everything'], config_dict['ckpt_path']
 
-    config_dict['trainer']['logger'] = False
-    del config_dict['seed_everything'], config_dict['ckpt_path']
+parser = LightningArgumentParser()
+parser.add_lightning_class_args(PointLit, 'model')
+parser.add_lightning_class_args(PCDDataModule, 'data')
+parser.add_class_arguments(L.Trainer, 'trainer')
 
-    parser = LightningArgumentParser()
-    parser.add_class_arguments(PointLit, 'model', fail_untyped=False)
-    parser.add_class_arguments(PCDDataModule, 'data', fail_untyped=False)
-    parser.add_class_arguments(L.Trainer, 'trainer', fail_untyped=False)
+# Any other key present in the config file must also be added.
+# parser.add_argument(--<keyname>, ...)
+# For more information 👉 https://jsonargparse.readthedocs.io/en/stable/#parsers
 
-    config = parser.parse_object(config_dict)
-    objects = parser.instantiate_classes(config)
-
-    return config, objects.trainer, objects.model, objects.data
+config = parser.parse_object(config_dict)
+objects = parser.instantiate_classes(config)
 
 # %%
 
-config, trainer, litmodel, dm = load_from_config('path/to/logs/config.yaml')
+trainer, litmodel, dm = objects.trainer, objects.model, objects.data
 
 # %%  The remaining part is to restore the model's state, i.e. load back the trained weights.
 
@@ -71,36 +68,37 @@ config, trainer, litmodel, dm = load_from_config('path/to/logs/config.yaml')
 # Restoring model's state 
 # -----------------------
 
+# Load the the checkpoint.
 ckpt = torch.load('path/to/checkpoints/checkpoint.ckpt')
-model_weights = {k: v for k, v in ckpt['state_dict'].items() if k.startswith('model.')}
-
-# %%
-
-# Due to lazy initialization we need to pass a dummy input with correct shape.
-in_channels = 5  # For xyz + Z + 1 additional feature.
-x = torch.randn(32, in_channels, 100)
-litmodel(x)
 
 # %%
 
 # Load back the weights.
-litmodel.load_state_dict(model_weights)
+litmodel.load_state_dict(ckpt['state_dict'])
 
 # %%
 
-# Set the model in inference mode.
-litmodel.eval()
-print(f'Model in inference mode: {not litmodel.training}')
+# Set the model for inference (disable grads & evaluation mode).
+litmodel.freeze()
+print(f'Model in evaluation mode: {not litmodel.training}')
+
+# Your code goes here.
+...
 
 
 # %%
-# Measure performance and make predictions
-# ----------------------------------------
+# Measure performance
+# -------------------
 
 # Measure performance on test set.
 trainer.test(litmodel, dm)
 
 # %%
+# Make predictions
+# ----------------
+
+# Setup the datamodule.
+dm.setup()
 
 # Predict on the test set.
 y_pred = torch.cat(trainer.predict(litmodel, dm.test_dataloader()))

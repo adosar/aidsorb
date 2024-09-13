@@ -75,24 +75,22 @@ TODO
 
 .. card-carousel:: 2
 
-    .. card:: Extend the :doc:`cli`
+    .. card:: 1️⃣  Extend the :doc:`cli`
         :text-align: center
 
         Enable users to make predictions from the command line.
 
-    .. card:: Support more architectures
+    .. card:: 2️⃣  Support more architectures
         :text-align: center
 
-        This might require the usage of
-        :bdg-link-primary:`PyTorch Geometric
-        <https://pytorch-geometric.readthedocs.io/en/latest/index.html>`.
+        This might require the usage of |pyg|.
 
-    .. card:: Extend featurization
+    .. card:: 3️⃣  Extend featurization
         :text-align: center
 
         Add more featurization options. These should be fast!
 
-    .. card:: Add pretrained models
+    .. card:: 4️⃣  Add pretrained models
         :text-align: center
 
         Enable users to fine-tune models trained on large data.
@@ -100,8 +98,7 @@ TODO
 License
 -------
 
-AIdsorb is released under the :bdg-link-primary:`GNU General Public License v3.0
-only <https://spdx.org/licenses/GPL-3.0-only.html>`.
+AIdsorb is released under the |license|.
 
 Citing
 ------

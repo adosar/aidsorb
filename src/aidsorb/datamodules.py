@@ -15,8 +15,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`~lightning.pytorch.core.LightningDataModule`'s,
-which can be used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
+This module provides :class:`~lightning.pytorch.core.LightningDataModule`'s for
+use with |lightning|.
 """
 
 import os
@@ -61,7 +61,7 @@ class PCDDataModule(L.LightningDataModule):
     index_col : str
         Column name of the ``.csv`` file to be used as row labels. The names
         (values) under this column must follow the same naming scheme as in
-        ``pcd_names``.
+        ``pcds.npz``.
     labels : list
         List containing the names of the properties to be predicted. No effect if
         ``path_to_Y=None``.
@@ -81,8 +81,8 @@ class PCDDataModule(L.LightningDataModule):
     eval_batch_size : int, default=32
         ``batch_size`` for the validation and test dataloaders.
     config_dataloaders : dict, optional
-        Valid keyword arguments for :class:`~torch.utils.data.DataLoader`. These
-        are applied to all dataloaders, i.e.
+        Dictionary for configuring the :class:`~torch.utils.data.DataLoader`'s.
+        This is applied to all dataloaders, i.e.
         ``{train,validation,test}_dataloader``. For example::
 
             config_dataloaders = {

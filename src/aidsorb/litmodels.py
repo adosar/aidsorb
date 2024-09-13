@@ -15,8 +15,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`~lightning.pytorch.core.LightningModule`'s that can be
-used with :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`.
+This module provides :class:`~lightning.pytorch.core.LightningModule`'s for use
+with |lightning|.
 """
 from typing import Callable
 import torch

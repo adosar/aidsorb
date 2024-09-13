@@ -29,13 +29,6 @@ fig.update_layout(margin=dict(b=0, t=0, l=0, r=0))  # Optional.
 show(fig)
 
 # %%
-
-# Color it by electronegativity.
-fig = draw_pcd(pcd, feature_to_color=(4, 'Electronegativity'), colorscale='viridis')
-fig.update_layout(margin=dict(b=0, t=0, l=0, r=0))  # Optional.
-show(fig)
-
-# %%
 # .. tip::
 #    
 #     You can also use the CLI:
@@ -43,3 +36,10 @@ show(fig)
 #     .. code-block:: console
 #
 #         $ aidsorb visualize path/to/structure
+
+# %%
+
+# Color it by electronegativity.
+fig = draw_pcd(pcd, feature_to_color=(4, 'Electronegativity'), colorscale='viridis')
+fig.update_layout(margin=dict(b=0, t=0, l=0, r=0))  # Optional.
+show(fig)

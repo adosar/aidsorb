@@ -16,7 +16,7 @@ There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
         +============+==============================================================+
         | create     | Create point clouds from a directory containing structures.  |
         +------------+--------------------------------------------------------------+
-        | prepare    | Split point clouds intro train, validation and test sets.    |
+        | prepare    | Split point clouds into train, validation and test sets.     |
         +------------+--------------------------------------------------------------+
         | visualize  | Visualize point cloud of a structure.                        |
         +------------+--------------------------------------------------------------+
