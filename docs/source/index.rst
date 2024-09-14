@@ -12,7 +12,7 @@
 About
 =====
 
-**AIdsorb** is a :fa:`python; fa-fade` Python package for **deep learning on
+|aidsorb| is a :fa:`python; fa-fade` Python package for **deep learning on
 molecular point clouds**.
 
 .. grid:: 4
@@ -48,9 +48,9 @@ molecular point clouds**.
                        :color: primary
                        :align: center
 
-                       :octicon:`telescope` AIdsorb paper
+                       :octicon:`telescope` |aidsorb| paper
 
-**AIdsorb** aims to provide a **simple, easy-to-use and reproduce** interface
+|aidsorb| aims to provide a **simple, easy-to-use and reproduce** interface
 for:
 
 * 📥 **Creating molecular point clouds**
@@ -95,10 +95,24 @@ TODO
 
         Enable users to fine-tune models trained on large data.
 
-License
--------
+Contributing
+------------
 
-AIdsorb is released under the |license|.
+🙌 We welcome contributions from the community to help improve and expand this
+project!
+
+You can start by 🛠️ `opening an issue <https://github.com/adosar/aidsorb/issues>`_ for:
+
+* 🐛 Reporting bugs
+* 🌟 Suggesting new features
+* 📚 Improving documentation
+* 🎨 Adding your example to the :doc:`Gallery <auto_examples/index>`
+
+We appreciate your efforts to submit well-documented :octicon:`git-pull-request`
+`pull requests <https://github.com/adosar/aidsorb/pulls>`_ and participate in
+discussions.
+
+💪 Together, we can make this project even better!
 
 Citing
 ------
@@ -111,64 +125,11 @@ If you use AIdosrb in your research, please consider citing the following work::
 
 	Currently, not available.
 
-Contributing
-------------
 
-We welcome contributions from the community to help improve and expand this
-project! You can start by 🛠️ `opening an issue
-<https://github.com/adosar/aidsorb/issues>`_ for:
+License
+-------
 
-* 🐛 Reporting bugs
-* 🌟 Suggesting new features
-* 📚 Improving documentation
-* 🎨 Adding your example to the :doc:`Gallery <auto_examples/index>`
-
-We appreciate your efforts to submit well-documented :octicon:`git-pull-request`
-`pull requests <https://github.com/adosar/aidsorb/pulls>`_ and participate in
-discussions. 💪 Together, we can make this project even better!
-
-..
-    Credits
-    -------
-
-    AIdsorb makes use of the following packages:
-
-    .. image:: https://img.shields.io/badge/Numpy-black?logo=numpy
-        :alt: Numpy
-        :target: https://numpy.org
-
-    .. image:: https://img.shields.io/badge/PyTorch-black?logo=pytorch
-        :alt: PyTorch
-        :target: https://pytorch.org/
-
-    .. image:: https://img.shields.io/badge/PyTorch_Lightning-black?logo=lightning
-        :alt: PyTorch Lightning
-        :target: https://lightning.ai/docs/pytorch/stable/
-
-    .. image:: https://img.shields.io/badge/Plotly-black?logo=plotly
-        :alt: Plotly
-        :target: https://plotly.com/
-
-    .. image:: https://img.shields.io/badge/TQDM-black?logo=tqdm
-        :alt: TQDM
-        :target: https://tqdm.github.io/
-
-    .. image:: https://img.shields.io/badge/Pandas-black?logo=pandas
-        :alt: TQDM
-        :target: https://pandas.pydata.org/
-
-    .. image:: https://img.shields.io/badge/Python_Fire-black?logo=google
-        :alt: Python Fire
-        :target: https://google.github.io/python-fire/guide/
-
-    .. image:: https://img.shields.io/badge/Mendeleev-black
-        :alt: Mendeleev
-        :target: https%3A%2F%2Fmendeleev.readthedocs.io%2Fen%2Fstable%2F
-
-    .. image:: https://img.shields.io/badge/Atomic_Simulation_Environment-black
-        :alt: Atomic Simulation Environment
-        :target: https://wiki.fysik.dtu.dk/ase/index.html
-
+|aidsorb| is released under the |license|.
 
 .. toctree::
     :maxdepth: 1

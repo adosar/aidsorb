@@ -59,12 +59,13 @@ intersphinx_mapping = {
         'plotly': ('https://plotly.com/python-api-reference/', None),
         }
 
-# For commonly used links.
+# For commonly used links and inline text.
 rst_epilog = '''
 .. |pytorch| replace:: :bdg-link-primary:`PyTorch <https://pytorch.org/>`
 .. |lightning| replace:: :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`
 .. |pyg| replace:: :bdg-link-primary:`PyTorch Geometric <https://pytorch-geometric.readthedocs.io/en/latest/index.html>`
 .. |license| replace:: :bdg-link-primary:`GNU General Public License v3.0 only <https://spdx.org/licenses/GPL-3.0-only.html>`
+.. |aidsorb| replace:: **AIdsorb**
 '''
 
 # -- Options for HTML output -------------------------------------------------

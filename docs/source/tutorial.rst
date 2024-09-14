@@ -2,7 +2,7 @@
 ==========================
 
 .. note::
-    **This tutorial covers the most common use cases of AIdsorb**. For more
+    **This tutorial covers the most common use cases of |aidsorb|**. For more
     advanced usage, you should consult the :doc:`api`.
 
 .. _Introduction:
@@ -25,7 +25,7 @@ Introduction
     where :math:`N` is the number of points in the point cloud and :math:`C` is
     the number of (per-point) features.
 
-    In AIdsorb, a point cloud is represented as a :class:`numpy.ndarray` of
+    In |aidsorb|, a point cloud is represented as a :class:`numpy.ndarray` of
     shape ``(N, 3+C)``:
 
     .. math::
@@ -50,7 +50,7 @@ Introduction
     It is a point cloud where coordinates correspond to **atomic positions**,
     and features correspond to **atomic numbers and any additional information**.
 
-    In AIdsorb, a molecular ``pcd`` is represented as :class:`numpy.ndarray` of
+    In |aidsorb|, a molecular ``pcd`` is represented as :class:`numpy.ndarray` of
     shape ``(N, 4+C)``, where ``N`` is the number of atoms, ``pcd[:, :3]`` are the
     **atomic coordinates**, ``pcd[:, 3]`` are the **atomic numbers** and ``pcd[:,
     4:]`` any **additional features**. If ``C == 0``, then the only features are the
@@ -67,8 +67,8 @@ Introduction
 Deep learning on molecular point clouds
 ---------------------------------------
 
-For creating molecular point clouds and performing deep learning with
-AIdsorb, the following components are needed:
+For creating molecular point clouds and performing deep learning, the following
+components are needed:
 
 * A directory containing files of **molecular structures**.
 * A ``.csv`` file containing the **labels of the molecular structures**.
@@ -193,7 +193,7 @@ Summing up
 Questions
 ---------
 
-Can I use point clouds not created with AIdsorb?
+Can I use point clouds not created with |aidsorb|?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Yes! The only requirement is to store them in ``.npz`` format (see
@@ -207,7 +207,7 @@ Can I do DL without the CLI?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Of course! Although you are encouraged to use the :doc:`cli`, you can also use
-AIdsorb with plain |pytorch| or |lightning|.
+|aidsorb| with plain |pytorch| or |lightning|.
 
 .. seealso::
 
