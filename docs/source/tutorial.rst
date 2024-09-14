@@ -194,7 +194,7 @@ Questions
 ---------
 
 Can I use point clouds not created with |aidsorb|?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Yes! The only requirement is to store them in ``.npz`` format (see
 :func:`numpy.savez`) file and respect the shapes described in

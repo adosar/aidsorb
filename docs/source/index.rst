@@ -64,7 +64,7 @@ for:
 A *molecular point cloud*, being essentially a *set of atomic positions, atomic
 numbers and any additional information*, provides a natural and efficient way to
 represent molecular structures and chemical systems in a machine understandable
-format. This in turns allows us to **perform DL directly on raw chemical
+format. This in turns allows us to **perform DL directly on raw structural
 information**, removing the need for manual feature extraction.
 
 The above point cloud represents IRMOF-1. You can hover :fa:`arrow-pointer;

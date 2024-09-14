@@ -395,7 +395,7 @@ class PointNetSegHead(nn.Module):
 
         Returns
         -------
-        out : tensor of shape (B, n_outputs)
+        out : tensor of shape (B, N, n_outputs)
         """
         x = self.shared_mlp(x)  # Shape (B, n_outputs, N).
         x = x.transpose(2, 1)  # Shape (B, N, n_outputs).

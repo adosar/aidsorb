@@ -54,8 +54,8 @@ class PointNet(torch.nn.Module):
 
     Currently implemented heads include:
 
-        1. :class:`.PointNetClsHead`: classification and regression.
-        2. :class:`.PointNetSegHead`: classification and regression.
+        1. :class:`.PointNetClsHead`: classification and regression
+        2. :class:`.PointNetSegHead`: segmentation
 
     The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
     the batch size, ``C`` is the number of input channels  and ``N`` is the

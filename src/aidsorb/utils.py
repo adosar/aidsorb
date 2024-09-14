@@ -33,6 +33,9 @@ def split_pcd(pcd):
     r"""
     Split a point cloud to coordinates and features.
 
+    .. note::
+        The returned arrays are copies.
+
     Parameters
     ----------
     pcd : array of shape (N, 3+C)
@@ -61,7 +64,7 @@ def split_pcd(pcd):
     """
     _check_shape(pcd)
 
-    return pcd[:, :3], pcd[:, 3:]
+    return pcd[:, :3].copy(), pcd[:, 3:].copy()
 
 
 def pcd_from_file(filename, features=None):
