@@ -83,18 +83,22 @@ class PointNet(torch.nn.Module):
 
     Examples
     --------
-    >>> from aidsorb.modules import PointNetSegHead
-    >>> head = PointNetSegHead(n_outputs=100)
-    >>> pointnet = PointNet(head=head, local_feats=True, n_global_feats=256)
+    >>> from aidsorb.modules import PointNetClsHead, PointNetSegHead
+    >>> cls_head = PointNetClsHead(n_outputs=2)
+    >>> seg_head = PointNetSegHead(n_outputs=10)
     >>> x = torch.randn(32, 4, 300)
-    >>> out = pointnet(x)
-    >>> out.shape
-    torch.Size([32, 100])
 
-    >>> # Get the critical indices.
-    >>> _, indices = pointnet.backbone(x)  # Ignore returned features.
-    >>> indices.shape
+    >>> cls_net = PointNet(head=cls_head, n_global_feats=256)
+    >>> cls_net(x).shape
+    torch.Size([32, 2])
+    >>> cls_net.backbone(x)[1].shape  # Critical indices.
     torch.Size([32, 256])
+
+    >>> seg_net = PointNet(head=seg_head, n_global_feats=512, local_feats=True)
+    >>> seg_net(x).shape
+    torch.Size([32, 300, 10])
+    >>> seg_net.backbone(x)[1].shape  # Critical indices.
+    torch.Size([32, 512])
     """
     def __init__(self, head, local_feats=False, n_global_feats=1024):
         super().__init__()
