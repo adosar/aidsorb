@@ -207,9 +207,7 @@ class TNet(nn.Module):
         x = self.dense_blocks(x)
 
         # Initialize the identity matrix.
-        identity = torch.eye(self.embed_dim, requires_grad=True).repeat(bs, 1, 1)
-        if x.is_cuda:
-            identity = identity.to(device='cuda')
+        identity = torch.eye(self.embed_dim, device=x.device, requires_grad=True).repeat(bs, 1, 1)
 
         # Output has shape (B, self.embed_dim, self.embed_dim).
         x = x.view(-1, self.embed_dim, self.embed_dim) + identity
@@ -315,10 +313,10 @@ class PointNetBackbone(nn.Module):
 
 class PointNetClsHead(nn.Module):
     r"""
-    The classification head from the [PointNet]_ paper.
+    Classification head from the [PointNet]_ paper.
 
     .. note::
-        This head can be used either for classification or regression.
+        This head can be used for classification or regression.
 
     Parameters
     ----------
@@ -361,38 +359,30 @@ class PointNetClsHead(nn.Module):
 
 class PointNetSegHead(nn.Module):
     r"""
-    Modified segmentation head from the [PointNet]_ paper.
-
-    The final layer is replaced by a global pooling layer followed by a MLP.
+    Segmentation head from the [PointNet]_ paper.
 
     .. note::
-        This head can be used either for classification or regression.
+        This head can be used for segmentation.
 
     Parameters
     ----------
     n_outputs : int, default=1
-    dropout_rate : int, default=0
 
     Examples
     --------
     >>> head = PointNetSegHead(n_outputs=2)
     >>> x = torch.randn(32, 1088, 400)
     >>> head(x).shape
-    torch.Size([32, 2])
+    torch.Size([32, 400, 2])
     """
-    def __init__(self, n_outputs=1, dropout_rate=0):
+    def __init__(self, n_outputs=1):
         super().__init__()
 
         self.shared_mlp = nn.Sequential(
                 conv1d_block(None, 512, kernel_size=1, bias=False),
                 conv1d_block(512, 256, kernel_size=1, bias=False),
                 conv1d_block(256, 128, kernel_size=1, bias=False),
-                )
-
-        self.mlp = nn.Sequential(
-                dense_block(128, 128, bias=False),
-                nn.Dropout(dropout_rate),
-                nn.Linear(128, n_outputs),
+                nn.Conv1d(128, n_outputs, kernel_size=1),
                 )
 
     def forward(self, x):
@@ -407,11 +397,7 @@ class PointNetSegHead(nn.Module):
         -------
         out : tensor of shape (B, n_outputs)
         """
-        x = self.shared_mlp(x)  # Shape (B, C, N).
-
-        # Perform global pooling.
-        x, _ = torch.max(x, 2, keepdim=False)  # Ignore indices.
-
-        x = self.mlp(x)
+        x = self.shared_mlp(x)  # Shape (B, n_outputs, N).
+        x = x.transpose(2, 1)  # Shape (B, N, n_outputs).
 
         return x

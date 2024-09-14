@@ -12,10 +12,6 @@ jobs = 0
 disable = ["C"]
 fail-under = 8
 
-[tool.coverage.run]
-source = ["src/aidsorb"]
-omit = ["src/aidsorb/**/_*.py"]
-
 [project]
 name = "aidsorb"
 dynamic = ["version"]
