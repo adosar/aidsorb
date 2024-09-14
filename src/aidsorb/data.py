@@ -24,11 +24,10 @@ import json
 from pathlib import Path
 from typing import Sequence
 import numpy as np
-import pandas as pd
 import torch
 from torch.utils.data import random_split, Dataset
 from torch.nn.utils.rnn import pad_sequence
-from . _internal import _SEED
+from . _internal import _SEED, pd
 
 
 def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_SEED):
@@ -436,7 +435,7 @@ class PCDDataset(Dataset):
 
         # Only for labeled datasets.
         if self.Y is not None:
-            sample_y = self.Y.loc[name].values
+            sample_y = self.Y.loc[name].to_numpy()
 
             if self.transform_y is not None:
                 sample_y = self.transform_y(sample_y)

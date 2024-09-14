@@ -58,7 +58,7 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
     atomic_numbers = np.array(atomic_numbers)
     scheme += '_color'
 
-    return _ptable.loc[atomic_numbers, scheme].values
+    return _ptable.loc[atomic_numbers, scheme].to_numpy()
 
 
 def get_elements(atomic_numbers):
@@ -81,7 +81,7 @@ def get_elements(atomic_numbers):
     """
     atomic_numbers = np.array(atomic_numbers)
 
-    return _ptable.loc[atomic_numbers, 'name'].values
+    return _ptable.loc[atomic_numbers, 'name'].to_numpy()
 
 
 def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs):

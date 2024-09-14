@@ -111,11 +111,11 @@ def pcd_from_file(filename, features=None):
     name = Path(filename).stem
     structure = read(filename)
 
-    positions = structure.get_positions()
-    atoms = structure.get_atomic_numbers()
+    positions = structure.positions
+    atoms = structure.numbers
 
     if features is not None:
-        feats = _ptable.loc[atoms.astype(int), features].values
+        feats = _ptable.loc[atoms, features].to_numpy()
         pcd = np.hstack((positions, atoms[:, None], feats), dtype='float32')
     else:
         pcd = np.hstack((positions, atoms[:, None]), dtype='float32')

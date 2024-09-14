@@ -61,8 +61,12 @@ def _check_shape_vis(array):
                 f'but got array of shape {array.shape}!'
                 )
 
+
 # Default value for controlling randomness.
 _SEED = 1
+
+# This will be the default on Pandas 3.0
+pd.options.mode.copy_on_write = True
 
 # Load the periodic table.
 with files('aidsorb.pkg_data').joinpath('periodic_table.csv').open() as fhand:
