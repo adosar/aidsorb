@@ -133,14 +133,21 @@ def upsample_pcd(pcd, size):
             [2, 4, 5, 6],
             [2, 4, 5, 6]])
 
+    >>> # New points point must be from pcd.
+    >>> pcd = torch.randn(10, 4)
+    >>> new_pcd = upsample_pcd(pcd, 20)
+    >>> (new_pcd[-1] == pcd).all(1).any()  # Check for last point.
+    tensor(True)
+
     >>> # No upsampling.
     >>> pcd = torch.randn(100, 4)
     >>> new_pcd = upsample_pcd(pcd, len(pcd))
     >>> torch.equal(pcd, new_pcd)
     True
+
     """
     n_samples = size - len(pcd)
-    indices = torch.from_numpy(np.random.choice(len(pcd), n_samples))
+    indices = torch.from_numpy(np.random.choice(len(pcd), n_samples, replace=True))
     new_points = pcd[indices]
 
     return torch.cat((pcd, new_points))

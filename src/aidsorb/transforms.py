@@ -174,8 +174,12 @@ class RandomRotation():
     >>> new_pcd.shape
     (25, 4)
 
-    >>> _, feats = split_pcd(pcd)
-    >>> _, new_feats = split_pcd(new_pcd)
+    >>> from aidsorb.utils import split_pcd
+    >>> coords, feats = split_pcd(pcd)
+    >>> new_coords, new_feats = split_pcd(new_pcd)
+
+    >>> np.array_equal(new_coords, coords)  # Coordinates are affected.
+    False
     >>> np.array_equal(new_feats, feats)  # Features are not affected.
     True
     """
@@ -202,7 +206,16 @@ class Jitter():
     >>> pcd = np.random.randn(100, 5)
     >>> jitter = Jitter()
     >>> new_pcd = jitter(pcd)
-    >>> np.array_equal(pcd[:, 3:], new_pcd[:, 3:])  # Features are not affected.
+    >>> new_pcd.shape
+    (100, 5)
+
+    >>> from aidsorb.utils import split_pcd
+    >>> coords, feats = split_pcd(pcd)
+    >>> new_coords, new_feats = split_pcd(new_pcd)
+
+    >>> np.array_equal(new_coords, coords)  # Coordinates are affected.
+    False
+    >>> np.array_equal(new_feats, feats)  # Features are not affected.
     True
     """
     def __init__(self, std=0.01):
