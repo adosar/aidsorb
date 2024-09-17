@@ -94,8 +94,8 @@ class TestPCDDataset(unittest.TestCase):
         self.batch_size = 2
 
     def test_labeled_pcddataset(self):
-        self.X = np.load(self.outname)
-        self.Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
+        X = np.load(self.outname)
+        Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
 
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
@@ -114,8 +114,8 @@ class TestPCDDataset(unittest.TestCase):
             name = self.pcd_names[i]
 
             # Untransformed sample.
-            x = torch.tensor(self.X[name])
-            y = torch.tensor(self.Y.loc[name].values)
+            x = torch.tensor(X[name])
+            y = torch.tensor(Y.loc[name].to_numpy())
 
             # Transformed sample.
             sample_x, sample_y = dataset[i]
@@ -125,9 +125,7 @@ class TestPCDDataset(unittest.TestCase):
             self.assertFalse(torch.equal(sample_y, y))
 
             # Check that self.transform_x is correctly applied.
-            self.assertTrue(torch.all(
-                torch.isclose(sample_x.mean(axis=0)[:3], torch.zeros(3), atol=1e-4)  # Single precision.
-                ))
+            self.assertTrue(torch.allclose(sample_x.mean(axis=0)[:3], torch.zeros(3), atol=1e-4))
 
             # Check that self.transform_y is correctly applied.
             self.assertTrue(torch.equal(y - 1, sample_y))
@@ -145,7 +143,7 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(y.dtype, torch.float)
 
     def test_unlabeled_pcddataset(self):
-        self.X = np.load(self.outname)
+        X = np.load(self.outname)
 
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
@@ -160,7 +158,7 @@ class TestPCDDataset(unittest.TestCase):
             name = self.pcd_names[i]
 
             # Untransformed sample.
-            x = torch.tensor(self.X[name])
+            x = torch.tensor(X[name])
 
             # "Transformed" sample.
             sample_x = dataset[i]
