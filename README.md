@@ -1,5 +1,9 @@
 <h1 align="center">
-  <img alt="AIdsorb logo" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/aidsorb_logo_light.svg" width=40%/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/aidsorb_logo_dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/aidsorb_logo_light.svg">
+    <img alt="AIdsorb logo" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/aidsorb_logo_light.svg" width=40%/>
+  </picture>
 </h1>
 
 <p align="center">
@@ -21,7 +25,7 @@
 This package aims to provide a **simple, easy-to-use and reproduce** interface for:
 
 -   📥 **Creating molecular point clouds**
-    
+  
 -   🤖 **Training DL algorithms on molecular point clouds**
 
 <p align="center">
@@ -63,17 +67,13 @@ Here is a summary of what you can do from the command line:
 	aidsorb-lit fit --config=path/to/config.yaml
 	aidsorb-lit test --config=path/to/config.yaml --ckpt_path=path/to/ckpt
 	```
-	Currently, only [PointNet](https://arxiv.org/abs/1612.00593) is supported.
 
-## 📰 Citing
-If you use AIdsorb in your research, please consider citing the following work:
-	
-	Currently, not available.
+## 💡 Contributing
 
-## 📰 Contributing
+🙌 We welcome contributions from the community to help improve and expand this
+project!
 
-We welcome contributions from the community to help improve and expand this
-project! You can start by 🛠️ [opening an issue](https://github.com/adosar/aidsorb/issues) for:
+You can start by 🛠️ [opening an issue](https://github.com/adosar/aidsorb/issues) for:
 
 * 🐛 Reporting bugs
 * 🌟 Suggesting new features
@@ -82,7 +82,15 @@ project! You can start by 🛠️ [opening an issue](https://github.com/adosar/a
 
 We appreciate your efforts to submit well-documented 🔃 [pull
 requests](https://github.com/adosar/aidsorb/pulls) and participate in
-discussions. 💪 Together, we can make this project even better!
+discussions.
 
-## 📑 License
-AIdosrb is released under the [GNU General Public License v3.0 only](https://spdx.org/licenses/GPL-3.0-only.html).
+💪 Together, we can make this project even better!
+
+
+## 📑 Citing
+If you use **AIdsorb** in your research, please consider citing the following work:
+	
+	Currently, not available.
+
+## ⚖️ License
+**AIdosrb** is released under the [GNU General Public License v3.0 only](https://spdx.org/licenses/GPL-3.0-only.html).
