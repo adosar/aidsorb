@@ -80,20 +80,20 @@ TODO
 
         Enable users to make predictions from the command line.
 
-    .. card:: 2️⃣  Support more architectures
+    .. card:: 2️⃣  Add pretrained models
+        :text-align: center
+
+        Enable users to fine-tune models trained on large data.
+
+    .. card:: 3️⃣  Support more architectures
         :text-align: center
 
         This might require the usage of |pyg|.
 
-    .. card:: 3️⃣  Extend featurization
+    .. card:: 4️⃣  Extend featurization
         :text-align: center
 
         Add more featurization options. These should be fast!
-
-    .. card:: 4️⃣  Add pretrained models
-        :text-align: center
-
-        Enable users to fine-tune models trained on large data.
 
 Contributing
 ------------
@@ -116,10 +116,6 @@ discussions.
 
 Citing
 ------
-
-.. admonition:: Citation
-
-    Here is the text for citation.
 
 If you use AIdosrb in your research, please consider citing the following work::
 

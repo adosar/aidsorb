@@ -52,7 +52,7 @@ class TestPCDFromFile(unittest.TestCase):
                 )
 
         self.assertEqual(name, 'H2O')
-        self.assertTrue(np.all(pcd == water))
+        self.assertTrue(np.array_equal(pcd, water))
 
 
 class TestPCDFromFiles(unittest.TestCase):

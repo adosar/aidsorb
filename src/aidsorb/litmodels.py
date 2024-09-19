@@ -26,7 +26,7 @@ import lightning as L
 
 class PointLit(L.LightningModule):
     r"""
-    :class:`~lightning.LightningModule` for :class:`aidsorb.models`.
+    ``LightningModule`` for :class:`aidsorb.models`.
 
     .. _loss functions: https://pytorch.org/docs/stable/nn.html#loss-functions
     .. _monitor: https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.ModelCheckpoint.html#modelcheckpoint
@@ -107,9 +107,9 @@ class PointLit(L.LightningModule):
         Also, make predictions that will be used on epoch-level operations.
 
         .. note::
-            The ``BatchNorm`` and ``Dropout`` are set in inference mode during
-            predictions, so an accurate estimate of training performance is
-            reported.
+            Inference mode is enabled during predictions, so an accurate
+            estimate of training performance (e.g. when using
+            :class:`~torch.nn.Dropout`) is reported.
         """
         assert self.training
         assert torch.is_grad_enabled()

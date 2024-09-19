@@ -45,7 +45,8 @@ class PCDDataModule(L.LightningDataModule):
         directory structure with :func:`~aidsorb.data.prepare_data`.
 
     .. todo::
-        Add support for ``predict_dataloader``.
+        * Add support for ``predict_dataloader``.
+        * Add option ``drop_last`` for ``train_dataloader``.
 
     Parameters
     ----------
