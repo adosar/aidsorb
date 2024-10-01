@@ -121,27 +121,26 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     """
     _check_shape_vis(pcd)
 
-    points = pcd[:, :3]
-    atoms = pcd[:, 3]
-    elements = get_elements(atoms)
+    atomic_numbers = pcd[:, 3]
+    elements = get_elements(atomic_numbers)
 
     if feature_to_color is None:
-        colors = get_atom_colors(atoms, scheme=scheme)
-        marker = {'size': atoms, 'color': colors}
+        colors = get_atom_colors(atomic_numbers, scheme=scheme)
+        marker = {'size': atomic_numbers, 'color': colors}
     else:
         idx, label = feature_to_color
         colors = pcd[:, idx]
         marker = {
-                'size': atoms, 'color': colors,
+                'size': atomic_numbers, 'color': colors,
                 'colorscale': colorscale,
                 'colorbar': {'thickness': 20, 'title': label}
                 }
 
     fig = go.Figure(
             data=[go.Scatter3d(
-                x=points[:, 0],
-                y=points[:, 1],
-                z=points[:, 2],
+                x=pcd[:, 0],
+                y=pcd[:, 1],
+                z=pcd[:, 2],
                 mode='markers',
                 marker=marker,
                 hovertext=elements

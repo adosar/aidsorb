@@ -20,7 +20,6 @@ import torch
 import lightning as L
 from lightning.pytorch.cli import LightningArgumentParser
 from torch.utils.data import DataLoader
-from aidsorb.data import PCDDataset
 from aidsorb.datamodules import PCDDataModule
 from aidsorb.litmodels import PointLit
 
@@ -78,7 +77,7 @@ litmodel.load_state_dict(ckpt['state_dict'])
 
 # %%
 
-# Set the model for inference (disable grads & evaluation mode).
+# Set the model for inference (disable grads & enable eval mode).
 litmodel.freeze()
 print(f'Model in evaluation mode: {not litmodel.training}')
 

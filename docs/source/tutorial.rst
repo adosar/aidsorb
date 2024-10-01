@@ -2,7 +2,7 @@
 ==========================
 
 .. note::
-    **This tutorial covers the most common use cases of |aidsorb|**. For more
+    **This tutorial covers the most common use cases of AIdsorb**. For more
     advanced usage, you should consult the :doc:`api`.
 
 .. _Introduction:
