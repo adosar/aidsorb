@@ -14,10 +14,12 @@
   <img alt="Static Badge" src="https://img.shields.io/badge/Python%203.11%2B-black?style=for-the-badge&logo=python&logoColor=cyan&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2F">
   <img alt="Static Badge" src="https://img.shields.io/badge/GPL--3.0--only-black?style=for-the-badge&logo=gnu&logoColor=cyan&link=https%3A%2F%2Fspdx.org%2Flicenses%2FGPL-3.0-only.html">
   <img alt="Static Badge" src="https://img.shields.io/badge/Linux-black?style=for-the-badge&logo=linux&logoColor=cyan">
-  <!--- <img alt="Static Badge" src="https://img.shields.io/badge/Pytorch-black?style=for-the-badge&logo=pytorch&logoColor=cyan&link=https%3A%2F%2Fpytorch.org%2F"> --->
-  <!--- <img alt="Static Badge" src="https://img.shields.io/badge/Pytorch%20Lightning-black?style=for-the-badge&logo=lightning&logoColor=cyan&link=https%3A%2F%2Flightning.ai%2Fdocs%2Fpytorch%2Fstable%2F"> --->
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/unittest.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Tests&labelColor=black">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pylint.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Lint&labelColor=black">
+  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pypi.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Build&labelColor=black">
+
+  [![Static Badge](https://img.shields.io/badge/foo-stable-black?style=for-the-badge&logo=readthedocs&logoColor=cyan&label=ReadTheDocs&labelColor=black&color=Green)](https://aidsorb.readthedocs.io/en/stable/)
+  [![Static Badge](https://img.shields.io/badge/foo-install-black?style=for-the-badge&logo=pypi&logoColor=cyan&label=pip&labelColor=black&color=Green)](https://pypi.org/project/aidsorb/)
 </h4>
 
 **AIdsorb** is a Python package for **deep learning on molecular point clouds**.
@@ -45,8 +47,7 @@ pip install aidsorb
 
 ## 🚀 Usage
 > [!NOTE] 
-> Refer to the 📚 Documentation for more information.
-> It will be available soon.
+> Refer to the 📚 [Documentation](https://aidsorb.readthedocs.io/en/stable/) for more information.
 
 Here is a summary of what you can do from the command line:
 
@@ -78,7 +79,7 @@ You can start by 🛠️ [opening an issue](https://github.com/adosar/aidsorb/is
 * 🐛 Reporting bugs
 * 🌟 Suggesting new features
 * 📚 Improving documentation
-* 🎨 Adding your example to the Gallery
+* 🎨 Adding your example to the [Gallery](https://aidsorb.readthedocs.io/en/stable/auto_examples/index.html)
 
 We appreciate your efforts to submit well-documented 🔃 [pull
 requests](https://github.com/adosar/aidsorb/pulls) and participate in
