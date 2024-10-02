@@ -13,11 +13,10 @@
 <h4 align="center">
   <img alt="Static Badge" src="https://img.shields.io/badge/Python%203.11%2B-black?style=for-the-badge&logo=python&logoColor=cyan&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2F">
   <img alt="Static Badge" src="https://img.shields.io/badge/GPL--3.0--only-black?style=for-the-badge&logo=gnu&logoColor=cyan&link=https%3A%2F%2Fspdx.org%2Flicenses%2FGPL-3.0-only.html">
-  <img alt="Static Badge" src="https://img.shields.io/badge/Linux-black?style=for-the-badge&logo=linux&logoColor=cyan">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/unittest.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Tests&labelColor=black">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pylint.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Lint&labelColor=black">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pypi.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Build&labelColor=black">
-
+	
   [![Static Badge](https://img.shields.io/badge/foo-stable-black?style=for-the-badge&logo=readthedocs&logoColor=cyan&label=ReadTheDocs&labelColor=black&color=Green)](https://aidsorb.readthedocs.io/en/stable/)
   [![Static Badge](https://img.shields.io/badge/foo-install-black?style=for-the-badge&logo=pypi&logoColor=cyan&label=pip&labelColor=black&color=Green)](https://pypi.org/project/aidsorb/)
 </h4>
