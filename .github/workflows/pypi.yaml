@@ -1,18 +1,17 @@
-name: Build and publish 📦 to PyPI
+name: Publish Python 🐍 distribution 📦 to PyPI
 
-on:
-  push:
-    branches: [master]
+on: push
 
 jobs:
   build:
     name: Build distribution 📦
+    if: startsWith(github.ref, 'refs/tags/')  # only build on tag pushes
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: "3.x"
     - name: Install pypa/build
@@ -49,6 +48,8 @@ jobs:
         path: dist/
     - name: Publish distribution 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        skip-existing: true
 
   github-release:
     name: >-
