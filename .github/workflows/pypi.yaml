@@ -1,16 +1,13 @@
-name: Publish Python 🐍 distribution 📦 to PyPI
+name: Build and publish 📦 to PyPI
 
 on:
-  workflow_run:
-    workflows: [Unittest]
-    types: [completed]
+  push:
     branches: [master]
 
 jobs:
   build:
     name: Build distribution 📦
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # build only if unittests succeed
 
     steps:
     - uses: actions/checkout@v4
