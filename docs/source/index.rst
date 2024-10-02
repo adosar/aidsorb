@@ -36,7 +36,7 @@ molecular point clouds**.
 
        .. grid-item::
 
-               .. button-link:: https://example.com
+               .. button-link:: https://pypi.org/project/aidsorb/
                        :color: primary
                        :align: center
 

@@ -1,4 +1,7 @@
 :octicon:`log` Changelog
 ========================
 
-Populate this before releasing the first version.
+Version 1.0.0
+-------------
+
+🎂 First release for public usage.
