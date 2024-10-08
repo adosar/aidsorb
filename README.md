@@ -18,7 +18,7 @@
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pypi.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Build&labelColor=black">
 	
   [![Static Badge](https://img.shields.io/badge/foo-stable-black?style=for-the-badge&logo=readthedocs&logoColor=cyan&label=ReadTheDocs&labelColor=black&color=Green)](https://aidsorb.readthedocs.io/en/stable/)
-  [![Static Badge](https://img.shields.io/badge/foo-install-black?style=for-the-badge&logo=pypi&logoColor=cyan&label=pip&labelColor=black&color=Green)](https://pypi.org/project/aidsorb/)
+  [![PyPI - Version](https://img.shields.io/pypi/v/aidsorb?style=for-the-badge&logo=pypi&logoColor=cyan&labelColor=black&color=Green)](https://pypi.org/project/aidsorb/)
 </h4>
 
 **AIdsorb** is a Python package for **deep learning on molecular point clouds**.
