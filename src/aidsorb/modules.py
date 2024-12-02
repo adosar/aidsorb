@@ -207,7 +207,7 @@ class TNet(nn.Module):
         x = self.dense_blocks(x)
 
         # Initialize the identity matrix.
-        identity = torch.eye(self.embed_dim, device=x.device, requires_grad=True).repeat(bs, 1, 1)
+        identity = torch.eye(self.embed_dim, device=x.device, requires_grad=x.requires_grad).repeat(bs, 1, 1)
 
         # Output has shape (B, self.embed_dim, self.embed_dim).
         x = x.view(-1, self.embed_dim, self.embed_dim) + identity
