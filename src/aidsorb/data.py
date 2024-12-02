@@ -237,6 +237,18 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     return batch
 
 
+def worker_init_fn(worker_id):
+    r"""
+    Load `.npz` in each worker.
+
+    Parameters
+    ----------
+    worker_id: int
+    """
+    worker_info = torch.utils.data.get_worker_info()
+    worker_info.dataset._load_npz()
+
+
 class Collator():
     r"""
     Collate a sequence of samples into a ``batch``.
@@ -368,8 +380,8 @@ class PCDDataset(Dataset):
 
     Parameters
     ----------
-    pcd_names : list
-        List containing the names of the point clouds.
+    pcd_names : sequence
+        Sequence containing the names of the point clouds.
     path_to_X : str
         Absolute or relative path to the ``.npz`` file holding the point clouds.
     path_to_Y : str, optional
@@ -401,10 +413,7 @@ class PCDDataset(Dataset):
             transform_x=None, transform_y=None,
             ):
 
-        if (labels is not None) and (type(labels) != list):
-            raise ValueError('labels must be a list!')
-
-        self._pcd_names = pcd_names
+        self._pcd_names = tuple(pcd_names)  # Immutable for safety.
         self.path_to_X = path_to_X
         self.path_to_Y = path_to_Y
         self.labels = labels
@@ -415,28 +424,36 @@ class PCDDataset(Dataset):
         self.X = None
         self.Y = None
 
-    @property
-    def pcd_names(self):
-        r"""The names of the point clouds."""
-        return self._pcd_names
-
-    def __len__(self):
-        return len(self.pcd_names)
-
-    def __getitem__(self, idx):
-        # Account for np.load and multiprocessing.
-        if self.X is None:
-            self.X = np.load(self.path_to_X)
-        if self.Y is None and self.path_to_Y is not None:
+        # Only for labeled datasets.
+        if self.path_to_Y is not None:
             self.Y = pd.read_csv(
                     self.path_to_Y,
                     index_col=self.index_col,
                     usecols=[*self.labels, self.index_col],
                     )
 
+    @property
+    def pcd_names(self):
+        r"""The names of the point clouds."""
+        return self._pcd_names
+
+    def _load_npz(self):
+        self.X = np.load(self.path_to_X)
+
+    def __len__(self):
+        return len(self.pcd_names)
+
+    def __getitem__(self, idx):
+        # Account for np.load and multiprocessing.
+        # https://github.com/numpy/numpy/issues/18124#issuecomment-2027786617
+        if self.X is None:
+            self._load_npz()
+
+        # Sample a point cloud.
         name = self.pcd_names[idx]
         sample_x = self.X[name]
 
+        # Transform point cloud.
         if self.transform_x is not None:
             sample_x = self.transform_x(sample_x)
 
@@ -444,6 +461,7 @@ class PCDDataset(Dataset):
         if self.Y is not None:
             sample_y = self.Y.loc[name].to_numpy()
 
+            # Transform label.
             if self.transform_y is not None:
                 sample_y = self.transform_y(sample_y)
 

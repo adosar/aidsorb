@@ -161,7 +161,7 @@ Train and test
         
         .. code-block:: console
             
-            $ aidsorb-lit test --config=cofnig.yaml --ckpt_path=path/to/ckpt
+            $ aidsorb-lit test --config=config.yaml --ckpt_path=path/to/ckpt
 
     .. tab-item:: config.yaml
         
@@ -233,8 +233,8 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             from aidsorb.models import PointNet
 
             # Create the datasets.
-            train_ds = PCDDataset(pcd_names=get_names('path/to/train.json', ...)
-            val_ds = PCDDataset(pcd_names=get_names('path/to/validation.json', ...)
+            train_ds = PCDDataset(pcd_names=get_names('path/to/train.json'), ...)
+            val_ds = PCDDataset(pcd_names=get_names('path/to/validation.json'), ...)
 
             # Create the dataloaders.
             train_dl = DataLoader(train_ds, ..., collate_fn=Collator(...))

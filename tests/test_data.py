@@ -35,7 +35,7 @@ from aidsorb.utils import pcd_from_dir
 from aidsorb.transforms import Center
 from aidsorb.data import (
         get_names, prepare_data, PCDDataset,
-        pad_pcds, Collator
+        pad_pcds, worker_init_fn, Collator
         )
 
 
@@ -134,7 +134,8 @@ class TestPCDDataset(unittest.TestCase):
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=Collator(),
-                num_workers=1,
+                num_workers=4,
+                worker_init_fn=worker_init_fn,
                 ):
             self.assertEqual(x.ndim, 3)
             self.assertEqual(len(x), self.batch_size)
@@ -170,7 +171,8 @@ class TestPCDDataset(unittest.TestCase):
         for x in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=pad_pcds,
-                num_workers=1,
+                num_workers=8,
+                worker_init_fn=worker_init_fn,
                 ):
             self.assertEqual(len(x), self.batch_size)
             self.assertEqual(x.ndim, 3)
