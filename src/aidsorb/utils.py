@@ -15,8 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions for creating and handling molecular point
-clouds.
+This module provides helper functions for creating molecular point clouds.
 """
 
 import os
@@ -27,44 +26,6 @@ from tqdm import tqdm
 from ase.io import read
 from . _internal import _check_shape, _ptable
 warnings.filterwarnings('ignore')
-
-
-def split_pcd(pcd):
-    r"""
-    Split a point cloud to coordinates and features.
-
-    .. note::
-        The returned arrays are copies.
-
-    Parameters
-    ----------
-    pcd : array of shape (N, 3+C)
-
-    Returns
-    -------
-    coords_and_feats : tuple of length 2
-        * ``coords_and_feats[0] == coords``, array of shape (N, 3).
-        * ``coords_and_feats[1] == feats``, array of shape (N, C).
-
-    Examples
-    --------
-    >>> pcd = np.random.randn(25, 7)  # Point cloud with 4 features.
-    >>> coords, feats = split_pcd(pcd)
-    >>> coords.shape
-    (25, 3)
-    >>> feats.shape
-    (25, 4)
-
-    >>> pcd = np.random.randn(15, 3)  # Point cloud with no features.
-    >>> coords, feats = split_pcd(pcd)
-    >>> coords.shape
-    (15, 3)
-    >>> feats.shape
-    (15, 0)
-    """
-    _check_shape(pcd)
-
-    return pcd[:, :3].copy(), pcd[:, 3:].copy()
 
 
 def pcd_from_file(filename, features=None):
@@ -196,6 +157,6 @@ def pcd_from_dir(dirname: str, outname: str, features: list=None):
     >>> pcds = np.load(outname)  # doctest: +SKIP
     >>> mol1_pcd = pcds['mol1']  # doctest: +SKIP
     """
-    fnames = (os.path.join(dirname, f) for f in os.listdir(dirname))
+    fnames = [os.path.join(dirname, f) for f in os.listdir(dirname)]
 
     pcd_from_files(fnames, outname, features)

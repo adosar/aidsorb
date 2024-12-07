@@ -134,7 +134,7 @@ class TestPCDDataset(unittest.TestCase):
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=Collator(),
-                num_workers=4,
+                num_workers=2,
                 worker_init_fn=worker_init_fn,
                 persistent_workers=True,
                 ):
@@ -172,7 +172,7 @@ class TestPCDDataset(unittest.TestCase):
         for x in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=pad_pcds,
-                num_workers=4,
+                num_workers=2,
                 worker_init_fn=worker_init_fn,
                 ):
             self.assertEqual(len(x), self.batch_size)

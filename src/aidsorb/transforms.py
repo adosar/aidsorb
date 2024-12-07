@@ -30,8 +30,45 @@ This module provides helper functions and classes for transforming point clouds.
 
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-from . utils import split_pcd
 from . _internal import _check_shape
+
+
+def split_pcd(pcd):
+    r"""
+    Split a point cloud to coordinates and features.
+
+    .. note::
+        The returned arrays are copies.
+
+    Parameters
+    ----------
+    pcd : array of shape (N, 3+C)
+
+    Returns
+    -------
+    coords_and_feats : tuple of length 2
+        * ``coords_and_feats[0] == coords``, array of shape (N, 3).
+        * ``coords_and_feats[1] == feats``, array of shape (N, C).
+
+    Examples
+    --------
+    >>> pcd = np.random.randn(25, 7)  # Point cloud with 4 features.
+    >>> coords, feats = split_pcd(pcd)
+    >>> coords.shape
+    (25, 3)
+    >>> feats.shape
+    (25, 4)
+
+    >>> pcd = np.random.randn(15, 3)  # Point cloud with no features.
+    >>> coords, feats = split_pcd(pcd)
+    >>> coords.shape
+    (15, 3)
+    >>> feats.shape
+    (15, 0)
+    """
+    _check_shape(pcd)
+
+    return pcd[:, :3].copy(), pcd[:, 3:].copy()
 
 
 def transform_pcd(pcd, tfm):
@@ -174,7 +211,6 @@ class RandomRotation():
     >>> new_pcd.shape
     (25, 4)
 
-    >>> from aidsorb.utils import split_pcd
     >>> coords, feats = split_pcd(pcd)
     >>> new_coords, new_feats = split_pcd(new_pcd)
 
@@ -209,7 +245,6 @@ class Jitter():
     >>> new_pcd.shape
     (100, 5)
 
-    >>> from aidsorb.utils import split_pcd
     >>> coords, feats = split_pcd(pcd)
     >>> new_coords, new_feats = split_pcd(new_pcd)
 
