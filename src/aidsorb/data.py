@@ -395,13 +395,13 @@ class PCDDataset(Dataset):
         Column name of the ``.csv`` file to be used as row labels. The names
         (values) under this column must follow the same naming scheme as in
         ``pcd_names``.
-    labels : list, optional
-        List containing the names of the properties to be predicted. No effect
-        if ``path_to_Y=None``.
+    labels : sequence, optional
+        Sequence containing the properties to be predicted. No effect if
+        ``path_to_Y=None``.
     transform_x : callable, optional
-        Transforms applied to ``input``, i.e to each point cloud.
+        Transforms applied to point cloud.
     transform_y : callable, optional
-        Transforms applied to ``output``. No effect if ``path_to_Y=None``.
+        Transforms applied to label. No effect if ``path_to_Y=None``.
 
     See Also
     --------
@@ -416,8 +416,8 @@ class PCDDataset(Dataset):
         self._pcd_names = tuple(pcd_names)  # Immutable for safety.
         self.path_to_X = path_to_X
         self.path_to_Y = path_to_Y
-        self.labels = labels
         self.index_col = index_col
+        self.labels = labels
         self.transform_x = transform_x
         self.transform_y = transform_y
 
@@ -446,6 +446,7 @@ class PCDDataset(Dataset):
     def __getitem__(self, idx):
         # Account for np.load and multiprocessing.
         # https://github.com/numpy/numpy/issues/18124#issuecomment-2027786617
+        # Consider using zarr for storing point clouds.
         if self.X is None:
             self._load_npz()
 
@@ -465,9 +466,6 @@ class PCDDataset(Dataset):
             if self.transform_y is not None:
                 sample_y = self.transform_y(sample_y)
 
-            return (
-                    torch.tensor(sample_x, dtype=torch.float),
-                    torch.tensor(sample_y, dtype=torch.float)
-                    )
+            return torch.tensor(sample_x, dtype=torch.float), torch.tensor(sample_y, dtype=torch.float)
 
         return torch.tensor(sample_x, dtype=torch.float)
