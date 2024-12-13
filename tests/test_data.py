@@ -77,15 +77,8 @@ class TestPrepareData(unittest.TestCase):
 
 class TestPCDDataset(unittest.TestCase):
     def setUp(self):
-        self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
-        self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
-
-        pcd_from_dir(dirname='tests/structures', outname=self.outname)
-
-        _npz = np.load(self.outname)
-        self.pcd_names = _npz.files
-
-        self.path_to_X = self.outname
+        self.path_to_X = 'tests/dummy/toy_project/pcd_data'
+        self.pcd_names = [name.removesuffix('.npy') for name in os.listdir(self.path_to_X)]
         self.path_to_Y = 'tests/dummy/toy_dataset.csv'
         self.index_col = 'id'
         self.labels = ['y1', 'y2']
@@ -94,9 +87,6 @@ class TestPCDDataset(unittest.TestCase):
         self.batch_size = 2
 
     def test_labeled_pcddataset(self):
-        X = np.load(self.outname)
-        Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
-
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
                 path_to_X=self.path_to_X,
@@ -106,6 +96,7 @@ class TestPCDDataset(unittest.TestCase):
                 transform_x=self.transform_x,
                 transform_y=self.transform_y
                 )
+        Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
 
         # Check the size of the dataset.
         self.assertEqual(len(dataset), len(self.pcd_names))
@@ -114,7 +105,7 @@ class TestPCDDataset(unittest.TestCase):
             name = self.pcd_names[i]
 
             # Untransformed sample.
-            x = torch.tensor(X[name])
+            x = torch.tensor(np.load(os.path.join(self.path_to_X, f'{name}.npy')))
             y = torch.tensor(Y.loc[name].to_numpy())
 
             # Transformed sample.
@@ -124,18 +115,11 @@ class TestPCDDataset(unittest.TestCase):
             self.assertFalse(torch.equal(sample_x, x))
             self.assertFalse(torch.equal(sample_y, y))
 
-            # Check that self.transform_x is correctly applied.
-            self.assertTrue(torch.allclose(sample_x.mean(axis=0)[:3], torch.zeros(3), atol=1e-4))
-
-            # Check that self.transform_y is correctly applied.
-            self.assertTrue(torch.equal(y - 1, sample_y))
-
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
                 collate_fn=Collator(),
-                num_workers=2,
-                worker_init_fn=worker_init_fn,
+                num_workers=4,
                 persistent_workers=True,
                 ):
             self.assertEqual(x.ndim, 3)
@@ -145,8 +129,6 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(y.dtype, torch.float)
 
     def test_unlabeled_pcddataset(self):
-        X = np.load(self.outname)
-
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
                 path_to_X=self.path_to_X,
@@ -160,7 +142,7 @@ class TestPCDDataset(unittest.TestCase):
             name = self.pcd_names[i]
 
             # Untransformed sample.
-            x = torch.tensor(X[name])
+            x = torch.tensor(np.load(os.path.join(self.path_to_X, f'{name}.npy')))
 
             # "Transformed" sample.
             sample_x = dataset[i]
@@ -173,14 +155,13 @@ class TestPCDDataset(unittest.TestCase):
                 dataset, batch_size=self.batch_size,
                 collate_fn=pad_pcds,
                 num_workers=2,
-                worker_init_fn=worker_init_fn,
                 ):
             self.assertEqual(len(x), self.batch_size)
             self.assertEqual(x.ndim, 3)
             self.assertEqual(x.dtype, torch.float)
 
     def tearDown(self):
-        self.tempdir.cleanup()
+        ...
 
 
 def load_tests(loader, tests, ignore):

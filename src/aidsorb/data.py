@@ -392,7 +392,7 @@ class PCDDataset(Dataset):
     pcd_names : sequence
         Sequence containing the names of the point clouds.
     path_to_X : str
-        Absolute or relative path to the ``.npz`` file holding the point clouds.
+        Absolute or relative path to the directory holding the point clouds.
     path_to_Y : str, optional
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
@@ -446,22 +446,14 @@ class PCDDataset(Dataset):
         r"""The names of the point clouds."""
         return self._pcd_names
 
-    def _load_npz(self):
-        self.X = np.load(self.path_to_X)
-
     def __len__(self):
         return len(self.pcd_names)
 
     def __getitem__(self, idx):
-        # Account for np.load and multiprocessing.
-        # https://github.com/numpy/numpy/issues/18124#issuecomment-2027786617
-        # Consider using zarr for storing point clouds.
-        if self.X is None:
-            self._load_npz()
-
-        # Sample a point cloud.
-        name = self.pcd_names[idx]
-        sample_x = self.X[name]
+        # Load a point cloud.
+        pcd_name = self.pcd_names[idx]
+        pcd_path = os.path.join(self.path_to_X, f'{pcd_name}.npy')
+        sample_x = np.load(pcd_path)
 
         # Transform point cloud.
         if self.transform_x is not None:
@@ -469,12 +461,13 @@ class PCDDataset(Dataset):
 
         # Only for labeled datasets.
         if self.Y is not None:
-            sample_y = self.Y.loc[name].to_numpy()
+            sample_y = self.Y.loc[pcd_name].to_numpy()
 
             # Transform label.
             if self.transform_y is not None:
                 sample_y = self.transform_y(sample_y)
 
+            # Return (x, y) if data are labeled.
             return torch.tensor(sample_x, dtype=torch.float), torch.tensor(sample_y, dtype=torch.float)
 
         return torch.tensor(sample_x, dtype=torch.float)
