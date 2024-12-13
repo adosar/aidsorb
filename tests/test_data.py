@@ -42,14 +42,14 @@ from aidsorb.data import (
 class TestPrepareData(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
-        self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
+        self.outname = os.path.join(self.tempdir.name, 'pcd_data')
         self.split_ratio = (2, 1, 3)
 
         pcd_from_dir(dirname='tests/structures', outname=self.outname)
         prepare_data(source=self.outname, split_ratio=self.split_ratio)
 
     def test_overlap_and_ratio(self):
-        names = np.load(self.outname).files
+        names = [name.removesuffix('.npy') for name in os.listdir(self.outname)]
         
         train_names = get_names(os.path.join(self.tempdir.name, 'train.json'))
         val_names = get_names(os.path.join(self.tempdir.name, 'validation.json'))

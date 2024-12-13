@@ -32,14 +32,13 @@ from . _internal import _SEED, pd, _check_shape
 
 def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_SEED):
     r"""
-    Split a source of point clouds in train, validation and test sets.
+    Split point clouds into train, validation and test sets.
 
     Each ``.json`` file that is created, stores the names of the point clouds
     that will be used for *training*, *validation* and *testing*.
 
     .. warning::
-        * No directory is created by :func:`prepare_data`. All ``.json`` files
-          are stored under the directory containing ``source``.
+        * All ``.json`` files are stored under the parent directory of ``source``.
         * Splitting doesn't support stratification. If your dataset is small and
           you want to perform classification, consider using
           `train_test_split`_.
@@ -49,9 +48,9 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_
     Parameters
     ----------
     source : str
-        Absolute or relative path to the file holding the point clouds.
+        Absolute or relative path to the directory holding the point clouds.
     split_ratio : sequence, default=(0.8, 0.1, 0.1)
-        The sizes or fractions of splits to be produced.
+        The absolute sizes or fractions of splits.
 
         * ``split_ratio[0] == train``.
         * ``split_ratio[1] == validation``.
@@ -64,31 +63,42 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_
     --------
     Before the split::
 
-        pcd_data
-        └──source.npz
+        project_root
+        └── source
+            ├── foo.npy
+            ├── ...
+            └── bar.npy
 
-    >>> prepare_data('path/to/pcd_data/source.npz')  # doctest: +SKIP
+    >>> prepare_data('path/to/source')  # doctest: +SKIP
 
     After the split::
 
-        pcd_data
-        ├──source.npz
-        ├──train.json
-        ├──validation.json
-        └──test.json
+        project_root
+        ├── source
+        │   ├── foo.npy
+        │   ├── ...
+        │   └── bar.npy
+        ├── test.json
+        ├── train.json
+        └── validation.json
     """
     rng = torch.Generator().manual_seed(seed)
     path = Path(source).parent
-    pcds = np.load(source)
+    pcd_names = [name.removesuffix('.npy') for name in os.listdir(source)]
 
-    train, val, test = random_split(pcds.files, split_ratio, generator=rng)
+    # Split the names of the point clouds.
+    train, val, test = random_split(pcd_names, split_ratio, generator=rng)
 
     for split, mode in zip((train, val, test), ('train', 'validation', 'test')):
         names = list(split)
-        with open(os.path.join(path, f'{mode}.json'), 'w') as fhand:
+        filename = os.path.join(path, f'{mode}.json')
+
+        with open(filename, 'w') as fhand:
             json.dump(names, fhand, indent=4)
 
-    print('\033[32mData preparation completed!\033[0m')
+        print(f'\033[1mSuccessfully created file: {filename}')
+
+    print('\033[32;1mData preparation completed!\033[0m')
 
 
 def get_names(filename):
