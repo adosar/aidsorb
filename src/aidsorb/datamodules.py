@@ -34,24 +34,22 @@ class PCDDataModule(L.LightningDataModule):
     .. note::
         The following directory structure is assumed::
 
-            pcd_data
-            ├──pcds.npz        <-- path_to_X
-            ├──train.json
-            ├──validation.json
-            └──test.json
-
-    .. tip::
-        Assuming ``pcd_data/pcds.npz`` already exists, you can create the above
-        directory structure with :func:`~aidsorb.data.prepare_data`.
+            project_root
+            ├── source      <-- path_to_X
+            │   ├── foo.npy
+            │   ├── ...
+            │   └── bar.npy
+            ├── test.json
+            ├── train.json
+            └── validation.json
 
     .. todo::
-        * Add support for ``predict_dataloader``.
-        * Add option ``drop_last`` for ``train_dataloader``.
+        Add support for ``predict_dataloader``.
 
     Parameters
     ----------
     path_to_X : str
-        Absolute or relative path to the ``.npz`` file holding the point clouds.
+        Absolute or relative path to the directory holding the point clouds.
     path_to_Y : str
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
@@ -70,11 +68,11 @@ class PCDDataModule(L.LightningDataModule):
         The number of training samples. By default, all training samples are
         used.
     train_transform_x : callable, optional
-        Transforms applied to ``input`` during training.
+        Transforms applied to point cloud during training.
     eval_transform_x : callable, optional
-        Transforms applied to ``input`` during validation and testing.
+        Transforms applied to point cloud during validation and testing.
     transform_y : callable, optional
-        Transforms applied to ``output``.
+        Transforms applied to label.
     shuffle : bool, default=False
         Only for ``train_dataloader``.
     train_batch_size : int, default=32
