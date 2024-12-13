@@ -103,19 +103,19 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_
 
 def get_names(filename):
     r"""
-    Return names stored in a ``.json`` file.
+    Return point cloud names stored in a ``.json`` file.
 
     Parameters
     ----------
     filename : str
-        The name of the file from which names will be retrieved.
+        Absolute or relative path to the file.
 
     Returns
     -------
-    names : list
+    names : tuple
     """
     with open(filename, 'r') as fhand:
-        names = json.load(fhand)
+        names = tuple(json.load(fhand))
 
     return names
 
