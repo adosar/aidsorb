@@ -17,38 +17,38 @@ molecular point clouds**.
 
 .. grid:: 4
 
-       .. grid-item::
+      .. grid-item::
 
-               .. button-link:: https://github.com/adosar/aidsorb
-                       :color: primary
-                       :align: center
+            .. button-link:: https://github.com/adosar/aidsorb
+                  :color: primary
+                  :align: center
 
-                       :octicon:`mark-github` Source code
+                  :octicon:`mark-github` Source code
 
-       .. grid-item::
+      .. grid-item::
 
-               .. button-ref:: installation
-                       :ref-type: doc
-                       :color: primary
-                       :align: center
+            .. button-ref:: installation
+                  :ref-type: doc
+                  :color: primary
+                  :align: center
 
-                       🚀 Get started
+                  🚀 Get started
 
-       .. grid-item::
+      .. grid-item::
 
-               .. button-link:: https://pypi.org/project/aidsorb/
-                       :color: primary
-                       :align: center
+            .. button-link:: https://pypi.org/project/aidsorb/
+                  :color: primary
+                  :align: center
 
-                       📦 PyPI package
+                  📦 PyPI package
 
-       .. grid-item::
+      .. grid-item::
 
-               .. button-link:: https://example.com
-                       :color: primary
-                       :align: center
+            .. button-link:: https://example.com
+                  :color: primary
+                  :align: center
 
-                       :octicon:`telescope` |aidsorb| paper
+                  :octicon:`telescope` |aidsorb| paper
 
 |aidsorb| aims to provide a **simple, easy-to-use and reproduce** interface
 for:
@@ -57,7 +57,7 @@ for:
 * 🤖 **Training DL algorithms on molecular point clouds**
 
 .. raw:: html
-    :file: images/pcd_plotly.html
+   :file: images/pcd_plotly.html
 
 .. rubric:: Why molecular point clouds?
 
@@ -75,25 +75,25 @@ TODO
 
 .. card-carousel:: 2
 
-    .. card:: 1️⃣  Extend the :doc:`cli`
-        :text-align: center
+   .. card:: 1️⃣  Extend the :doc:`cli`
+      :text-align: center
 
-        Enable users to make predictions from the command line.
+      Enable users to make predictions from the command line.
 
-    .. card:: 2️⃣  Add pretrained models
-        :text-align: center
+   .. card:: 2️⃣  Add pretrained models
+      :text-align: center
 
-        Enable users to fine-tune models trained on large data.
+      Enable users to fine-tune models trained on large data.
 
-    .. card:: 3️⃣  Support more architectures
-        :text-align: center
+   .. card:: 3️⃣  Support more architectures
+      :text-align: center
 
-        This might require the usage of |pyg|.
+      This might require the usage of |pyg|.
 
-    .. card:: 4️⃣  Extend featurization
-        :text-align: center
+   .. card:: 4️⃣  Extend featurization
+      :text-align: center
 
-        Add more featurization options. These should be fast!
+      Add more featurization options. These should be fast!
 
 Contributing
 ------------
@@ -128,15 +128,15 @@ License
 |aidsorb| is released under the |license|.
 
 .. toctree::
-    :maxdepth: 1
-    :caption: Contents
+   :maxdepth: 1
+   :caption: Contents
 
-    installation
-    tutorial
-    cli
-    api
-    auto_examples/index
-    changelog
+   installation
+   tutorial
+   cli
+   api
+   auto_examples/index
+   changelog
 
 
 Indices and tables

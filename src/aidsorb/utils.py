@@ -88,8 +88,7 @@ def pcd_from_files(filenames, outname, features=None):
     r"""
     Create molecular point clouds from a list of files and store them.
 
-    The point clouds are stored in ``.npz`` format as key-value pairs. For more
-    information on this format, see :func:`numpy.savez`.
+    The point clouds are stored under ``outname/`` as ``.npy`` files.
 
     Parameters
     ----------
@@ -97,7 +96,7 @@ def pcd_from_files(filenames, outname, features=None):
         An iterable providing the filenames. Absolute or relative paths can be
         used.
     outname : str
-        Filename where the data will be stored.
+        Directory name where the data will be stored.
     features: list, optional
         See :func:`pcd_from_file`.
 
@@ -108,39 +107,37 @@ def pcd_from_files(filenames, outname, features=None):
     Examples
     --------
     >>> # Create and store the point clouds.
-    >>> outname = 'path/to/pcds.npz'
-    >>> pcd_from_files(['path/to/mol1.xyz', 'path/to/mol2.cif'], outname=outname)  # doctest: +SKIP
-    >>> # Load back and access the point clouds.
-    >>> pcds = np.load(outname)  # doctest: +SKIP
-    >>> mol1_pcd = pcds['mol1']  # doctest: +SKIP
+    >>> outname = 'path/to/pcd_data'
+    >>> pcd_from_files(['path/to/foo.xyz', 'path/to/bar.cif'], outname)  # doctest: +SKIP
+    >>> # Load back a point cloud.
+    >>> pcd = np.load(f'{outname}/foo.npy')  # doctest: +SKIP
     """
-    # Dictionary with names as keys and pcd's as values.
-    savez_dict = {}
+    # Create the directory if it doesn't exist.
+    os.mkdir(outname)
+    print(f'\033[32;1mSuccessfully created directory: {outname}\033[0m')
 
-    for f in tqdm(filenames, desc='\033[32mCreating point clouds\033[0m'):
+    # Create point clouds and store them.
+    for f in tqdm(filenames, desc='\033[32;1mCreating point clouds\033[0m'):
         try:
             name, pcd = pcd_from_file(f, features=features)
-            savez_dict[name] = pcd
-        except Exception:
-            pass
-
-    # Store the point clouds.
-    np.savez_compressed(outname, **savez_dict)
+            pathname = os.path.join(outname, name)
+            np.save(pathname, pcd)
+        except Exception as e:
+            print(e)
 
 
 def pcd_from_dir(dirname: str, outname: str, features: list=None):
     r"""
     Create molecular point clouds from a directory and store them.
 
-    The point clouds are stored in ``.npz`` format as key-value pairs. For more
-    information on this format, see :func:`numpy.savez`.
+    The point clouds are stored under ``outname/`` as ``.npy`` files.
 
     Parameters
     ----------
     dirname : str
         Absolute or relative path to the directory.
     outname : str
-        Name of the file where point clouds will be stored.
+        Directory name where the data will be stored.
     features: list, optional
         See :func:`pcd_from_file`.
 
@@ -151,11 +148,9 @@ def pcd_from_dir(dirname: str, outname: str, features: list=None):
     Examples
     --------
     >>> # Create and store the point clouds.
-    >>> outname = 'path/to/pcds.npz'
-    >>> pcd_from_dir('path/to/dir', outname=outname)  # doctest: +SKIP
-    >>> # Load back and access the point clouds.
-    >>> pcds = np.load(outname)  # doctest: +SKIP
-    >>> mol1_pcd = pcds['mol1']  # doctest: +SKIP
+    >>> dirname = 'path/to/structures'
+    >>> outname = 'path/to/pcd_data'
+    >>> pcd_from_dir(dirname, outname)  # doctest: +SKIP
     """
     fnames = [os.path.join(dirname, f) for f in os.listdir(dirname)]
 
