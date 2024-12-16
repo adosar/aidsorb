@@ -22,7 +22,7 @@ handling point clouds of variable sizes.
 import os
 import json
 from pathlib import Path
-from typing import Sequence
+from collections.abc import Sequence
 import numpy as np
 import torch
 from torch.utils.data import random_split, Dataset

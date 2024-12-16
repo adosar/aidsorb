@@ -18,7 +18,7 @@ r"""
 This module provides :class:`~lightning.pytorch.core.LightningModule`'s for use
 with |lightning|.
 """
-from typing import Callable
+from collections.abc import Callable
 import torch
 import torchmetrics
 import lightning as L

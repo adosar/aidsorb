@@ -20,7 +20,7 @@ use with |lightning|.
 """
 
 import os
-from typing import Callable
+from collections.abc import Callable
 from pathlib import Path
 import lightning as L
 from torch.utils.data import DataLoader
