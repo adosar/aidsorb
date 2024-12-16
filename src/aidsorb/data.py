@@ -247,18 +247,6 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     return batch
 
 
-def worker_init_fn(worker_id):
-    r"""
-    Load `.npz` in each worker.
-
-    Parameters
-    ----------
-    worker_id: int
-    """
-    worker_info = torch.utils.data.get_worker_info()
-    worker_info.dataset._load_npz()
-
-
 class Collator():
     r"""
     Collate a sequence of samples into a ``batch``.
