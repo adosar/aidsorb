@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: AIdsorb
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Antonios
+    name-particle: P.
+    family-names: Sarikas
+    orcid: 'https://orcid.org/0009-0008-8420-927X'
+identifiers:
+  - type: doi
+    value: 10.1038/s41598-024-76319-8
+    description: The DOI of the paper.
+repository-code: 'https://github.com/adosar/aidsorb'
+url: 'https://aidsorb.readthedocs.io/en/stable/'
+abstract: >-
+  Python package for deep learning on molecular point
+  clouds.
+keywords:
+  - deep learning
+  - geometric deep learning
+  - point clouds
+  - machie learning
+  - pytorch
+  - pytorch lightning
+  - porous materials
+  - material informatics
+  - metal-organic frameworks
+  - molecular point clouds
+license: GPL-3.0-only
