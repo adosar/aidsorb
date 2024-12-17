@@ -27,7 +27,7 @@ import numpy as np
 import torch
 from torch.utils.data import random_split, Dataset
 from torch.nn.utils.rnn import pad_sequence
-from . _internal import _SEED, pd, _check_shape
+from . _internal import _SEED, pd
 
 
 def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_SEED):

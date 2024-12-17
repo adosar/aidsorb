@@ -24,7 +24,7 @@ import warnings
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
-from . _internal import _check_shape, _ptable
+from . _internal import _ptable
 warnings.filterwarnings('ignore')
 
 
