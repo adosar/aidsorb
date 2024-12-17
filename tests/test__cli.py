@@ -30,9 +30,9 @@ from aidsorb.litmodels import PointLit
 class TestCLI(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
-        self.outname = os.path.join(self.tempdir.name, 'pcds.npz')
+        self.outname = os.path.join(self.tempdir.name, 'pcd_data')
         self.dirname = 'tests/structures'
-        self.split_ratio = (2, 2, 2)
+        self.split_ratio = [2, 2, 2]
         self.path_to_logs = f'{self.tempdir.name}/lightning_logs/version_0'
 
     def test_cli(self):
@@ -40,7 +40,7 @@ class TestCLI(unittest.TestCase):
         os.system(f'aidsorb prepare {self.outname} --split_ratio "{self.split_ratio}"')
 
         # Check that the files are correctly created.
-        self.assertTrue(os.path.isfile(self.outname))
+        self.assertTrue(os.path.isdir(self.outname))
         for mode in ['train', 'validation', 'test']:
             self.assertTrue(os.path.isfile(f'{self.tempdir.name}/{mode}.json'))
 

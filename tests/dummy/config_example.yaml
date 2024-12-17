@@ -28,6 +28,7 @@ data:
   config_dataloaders:
     collate_fn:
       class_path: aidsorb.data.Collator
+    num_workers: 4
 
 model:
   loss:

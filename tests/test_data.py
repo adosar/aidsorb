@@ -35,7 +35,7 @@ from aidsorb.utils import pcd_from_dir
 from aidsorb.transforms import Center
 from aidsorb.data import (
         get_names, prepare_data, PCDDataset,
-        pad_pcds, worker_init_fn, Collator
+        pad_pcds, Collator
         )
 
 
