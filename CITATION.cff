@@ -8,8 +8,7 @@ message: >-
   metadata from this file.
 type: software
 authors:
-  - given-names: Antonios
-    name-particle: P.
+  - given-names: Antonios P.
     family-names: Sarikas
     orcid: 'https://orcid.org/0009-0008-8420-927X'
 identifiers:
