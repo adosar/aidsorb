@@ -91,6 +91,9 @@ discussions.
 ## 📑 Citing
 * **To cite the software**, please refer to the [citation file](./CITATION.cff) or click the citation button.
 * **To cite the paper**, please use the following BibTeX entry:
+<details>
+<summary>Show BibTex entry</summary>
+	
 ```bibtex
 @article{Sarikas2024,
   title = {Gas adsorption meets geometric deep learning: points,  set and match},
@@ -106,6 +109,7 @@ discussions.
   month = nov
 }
 ```
+</details>
 
 ## ⚖️ License
 **AIdosrb** is released under the [GNU General Public License v3.0 only](https://spdx.org/licenses/GPL-3.0-only.html).
