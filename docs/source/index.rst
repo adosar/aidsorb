@@ -44,7 +44,7 @@ molecular point clouds**.
 
       .. grid-item::
 
-            .. button-link:: https://example.com
+            .. button-link:: https://www.nature.com/articles/s41598-024-76319-8
                   :color: primary
                   :align: center
 
@@ -117,9 +117,29 @@ discussions.
 Citing
 ------
 
-If you use AIdosrb in your research, please consider citing the following work::
+.. tab-set::
 
-	Currently, not available.
+    .. tab-item:: Software
+
+       Please refer to the ``CITATION.cff`` file or click the citation button on |github|.
+
+    .. tab-item:: Paper
+
+        .. code-block:: bibtex
+
+            @article{Sarikas2024,
+              title = {Gas adsorption meets geometric deep learning: points,  set and match},
+              volume = {14},
+              ISSN = {2045-2322},
+              url = {http://dx.doi.org/10.1038/s41598-024-76319-8},
+              DOI = {10.1038/s41598-024-76319-8},
+              number = {1},
+              journal = {Scientific Reports},
+              publisher = {Springer Science and Business Media LLC},
+              author = {Sarikas,  Antonios P. and Gkagkas,  Konstantinos and Froudakis,  George E.},
+              year = {2024},
+              month = nov
+            }
 
 
 License
@@ -133,9 +153,9 @@ License
 
    installation
    tutorial
+   auto_examples/index
    cli
    api
-   auto_examples/index
    changelog
 
 

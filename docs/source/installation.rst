@@ -29,10 +29,3 @@
 		.. code-block::
 
 			$ (<venvir_name>) pip install git+https://github.com/adosar/aidsorb
-
-.. button-ref:: tutorial
-	:ref-type: doc
-	:color: primary
-	:align: center
-	
-	What's next?

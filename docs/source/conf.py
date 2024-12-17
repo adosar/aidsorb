@@ -66,6 +66,7 @@ rst_epilog = '''
 .. |pyg| replace:: :bdg-link-primary:`PyTorch Geometric <https://pytorch-geometric.readthedocs.io/en/latest/index.html>`
 .. |license| replace:: :bdg-link-primary:`GNU General Public License v3.0 only <https://spdx.org/licenses/GPL-3.0-only.html>`
 .. |aidsorb| replace:: **AIdsorb**
+.. |github| replace:: :bdg-link-primary:`GitHub <https://github.com/adosar/aidsorb/>`
 '''
 
 # -- Options for HTML output -------------------------------------------------

@@ -272,10 +272,3 @@ Can I predict directly from the CLI?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Currently, this feature is not available (see :ref:`index:TODO`).
-
-.. button-ref:: auto_examples/index
-	:ref-type: doc
-	:color: primary
-	:align: center
-	
-	What's next?
