@@ -47,5 +47,5 @@ Issues = "https://github.com/adosar/aidsorb/issues"
 Documentation = "https://aidsorb.readthedocs.io/en/stable/"
 
 [project.scripts]
-aidsorb = "aidsorb._cli:aidsorb_fire"
+aidsorb = "aidsorb._cli:aidsorb_cli"
 aidsorb-lit = "aidsorb._cli:lightning_cli"

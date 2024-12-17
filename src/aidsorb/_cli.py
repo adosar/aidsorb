@@ -30,16 +30,16 @@ def lightning_cli():
     LightningCLI(PointLit, PCDDataModule)
 
 
-def aidsorb_fire():
+def aidsorb_cli():
     r"""
     CLI for creating, preparing and visualizing molecular point clouds.
     """
-    import fire
+    from jsonargparse import CLI
     from . visualize import draw_pcd_from_file
     from . utils import pcd_from_dir
     from . data import prepare_data
 
-    fire.Fire({
+    CLI({
         'visualize': draw_pcd_from_file,
         'create': pcd_from_dir,
         'prepare': prepare_data,
