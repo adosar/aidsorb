@@ -31,7 +31,6 @@ classifiers = [
 
 dependencies = [
     "ase>=3.22.1",
-    "fire>=0.5.0",
     "plotly>=5.19.0",
     "tqdm>=4.66.2",
     "pandas>=2.2.0",
