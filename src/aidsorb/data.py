@@ -292,10 +292,6 @@ class Collator():
 
     >>> collate_fn = Collator()
     >>> x, y = collate_fn((sample1, sample2))
-    >>> x.shape
-    torch.Size([2, 4, 2])
-    >>> y.shape
-    torch.Size([2, 2])
     >>> x
     tensor([[[1, 1],
              [4, 4],
@@ -335,6 +331,23 @@ class Collator():
              [9, 4, 1, 8]]])
     >>> y
     tensor([0, 1])
+
+    >>> # Label is None, i.e. unlabeled data.
+    >>> sample1 = (torch.tensor([[1, 0, 1, 0]]), None)
+    >>> sample2 = (torch.tensor([[5, 2, 2, 0], [9, 0, 0, 1]]), None)
+    >>> collate_fn = Collator()
+    >>> x, y = collate_fn((sample1, sample2))
+    >>> x
+    tensor([[[1, 1],
+             [0, 0],
+             [1, 1],
+             [0, 0]],
+    <BLANKLINE>
+            [[5, 9],
+             [2, 0],
+             [2, 0],
+             [0, 1]]])
+    >>> y
     """
     def __init__(self, channels_first=True, mode='upsample'):
         self.channels_first = channels_first
@@ -359,7 +372,7 @@ class Collator():
         pcds, labels = list(zip(*samples))
         
         x = pad_pcds(pcds, channels_first=self.channels_first, mode=self.mode)
-        y = torch.stack(labels)
+        y = torch.stack(labels) if None not in labels else None
 
         return x, y
 
@@ -442,12 +455,16 @@ class PCDDataset(Dataset):
         pcd_name = self.pcd_names[idx]
         pcd_path = os.path.join(self.path_to_X, f'{pcd_name}.npy')
         sample_x = np.load(pcd_path)
+        sample_y = None
 
         # Transform point cloud.
         if self.transform_x is not None:
             sample_x = self.transform_x(sample_x)
 
-        # Only for labeled datasets.
+        # Convert point cloud to tensor.
+        sample_x = torch.tensor(sample_x, dtype=torch.float)
+
+        # Load label of point cloud.
         if self.Y is not None:
             sample_y = self.Y.loc[pcd_name].to_numpy()
 
@@ -455,7 +472,8 @@ class PCDDataset(Dataset):
             if self.transform_y is not None:
                 sample_y = self.transform_y(sample_y)
 
-            # Return (x, y) if data are labeled.
-            return torch.tensor(sample_x, dtype=torch.float), torch.tensor(sample_y, dtype=torch.float)
+            # Convert label to tensor.
+            sample_y = torch.tensor(sample_y, dtype=torch.float)
 
-        return torch.tensor(sample_x, dtype=torch.float)
+        # Return (x, y) if data are labeled else (x, None).
+        return sample_x, sample_y

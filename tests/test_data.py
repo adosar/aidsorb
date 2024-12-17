@@ -145,20 +145,24 @@ class TestPCDDataset(unittest.TestCase):
             x = torch.tensor(np.load(os.path.join(self.path_to_X, f'{name}.npy')))
 
             # "Transformed" sample.
-            sample_x = dataset[i]
+            sample_x, sample_y = dataset[i]
 
             # Check that transformations are not applied.
             self.assertTrue(torch.equal(sample_x, x))
 
+            # Check that label is None.
+            self.assertTrue(sample_y is None)
+
         # Check that it works properly with a dataloader.
-        for x in DataLoader(
+        for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=pad_pcds,
+                collate_fn=Collator(),
                 num_workers=2,
                 ):
             self.assertEqual(len(x), self.batch_size)
             self.assertEqual(x.ndim, 3)
             self.assertEqual(x.dtype, torch.float)
+            self.assertTrue(y is None)
 
     def tearDown(self):
         ...
