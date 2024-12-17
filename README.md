@@ -11,14 +11,15 @@
 </p>
 
 <h4 align="center">
-  <img alt="Static Badge" src="https://img.shields.io/badge/Python%203.11%2B-black?style=for-the-badge&logo=python&logoColor=cyan&link=https%3A%2F%2Fwww.python.org%2Fdownloads%2F">
-  <img alt="Static Badge" src="https://img.shields.io/badge/GPL--3.0--only-black?style=for-the-badge&logo=gnu&logoColor=cyan&link=https%3A%2F%2Fspdx.org%2Flicenses%2FGPL-3.0-only.html">
+  <img alt="Static Badge" src="https://img.shields.io/badge/Python%203.11%2B-black?style=for-the-badge&logo=python&logoColor=cyan">
+  <img alt="Static Badge" src="https://img.shields.io/badge/GPL--3.0--only-black?style=for-the-badge&logo=gnu&logoColor=cyan">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/unittest.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Tests&labelColor=black">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pylint.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Lint&labelColor=black">
   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pypi.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Build&labelColor=black">
 	
   [![Static Badge](https://img.shields.io/badge/foo-stable-black?style=for-the-badge&logo=readthedocs&logoColor=cyan&label=ReadTheDocs&labelColor=black&color=Green)](https://aidsorb.readthedocs.io/en/stable/)
   [![PyPI - Version](https://img.shields.io/pypi/v/aidsorb?style=for-the-badge&logo=pypi&logoColor=cyan&labelColor=black&color=Green)](https://pypi.org/project/aidsorb/)
+  [![Static Badge](https://img.shields.io/badge/online%20app-purple?style=for-the-badge&logo=streamlit&logoSize=auto&label=streamlit&labelColor=black)](https://aidsorb-online.streamlit.app)
 </h4>
 
 **AIdsorb** is a Python package for **deep learning on molecular point clouds**.
@@ -88,9 +89,23 @@ discussions.
 
 
 ## 📑 Citing
-If you use **AIdsorb** in your research, please consider citing the following work:
-	
-	Currently, not available.
+* **To cite the software**, please refer to the [citation file](./CITATION.cff) or click the citation button.
+* **To cite the paper**, please use the following BibTeX entry:
+```bibtex
+@article{Sarikas2024,
+  title = {Gas adsorption meets geometric deep learning: points,  set and match},
+  volume = {14},
+  ISSN = {2045-2322},
+  url = {http://dx.doi.org/10.1038/s41598-024-76319-8},
+  DOI = {10.1038/s41598-024-76319-8},
+  number = {1},
+  journal = {Scientific Reports},
+  publisher = {Springer Science and Business Media LLC},
+  author = {Sarikas,  Antonios P. and Gkagkas,  Konstantinos and Froudakis,  George E.},
+  year = {2024},
+  month = nov
+}
+```
 
 ## ⚖️ License
 **AIdosrb** is released under the [GNU General Public License v3.0 only](https://spdx.org/licenses/GPL-3.0-only.html).
