@@ -24,7 +24,7 @@ import torchmetrics
 import lightning as L
 
 
-class PointLit(L.LightningModule):
+class PCDLit(L.LightningModule):
     r"""
     ``LightningModule`` for :class:`aidsorb.models`.
 
@@ -67,7 +67,7 @@ class PointLit(L.LightningModule):
 
     >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
     >>> loss, metric = MSELoss(), MetricCollection(R2Score(), MAE())
-    >>> litmodel = PointLit(model=model, loss=loss, metric=metric)
+    >>> litmodel = PCDLit(model=model, loss=loss, metric=metric)
 
     >>> x = torch.randn(32, 5, 100)
     >>> out = litmodel(x)

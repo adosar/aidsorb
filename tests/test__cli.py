@@ -24,7 +24,7 @@ Command: python -m unittest tests.test__cli
 import os
 import tempfile
 import unittest
-from aidsorb.litmodels import PointLit
+from aidsorb.litmodels import PCDLit
 
 
 class TestCLI(unittest.TestCase):

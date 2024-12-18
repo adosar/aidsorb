@@ -21,7 +21,7 @@ import lightning as L
 from lightning.pytorch.cli import LightningArgumentParser
 from torch.utils.data import DataLoader
 from aidsorb.datamodules import PCDDataModule
-from aidsorb.litmodels import PointLit
+from aidsorb.litmodels import PCDLit
 
 # %%
 # The following snipper let us instantiate:
@@ -46,7 +46,7 @@ config_dict['trainer']['logger'] = False
 del config_dict['seed_everything'], config_dict['ckpt_path']
 
 parser = LightningArgumentParser()
-parser.add_lightning_class_args(PointLit, 'model')
+parser.add_lightning_class_args(PCDLit, 'model')
 parser.add_lightning_class_args(PCDDataModule, 'data')
 parser.add_class_arguments(L.Trainer, 'trainer')
 

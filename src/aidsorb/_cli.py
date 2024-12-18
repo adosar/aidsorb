@@ -25,9 +25,9 @@ def lightning_cli():
     """
     from lightning.pytorch.cli import LightningCLI
     from . datamodules import PCDDataModule
-    from . litmodels import PointLit
+    from . litmodels import PCDLit
 
-    LightningCLI(PointLit, PCDDataModule)
+    LightningCLI(PCDLit, PCDDataModule)
 
 
 def aidsorb_cli():
