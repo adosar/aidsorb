@@ -107,22 +107,15 @@ class PCDLit(L.LightningModule):
         Also, make predictions that will be used on epoch-level operations.
 
         .. note::
-            Inference mode is enabled during predictions, so an accurate
-            estimate of training performance (e.g. when using
-            :class:`~torch.nn.Dropout`) is reported.
+            Training loss is computed with training mode enabled and thus, may
+            underestimate the true training loss if ``model`` contains
+            modules like :class:`~torch.nn.Dropout` etc.
         """
-        assert self.training
-        assert torch.is_grad_enabled()
-
         x, y = batch
-        y_pred = self(x)
-        loss = self.loss(input=y_pred, target=y)
+        preds = self(x)
 
-        # Account for BatchNorm and Dropout.
-        self.eval()
-        with torch.no_grad():
-            preds = self(x)
-        self.train()
+        # Compute training loss.
+        loss = self.loss(input=preds, target=y)
 
         # Log metric on epoch-level.
         self.train_metric.update(preds=preds, target=y)
@@ -135,9 +128,6 @@ class PCDLit(L.LightningModule):
         Make predictions on a single ``batch`` from the validation set for epoch-level
         operations.
         """
-        assert not self.training
-        assert not torch.is_grad_enabled()
-
         x, y = batch
         preds = self(x)
 
@@ -150,9 +140,6 @@ class PCDLit(L.LightningModule):
         Make predictions on a single ``batch`` from the test set for epoch-level
         operations.
         """
-        assert not self.training
-        assert not torch.is_grad_enabled()
-
         x, y = batch
         preds = self(x)
 
@@ -164,13 +151,7 @@ class PCDLit(L.LightningModule):
         r"""
         Return predictions on a single ``batch``.
         """
-        assert not self.training
-        assert not torch.is_grad_enabled()
-
-        if len(batch) == 2:  # Batch with labels.
-            x, _ = batch
-        else:
-            x = batch  # Batch without labels.
+        x, _ = batch
 
         return self(x)
 
