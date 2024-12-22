@@ -32,7 +32,7 @@ There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
         +------------+--------------------------------------------------------------+
         | Subcommand | Short description                                            |
         +============+==============================================================+
-        | fit        | Train a DL architecture.                                     |
+        | fit        | Run the full optimization routine.                           |
         +------------+--------------------------------------------------------------+
         | validate   | Evaluate the model on the validation set.                    |
         +------------+--------------------------------------------------------------+

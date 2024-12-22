@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions for the CLI.
+Helper functions for the CLI.
 """
 
 

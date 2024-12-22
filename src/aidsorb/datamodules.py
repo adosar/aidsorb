@@ -15,12 +15,11 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`~lightning.pytorch.core.LightningDataModule`'s for
-use with |lightning|.
+:class:`~lightning.pytorch.core.LightningDataModule`'s for use with |lightning|.
 """
 
 import os
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 import lightning as L
 from torch.utils.data import DataLoader
@@ -29,7 +28,7 @@ from . data import get_names, PCDDataset
 
 class PCDDataModule(L.LightningDataModule):
     r"""
-    ``LightningDataModule`` for point clouds.
+    ``LightningDataModule`` for supervised learning on point clouds.
 
     .. note::
         The following directory structure is assumed::
@@ -43,6 +42,13 @@ class PCDDataModule(L.LightningDataModule):
             ├── train.json
             └── validation.json
 
+    .. warning::
+        * Comma ``,`` is assumed as the field separator in ``.csv`` file.
+        * If ``train_size`` is specified, the first ``train_size`` point clouds
+          from ``train.json`` will be used. **If the data were not split with**
+          :func:`~aidsorb.data.prepare_data`, **ensure that names in**
+          ``train.json`` **don't follow a particular order**.
+
     .. todo::
         Add support for ``predict_dataloader``.
 
@@ -53,20 +59,13 @@ class PCDDataModule(L.LightningDataModule):
     path_to_Y : str
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
-
-        .. warning::
-            The comma ``,`` is assumed as the field separator.
-
     index_col : str
-        Column name of the ``.csv`` file to be used as row labels. The names
-        (values) under this column must follow the same naming scheme as in
-        ``pcds.npz``.
-    labels : list
-        List containing the names of the properties to be predicted. No effect if
-        ``path_to_Y=None``.
+        Column name of the ``.csv`` file to be used for indexing.
+    labels : sequence
+        Column names of the ``.csv`` file containing the properties to be
+        predicted.
     train_size : int, optional
-        The number of training samples. By default, all training samples are
-        used.
+        Number of training samples. If ``None``, all training samples are used.
     train_transform_x : callable, optional
         Transforms applied to point cloud during training.
     eval_transform_x : callable, optional
@@ -74,15 +73,13 @@ class PCDDataModule(L.LightningDataModule):
     transform_y : callable, optional
         Transforms applied to label.
     shuffle : bool, default=False
-        Only for ``train_dataloader``.
+        Only for train dataloader.
     train_batch_size : int, default=32
-        ``batch_size`` for train dataloader.
+        Batch size for train dataloader.
     eval_batch_size : int, default=32
-        ``batch_size`` for the validation and test dataloaders.
+        Batch size for validation and test dataloaders.
     config_dataloaders : dict, optional
-        Dictionary for configuring the :class:`~torch.utils.data.DataLoader`'s.
-        This is applied to all dataloaders, i.e.
-        ``{train,validation,test}_dataloader``. For example::
+        Dictionary for configuring all dataloaders. For example::
 
             config_dataloaders = {
                 'pin_memory': True,
@@ -91,10 +88,8 @@ class PCDDataModule(L.LightningDataModule):
 
     See Also
     --------
-    :class:`~aidsorb.data.PCDDataset`
     :class:`~torch.utils.data.DataLoader` :
-        For a description of ``shuffle``, ``batch_size`` and valid ``**kwargs``
-        passed to ``config_dataloaders``.
+        For a description of ``shuffle`` and valid options for ``config_dataloaders``.
     """
     def __init__(
             self, path_to_X: str, path_to_Y: str,
@@ -136,6 +131,14 @@ class PCDDataModule(L.LightningDataModule):
     def setup(self, stage=None):
         r"""
         Setup train, validation and test datasets.
+
+        .. tip::
+            * Datasets are instances of :class:`~aidsorb.data.PCDDataset`.
+            * Datasets are accesible via ``self.{train,validation,test}_dataset``.
+
+        Parameters
+        ----------
+        stage : {None, 'fit', 'validate', 'test'}, optional
         """
         if stage in (None, 'fit'):
             # Load the names for training and validation.
@@ -206,7 +209,7 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def set_test_dataset(self):
-        r"""Setup the validation dataset."""
+        r"""Setup the test dataset."""
         self.test_dataset = PCDDataset(
                 pcd_names=self.test_names,
                 path_to_X=self.path_to_X,
@@ -222,7 +225,11 @@ class PCDDataModule(L.LightningDataModule):
         Return the train dataloader.
 
         Can be called only after :meth:`setup` has been called and
-        ``stage={None|fit}``.
+        ``stage`` is ``{None, 'fit'}``.
+
+        Returns
+        -------
+            :class:`~torch.utils.data.DataLoader`
         """
         return DataLoader(
                 dataset=self.train_dataset,
@@ -236,7 +243,11 @@ class PCDDataModule(L.LightningDataModule):
         Return the validation dataloader.
 
         Can be called only after :meth:`setup` has been called and
-        ``stage={None|fit|validate}``.
+        ``stage`` is ``{None, 'fit', 'validate'}``.
+
+        Returns
+        -------
+            :class:`~torch.utils.data.DataLoader`
         """
         return DataLoader(
                 dataset=self.validation_dataset,
@@ -250,7 +261,11 @@ class PCDDataModule(L.LightningDataModule):
         Return the test dataloader.
 
         Can be called only after :meth:`setup` has been called and
-        ``stage={None|test}``.
+        ``stage`` is ``{None, 'test'}``.
+
+        Returns
+        -------
+            :class:`~torch.utils.data.DataLoader`
         """
         return DataLoader(
                 dataset=self.test_dataset,

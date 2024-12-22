@@ -15,8 +15,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions and classes for creating datasets and
-handling point clouds of variable sizes.
+Helper functions and classes for creating datasets and handling point clouds of
+variable sizes.
 """
 
 import os
@@ -35,7 +35,7 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_
     Split point clouds into train, validation and test sets.
 
     Each ``.json`` file that is created, stores the names of the point clouds
-    that will be used for *training*, *validation* and *testing*.
+    that will be used for training, validation and testing.
 
     .. warning::
         * All ``.json`` files are stored under the parent directory of ``source``.
@@ -50,14 +50,14 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_
     source : str
         Absolute or relative path to the directory holding the point clouds.
     split_ratio : sequence, default=(0.8, 0.1, 0.1)
-        The absolute sizes or fractions of splits.
+        Absolute sizes or fractions of splits.
 
-        * ``split_ratio[0] == train``.
-        * ``split_ratio[1] == validation``.
-        * ``split_ratio[2] == test``.
+        * ``split_ratio[0] == train``
+        * ``split_ratio[1] == validation``
+        * ``split_ratio[2] == test``
 
     seed : int, default=1
-        Controls the randomness of the ``rng`` used for splitting.
+        Controls randomness of the ``rng`` used for splitting.
 
     Examples
     --------
@@ -127,9 +127,9 @@ def upsample_pcd(pcd, size):
     Parameters
     ----------
     pcd : tensor of shape (N, C)
-        The original point cloud of size ``N``.
+        Original point cloud of size ``N``.
     size : int
-        The size of the new point cloud.
+        Size of the new point cloud.
 
     Returns
     -------
@@ -249,7 +249,7 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
 
 class Collator():
     r"""
-    Collate a sequence of samples into a ``batch``.
+    Collate a sequence of samples into a batch.
 
     Point clouds are padded before collation, so they can form a batch.
 
@@ -257,24 +257,19 @@ class Collator():
 
     * Input: sequence of samples
 
-        Each sample is a tuple of tensors ``(pcd, label)``, where
-        ``pcd`` has shape ``(N_i, C)`` and ``label`` has shape
-        ``(n_outputs,)`` or ``()``.
+        Each sample is a tuple of ``(pcd, label)``.
+
+        * ``pcd`` tensor of shape ``(N_i, C)``.
+        * ``label`` tensor of shape ``(n_outputs,)``, ``()`` or ``None``.
 
     * Output: tuple of length 2
 
-        * ``batch[0] == x`` with shape ``(B, C, T)`` if ``channels_first=True``,
-          otherwise ``(B, T, C)``. ``B`` is the batch size and ``T`` is the size
-          of the largest point cloud in the sequence.
-        * ``batch[1] == y`` with shape ``(B, n_outputs)`` or ``(B,)``.
+        * ``batch[0] == x`` tensor of shape ``(B, C, T)`` if
+          ``channels_first=True``, else ``(B, T, C)``.
+        * ``batch[1] == y`` tensor of  shape ``(B, n_outputs)``, ``(B,)`` or ``None``.
 
-    .. tip::
-        Use an instance of this class as ``collate_fn`` with
-        ``channels_first=True``, if your model is :class:`~aidsorb.models.PointNet`.
-
-    .. todo::
-        Add functionality for collating only point clouds (useful when the
-        dataset is unlabeled).
+     ``B`` is the batch size and ``T`` is the size of the largest point cloud in the
+     sequence.
 
     Parameters
     ----------
@@ -381,33 +376,33 @@ class PCDDataset(Dataset):
     r"""
     ``Dataset`` for point clouds.
 
-    .. tip::
-        For implementing your own transforms, have a look at the transforms
-        `tutorial`_.  For more flexibility, consider implementing them as
-        callable instances of classes.
+    Indexing the dataset returns ``(x, None)`` if data are unlabeled, i.e.
+    ``path_to_Y=None``, else ``(x, y)``.
 
-    .. _tutorial: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
+    .. note::
+        * ``x`` and ``y`` are tensors of ``dtype=torch.float``.
+        * ``y`` has shape ``(len(labels),)``.
+        * ``transform_x`` and ``transform_y`` expect :class:`~numpy.ndarray` as
+          input.
+
+    .. warning::
+        Comma ``,`` is assumed as the field separator in ``.csv`` file.
 
     Parameters
     ----------
     pcd_names : sequence
-        Sequence containing the names of the point clouds.
+        Point cloud names.
     path_to_X : str
         Absolute or relative path to the directory holding the point clouds.
     path_to_Y : str, optional
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
-
-        .. warning::
-            The comma ``,`` is assumed as the field separator.
-
     index_col : str, optional
-        Column name of the ``.csv`` file to be used as row labels. The names
-        (values) under this column must follow the same naming scheme as in
-        ``pcd_names``.
+        Column name of the ``.csv`` file to be used for indexing. This column
+        must include ``pcd_names``. No effect if ``path_to_Y=None``.
     labels : sequence, optional
-        Sequence containing the properties to be predicted. No effect if
-        ``path_to_Y=None``.
+        Column names of the ``.csv`` file containing the properties to be
+        predicted. No effect if ``path_to_Y=None``.
     transform_x : callable, optional
         Transforms applied to point cloud.
     transform_y : callable, optional
@@ -444,36 +439,30 @@ class PCDDataset(Dataset):
 
     @property
     def pcd_names(self):
-        r"""The names of the point clouds."""
+        r"""Point cloud names."""
         return self._pcd_names
 
     def __len__(self):
         return len(self.pcd_names)
 
     def __getitem__(self, idx):
-        # Load a point cloud.
         pcd_name = self.pcd_names[idx]
         pcd_path = os.path.join(self.path_to_X, f'{pcd_name}.npy')
         sample_x = np.load(pcd_path)
         sample_y = None
 
-        # Transform point cloud.
         if self.transform_x is not None:
             sample_x = self.transform_x(sample_x)
 
-        # Convert point cloud to tensor.
         sample_x = torch.tensor(sample_x, dtype=torch.float)
 
-        # Load label of point cloud.
+        # Only for labeled data.
         if self.Y is not None:
             sample_y = self.Y.loc[pcd_name].to_numpy()
 
-            # Transform label.
             if self.transform_y is not None:
                 sample_y = self.transform_y(sample_y)
 
-            # Convert label to tensor.
             sample_y = torch.tensor(sample_y, dtype=torch.float)
 
-        # Return (x, y) if data are labeled else (x, None).
         return sample_x, sample_y

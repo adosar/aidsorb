@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides deep learning architectures for point cloud processing.
+Deep learning architectures for point cloud processing.
 
 .. note::
     Currently, only :class:`PointNet` is implemented, a lightweight version of
@@ -116,7 +116,7 @@ class PointNet(torch.nn.Module):
         Returns
         -------
         out : tensor
-            The output of ``head``.
+            Output of ``head``.
         """
         feats, _ = self.backbone(x)  # Ignore critical indices.
         out = self.head(feats)

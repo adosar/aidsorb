@@ -1,19 +1,19 @@
 seed_everything: 1  # Workers are seeded as well.
 
-# Here you setup the Trainer.
+# (Optional) Here you setup the Trainer.
 trainer:
   max_epochs: 2
   accelerator: 'gpu'
 
 # Here you setup the DataModule (PCDDataModule).
-# For more information 👉 aidsorb.datamodules
+# For more information 👉 aidsorb.datamodules.
 data:
   # The paths must be relative to where aidsorb-lit is called.
   # Consider using absolute paths.
-  path_to_X: 'path/to/pcds/pcds.npz'
+  path_to_X: 'path/to/pcd_data'
   path_to_Y: 'path/to/labels.csv'
   index_col: 'id'
-  labels: ['y1, y3']
+  labels: ['y1', 'y3']
   train_transform_x:
     # Here you can pass transformations for augmentation.
     class_path: aidsorb.transforms.Center
@@ -28,7 +28,7 @@ data:
       class_path: aidsorb.data.Collator
 
 # Here you setup the LightningModule (PCDLit).
-# For more information 👉 aidsorb.litmodels
+# For more information 👉 aidsorb.litmodels.
 model:
   loss:
     class_path: torch.nn.MSELoss
@@ -46,14 +46,14 @@ model:
         init_args:
           dropout_rate: 0.7
 
-# Here you setup the optimizer.
+# (Optional) Here you setup the optimizer.
 optimizer:
   class_path: torch.optim.SGD
   init_args:
     lr: 0.001
     momentum: 0.0
 
-# Here you setup the learning rate scheduler.
+# (Optional) Here you setup the learning rate scheduler.
 lr_scheduler:
   class_path: torch.optim.lr_scheduler.StepLR
   init_args:

@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions for creating molecular point clouds.
+Helper functions for creating molecular point clouds.
 """
 
 import os
@@ -38,10 +38,15 @@ def pcd_from_file(filename, features=None):
     **additional** ``features``. If ``features=None``, then the only features
     are the atomic numbers.
 
-    .. _periodic table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
+    .. tip::
+        To get a list of the supported chemical file formats see
+        :func:`ase.io.read`. Alternatively, you can list them from the command line
+        with: ``ase info --formats``.
 
     .. todo::
         Add option to drop hydrogen atoms for reducing size of point clouds.
+
+    .. _periodic table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
 
     Parameters
     ----------
@@ -53,16 +58,13 @@ def pcd_from_file(filename, features=None):
     Returns
     -------
     name_and_pcd : tuple of length 2
-        * ``name_and_pcd[0] == name``.
-        * ``name_and_pcd[1] == pcd``.
+        * ``name_and_pcd[0] == name``
+        * ``name_and_pcd[1] == pcd``
 
     Notes
     -----
-    * The ``name`` of the molecule is the ``basename`` of ``filename`` with its
-      suffix removed.
-    * To get a list of the supported chemical file formats see
-      :func:`ase.io.read`. Alternatively, you can list them from the command line
-      with: ``ase info --formats``.
+    The ``name`` of the molecule is the ``basename`` of ``filename`` with its
+    suffix removed.
 
     Examples
     --------
@@ -88,7 +90,7 @@ def pcd_from_files(filenames, outname, features=None):
     r"""
     Create molecular point clouds from a list of files and store them.
 
-    The point clouds are stored under ``outname/`` as ``.npy`` files.
+    Point clouds are stored under ``outname`` as ``.npy`` files.
 
     Parameters
     ----------
@@ -130,7 +132,7 @@ def pcd_from_dir(dirname: str, outname: str, features: list=None):
     r"""
     Create molecular point clouds from a directory and store them.
 
-    The point clouds are stored under ``outname/`` as ``.npy`` files.
+    Point clouds are stored under ``outname`` as ``.npy`` files.
 
     Parameters
     ----------

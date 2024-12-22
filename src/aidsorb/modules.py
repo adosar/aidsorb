@@ -15,11 +15,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`torch.nn.Module`'s for building the architectures
+:class:`torch.nn.Module`'s for building the architectures
 in :class:`aidsorb.models`.
-
-Currently, the module provides the basic blocks for building the architecture
-from the [PointNet]_ paper.
 
 .. note::
     :class:`PointNetBackbone`, :class:`PointNetClsHead` and
@@ -160,7 +157,7 @@ class TNet(nn.Module):
     Parameters
     ----------
     embed_dim : int
-        The embedding dimension.
+        Embedding dimension.
 
     Examples
     --------
@@ -197,7 +194,7 @@ class TNet(nn.Module):
         Returns
         -------
         out : tensor of shape (B, embed_dim, embed_dim)
-            The regressed matrices.
+            Regressed matrices.
         """
         # Input has shape (B, self.embed_dim, N).
         bs = x.shape[0]
@@ -233,7 +230,7 @@ class PointNetBackbone(nn.Module):
         If ``True``, the returned features are a concatenation of local features
         and global features. Otherwise, the global features are returned.
     n_global_feats : int, default=1024
-        The number of global features.
+        Number of global features.
 
     Examples
     --------
@@ -315,8 +312,8 @@ class PointNetClsHead(nn.Module):
     r"""
     Classification head from the [PointNet]_ paper.
 
-    .. note::
-        This head can be used for classification or regression.
+    .. tip::
+        This head can be used for classification or regression tasks.
 
     Parameters
     ----------
@@ -361,8 +358,8 @@ class PointNetSegHead(nn.Module):
     r"""
     Segmentation head from the [PointNet]_ paper.
 
-    .. note::
-        This head can be used for segmentation.
+    .. tip::
+        This head can be used for segmentation tasks.
 
     Parameters
     ----------

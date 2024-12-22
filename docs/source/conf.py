@@ -36,7 +36,7 @@ extensions = [
 copybutton_exclude = '.linenos, .gp, .go'
 todo_include_todos = True
 autodoc_inherit_docstrings = False
-autodoc_typehints = 'none'
+autodoc_typehints = 'description'
 autosectionlabel_prefix_document = True
 
 templates_path = ['_templates']
@@ -72,8 +72,11 @@ rst_epilog = '''
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'renku'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 html_logo = 'images/aidsorb_logo_dark.svg'
 html_theme_options = {'logo_only': True}
-html_css_files = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"]
+html_css_files = [
+        'custom.css',
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
+        ]

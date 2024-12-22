@@ -15,10 +15,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions and classes for transforming point clouds.
+Helper functions and classes for transforming point clouds.
 
 .. note::
-    The ``pcd`` must be a :class:`~numpy.ndarray` and have shape of ``(N, 3+C)``.
+    ``pcd`` must be a :class:`~numpy.ndarray` of shape ``(N, 3+C)``.
 
 .. tip::
     For implementing your own transforms, have a look at the transforms
@@ -38,7 +38,7 @@ def split_pcd(pcd):
     Split a point cloud to coordinates and features.
 
     .. note::
-        The returned arrays are copies.
+        Returned arrays are copies.
 
     Parameters
     ----------
@@ -47,8 +47,8 @@ def split_pcd(pcd):
     Returns
     -------
     coords_and_feats : tuple of length 2
-        * ``coords_and_feats[0] == coords``, array of shape (N, 3).
-        * ``coords_and_feats[1] == feats``, array of shape (N, C).
+        * ``coords_and_feats[0] == coords`` array of shape (N, 3).
+        * ``coords_and_feats[1] == feats`` array of shape (N, C).
 
     Examples
     --------
@@ -80,15 +80,15 @@ def transform_pcd(pcd, tfm):
     Parameters
     ----------
     pcd : array of shape (N, 3+C)
-        The original point cloud.
+        Original point cloud.
 
     tfm : array of shape (3, 3)
-        The transformation matrix.
+        Transformation matrix.
 
     Returns
     -------
     new_pcd : array of shape (N, 3+C)
-        The transformed point cloud.
+        Transformed point cloud.
 
     Raises
     ------
@@ -128,7 +128,7 @@ def _center_pcd(pcd):
     Center the coordinates of a point cloud by subtracting their centroid.
 
     .. note::
-        The ``features == pcd[:, 3:]`` are not affected.
+        ``features == pcd[:, 3:]`` are not affected.
 
     Parameters
     ----------
@@ -137,7 +137,7 @@ def _center_pcd(pcd):
     Returns
     -------
     new_pcd : array of shape (N, 3+C)
-        The centered point cloud.
+        Centered point cloud.
 
     Raises
     ------
@@ -235,7 +235,7 @@ class Jitter():
     Parameters
     ----------
     std: float, default=0.01
-        The standard deviation of the normal noise.
+        Standard deviation of the normal noise.
 
     Examples
     --------

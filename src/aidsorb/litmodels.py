@@ -15,8 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides :class:`~lightning.pytorch.core.LightningModule`'s for use
-with |lightning|.
+:class:`~lightning.pytorch.core.LightningModule`'s for use with |lightning|.
 """
 from collections.abc import Callable
 import torch
@@ -26,37 +25,34 @@ import lightning as L
 
 class PCDLit(L.LightningModule):
     r"""
-    ``LightningModule`` for :class:`aidsorb.models`.
+    ``LightningModule`` for supervised learning on point clouds.
 
-    .. _loss functions: https://pytorch.org/docs/stable/nn.html#loss-functions
+    .. note::
+        * ``metric`` is logged on epoch-level.
+        * ``*_step`` methods expect a ``batch`` of the form ``(pcds, labels)``.
+
+    .. tip::
+        You can use ``'val_<MetricName>'`` as the quantity to `monitor`_.
+        For example, if ``metric=MetricCollection(R2Score(),
+        MeanAbsoluteError())`` and you want to monitor ``R2Score``, configure
+        the :class:`~lightning.pytorch.callbacks.ModelCheckpoint` as following::
+
+            from lightning.pytorch.callbacks import ModelCheckpoint
+
+            checkpoint_callback = ModelCheckpoint(monitor='val_R2Score', mode='max', ...)
+
     .. _monitor: https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.ModelCheckpoint.html#modelcheckpoint
 
     Parameters
     ----------
-    model : :class:`torch.nn.Module`
-        Currently, only :class:`~aidsorb.models.PointNet` is available.
+    model : :class:`~torch.nn.Module`
+        Custom architecture or one from :mod:`aidsorb.models`.
     loss : callable
-        The loss function to be optimized during training. For valid options,
-        see `loss functions`_.
-    metric : :class:`torchmetrics.MetricCollection`
-        The performance metric(s) to be logged and optionally monitored.
-
-        .. note::
-            The ``metric`` is logged on epoch-level.
-
-        .. tip::
-            You can use ``'val_<MetricName>'`` as the quantity to `monitor`_.
-            For example, if ``metric=MetricCollection(R2Score(),
-            MeanAbsoluteError())`` and you want to monitor
-            :class:`~torchmetrics.R2Score`, configure the
-            :class:`~lightning.pytorch.callbacks.ModelCheckpoint` as following::
-
-                from lightning.pytorch.callbacks import ModelCheckpoint
-
-                checkpoint_callback = ModelCheckpoint(monitor='val_R2Score', mode='max', ...)
-
+        Loss function to be optimized during training.
+    metric : :class:`~torchmetrics.MetricCollection`
+        Metric(s) to be logged and optionally monitored.
     lr : float, default=0.001
-        The learning rate for :class:`~torch.optim.Adam` optimizer.
+        Learning rate for :class:`~torch.optim.Adam` optimizer.
 
     Examples
     --------
@@ -102,14 +98,14 @@ class PCDLit(L.LightningModule):
 
     def training_step(self, batch, batch_idx):
         r"""
-        Compute and return training loss on a single ``batch`` from the train set.
+        Compute and return training loss on a single batch from the train set.
 
         Also, make predictions that will be used on epoch-level operations.
 
         .. note::
             Training loss is computed with training mode enabled and thus, may
             underestimate the true training loss if ``model`` contains
-            modules like :class:`~torch.nn.Dropout` etc.
+            modules like ``Dropout`` etc.
         """
         x, y = batch
         preds = self(x)
@@ -125,7 +121,7 @@ class PCDLit(L.LightningModule):
 
     def validation_step(self, batch, batch_idx):
         r"""
-        Make predictions on a single ``batch`` from the validation set for epoch-level
+        Make predictions on a single batch from the validation set for epoch-level
         operations.
         """
         x, y = batch
@@ -137,7 +133,7 @@ class PCDLit(L.LightningModule):
 
     def test_step(self, batch, batch_idx):
         r"""
-        Make predictions on a single ``batch`` from the test set for epoch-level
+        Make predictions on a single batch from the test set for epoch-level
         operations.
         """
         x, y = batch
@@ -149,7 +145,7 @@ class PCDLit(L.LightningModule):
 
     def predict_step(self, batch, batch_idx):
         r"""
-        Return predictions on a single ``batch``.
+        Return predictions on a single batch.
         """
         x, _ = batch
 

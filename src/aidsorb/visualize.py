@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions for visualizing molecular point clouds.
+Helper functions for visualizing molecular point clouds.
 
 .. tip::
 
@@ -88,11 +88,11 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     r"""
     Visualize molecular point cloud with Plotly.
 
-    Each point ``pcd[i]`` is sized based on its atomic number ``pcd[i, 3]``.
+    * The size of each point is determined by its atomic number ``pcd[i, 3]``.
 
-    The color of each point is determined by ``feature_to_color``. If ``None``,
-    the atomic number of each point determines the color. Otherwise, ``pcd[i,
-    feature_to_color[0]]`` value determines the color.
+    * The color of each point is determined by ``feature_to_color``. If ``None``,
+      the atomic number of each point determines the color. Otherwise, ``pcd[i,
+      feature_to_color[0]]`` value determines the color.
 
     .. _colorscale: https://plotly.com/python/builtin-colorscales/
 
@@ -108,7 +108,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
         No effect if ``feature_to_color=None``. For available options, see
         `colorscale`_.
     **kwargs
-        Valid keword arguments for :class:`plotly.graph_objects.Figure`.
+        Valid keword arguments for :class:`~plotly.graph_objects.Figure`.
 
     Returns
     -------

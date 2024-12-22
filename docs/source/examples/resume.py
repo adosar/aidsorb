@@ -12,23 +12,22 @@ Coming back after model training
 #         * `PyTorch Lightning checkpoints
 #           <https://lightning.ai/docs/pytorch/stable/common/checkpointing_basic.html#lightningmodule-from-checkpoint>`_
 #           are enabled during training.
-#         * Training was performed with AIdsorb :doc:`../cli` or :ref:`AIdsorb +
+#         * Training was performed with :doc:`AIdsorb CLI <../cli>` or :ref:`AIdsorb +
 #           PyTorch Lightning <aidsorb_with_pytorch_and_lightning>`.
 
 import yaml
 import torch
 import lightning as L
 from lightning.pytorch.cli import LightningArgumentParser
-from torch.utils.data import DataLoader
 from aidsorb.datamodules import PCDDataModule
 from aidsorb.litmodels import PCDLit
 
 # %%
 # The following snipper let us instantiate:
 # 
-# * Trainer
-# * LightningModule (litmodel)
-# * Datamodule
+# * :class:`~lightning.pytorch.trainer.trainer.Trainer`
+# * :class:`~lightning.pytorch.core.LightningModule`
+# * :class:`~lightning.pytorch.core.LightningDataModule`
 # 
 # with the same settings as in the ``.yaml`` configuration file. For more
 # information 👉 `here
@@ -38,12 +37,9 @@ from aidsorb.litmodels import PCDLit
 # .. note::
 #     You are responsible for restoring the model's state (the weights of the model).
 
+filename = 'path/to/config.yaml'
 with open(filename, 'r') as f:
     config_dict = yaml.safe_load(f)
-
-# They are not needed during inference.
-config_dict['trainer']['logger'] = False
-del config_dict['seed_everything'], config_dict['ckpt_path']
 
 parser = LightningArgumentParser()
 parser.add_lightning_class_args(PCDLit, 'model')
@@ -53,6 +49,10 @@ parser.add_class_arguments(L.Trainer, 'trainer')
 # Any other key present in the config file must also be added.
 # parser.add_argument(--<keyname>, ...)
 # For more information 👉 https://jsonargparse.readthedocs.io/en/stable/#parsers
+parser.add_argument('--seed_everything')
+parser.add_argument('--ckpt_path')
+parser.add_argument('--optimizer')
+parser.add_argument('--lr_scheduler')
 
 config = parser.parse_object(config_dict)
 objects = parser.instantiate_classes(config)

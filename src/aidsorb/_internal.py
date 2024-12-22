@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-This module provides helper functions and data for use in other modules.
+Helper functions and data for use in other modules.
 """
 
 from importlib.resources import files
