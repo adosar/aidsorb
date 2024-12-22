@@ -58,10 +58,9 @@ Here is a summary of what you can do from the command line:
 
 2.  Create and prepare point clouds:
 	```bash
-	aidsorb create path/to/inp path/to/out  # Create point clouds
-	aidsorb prepare path/to/out  # Split point clouds to train, val and test
+	aidsorb create path/to/structures path/to/pcd_data  # Create and store point clouds
+	aidsorb prepare path/to/pcd_data  # Split point clouds to train, valdation and test
 	```
-	where `path/to/inp` is a directory containing molecular structures.
 	
 3. Train and test a model:
 	```bash
