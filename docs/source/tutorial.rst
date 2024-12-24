@@ -260,7 +260,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             train_dl = DataLoader(train_ds, ..., collate_fn=Collator(...))
             val_dl = DataLoader(val_ds, ..., collate_fn=Collator(...))
 
-            # Instatiate the model.
+            # Instantiate the model.
             model = PointNet(...)
 
             # Your code goes here.
