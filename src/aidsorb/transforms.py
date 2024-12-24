@@ -123,12 +123,9 @@ def transform_pcd(pcd, tfm):
     return np.hstack((new_coords, feats))
 
 
-def _center_pcd(pcd):
+def center_pcd(pcd):
     r"""
     Center the coordinates of a point cloud by subtracting their centroid.
-
-    .. note::
-        ``features == pcd[:, 3:]`` are not affected.
 
     Parameters
     ----------
@@ -147,12 +144,12 @@ def _center_pcd(pcd):
     Examples
     --------
     >>> pcd = np.array([[2, 1, 3, 9, 6], [-3, 2, 8, 7, 8]])
-    >>> new_pcd = _center_pcd(pcd)
+    >>> new_pcd = center_pcd(pcd)
     >>> new_pcd.mean(axis=0)
     array([0., 0., 0., 8., 7.])
 
     >>> pcd = np.random.randn(100, 2)  # Invalid shape.
-    >>> new_pcd = _center_pcd(pcd)
+    >>> new_pcd = center_pcd(pcd)
     Traceback (most recent call last):
         ...
     ValueError: Expecting array of shape (N, 3+C) but got array of shape (100, 2)!
@@ -169,6 +166,10 @@ class Center():
     r"""
     Center the coordinates of a point cloud by subtracting their centroid.
 
+    See also
+    --------
+    :func:`.center_pcd`
+        For a functional interface.
     Examples
     --------
     >>> pcd = np.array([[1., 2., 3., 5.], [2., 4., 5., 3.]])
@@ -181,7 +182,7 @@ class Center():
     array([0., 0., 0., 4.])
     """
     def __call__(self, pcd):
-        return _center_pcd(pcd)  # Checks also for shape.
+        return center_pcd(pcd)  # Checks also for shape.
 
 
 class Identity():
