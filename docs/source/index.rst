@@ -121,7 +121,8 @@ Citing
 
     .. tab-item:: Software
 
-       Please refer to the ``CITATION.cff`` file or click the citation button on |github|.
+       Please refer to the `citation file <https://github.com/adosar/aidsorb/blob/master/CITATION.cff>`_
+       or click the citation button on |github|.
 
     .. tab-item:: Paper
 
