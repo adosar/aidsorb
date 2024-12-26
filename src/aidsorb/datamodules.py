@@ -180,17 +180,17 @@ class PCDDataModule(L.LightningDataModule):
     @property
     def train_names(self):
         r"""The names of point clouds used for training."""
-        return self._train_names
+        return tuple(self._train_names)
 
     @property
     def val_names(self):
         r"""The names of point clouds used for validation."""
-        return self._val_names
+        return tuple(self._val_names)
 
     @property
     def test_names(self):
         r"""The names of point clouds used for testing."""
-        return self._test_names
+        return tuple(self._test_names)
 
     def set_train_dataset(self):
         r"""Setup the train dataset."""
