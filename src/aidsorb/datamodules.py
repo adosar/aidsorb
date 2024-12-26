@@ -31,7 +31,7 @@ class PCDDataModule(L.LightningDataModule):
     ``LightningDataModule`` for supervised learning on point clouds.
 
     .. note::
-        The following directory structure is assumed::
+        * The following directory structure is assumed::
 
             project_root
             ├── source      <-- path_to_X
@@ -41,6 +41,9 @@ class PCDDataModule(L.LightningDataModule):
             ├── test.json
             ├── train.json
             └── validation.json
+
+        * For validation and test dataloaders, ``shuffle=False`` and
+          ``drop_last=False``.
 
     .. warning::
         * Comma ``,`` is assumed as the field separator in ``.csv`` file.
@@ -74,6 +77,8 @@ class PCDDataModule(L.LightningDataModule):
         Transforms applied to label.
     shuffle : bool, default=False
         Only for train dataloader.
+    drop_last : bool, default=False
+        Only for train dataloader.
     train_batch_size : int, default=32
         Batch size for train dataloader.
     eval_batch_size : int, default=32
@@ -89,7 +94,8 @@ class PCDDataModule(L.LightningDataModule):
     See Also
     --------
     :class:`~torch.utils.data.DataLoader` :
-        For a description of ``shuffle`` and valid options for ``config_dataloaders``.
+        For a description of ``shuffle``, ``drop_last`` and valid options for
+        ``config_dataloaders``.
     """
     def __init__(
             self, path_to_X: str, path_to_Y: str,
@@ -99,6 +105,7 @@ class PCDDataModule(L.LightningDataModule):
             eval_transform_x: Callable=None,
             transform_y: Callable=None,
             shuffle: bool=False,
+            drop_last: bool=False,
             train_batch_size: int=32,
             eval_batch_size: int=32,
             config_dataloaders=None,
@@ -117,13 +124,14 @@ class PCDDataModule(L.LightningDataModule):
 
         self.train_size = train_size
         self.shuffle = shuffle
+        self.drop_last = drop_last
 
         self.train_batch_size = train_batch_size
         self.eval_batch_size = eval_batch_size
 
-        if config_dataloaders is None:
-            self.config_dataloaders = {}
-        else:
+        # Options passed to all dataloaders.
+        self.config_dataloaders = {}
+        if config_dataloaders is not None:
             self.config_dataloaders = config_dataloaders
 
         self._path_to_names = Path(self.path_to_X).parent
@@ -235,6 +243,7 @@ class PCDDataModule(L.LightningDataModule):
                 dataset=self.train_dataset,
                 batch_size=self.train_batch_size,
                 shuffle=self.shuffle,
+                drop_last=self.drop_last,
                 **self.config_dataloaders,
                 )
 
@@ -253,6 +262,7 @@ class PCDDataModule(L.LightningDataModule):
                 dataset=self.validation_dataset,
                 batch_size=self.eval_batch_size,
                 shuffle=False,
+                drop_last=False,
                 **self.config_dataloaders,
                 )
 
@@ -271,5 +281,6 @@ class PCDDataModule(L.LightningDataModule):
                 dataset=self.test_dataset,
                 batch_size=self.eval_batch_size,
                 shuffle=False,
+                drop_last=False,
                 **self.config_dataloaders,
                 )

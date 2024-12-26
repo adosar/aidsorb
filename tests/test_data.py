@@ -164,9 +164,6 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(x.dtype, torch.float)
             self.assertTrue(y is None)
 
-    def tearDown(self):
-        ...
-
 
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(data))

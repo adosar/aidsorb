@@ -40,11 +40,12 @@ class TestPCDDataModule(unittest.TestCase):
         self.eval_trans_x = RandomRotation()
         self.trans_y = lambda y: y -1
         self.shuffle = True
+        self.drop_last = True
         self.train_bs = 3
         self.eval_bs = 2
         self.config_dataloaders = {
                 'pin_memory': True,
-                'num_workers': 4,
+                'num_workers': 0,
                 'collate_fn': Collator()
                 }
 
@@ -59,12 +60,13 @@ class TestPCDDataModule(unittest.TestCase):
                 eval_transform_x=self.eval_trans_x,
                 transform_y=self.trans_y,
                 shuffle=self.shuffle,
+                drop_last=self.drop_last,
                 train_batch_size=self.train_bs,
                 eval_batch_size=self.eval_bs,
                 config_dataloaders=self.config_dataloaders,
                 )
 
-        self.dm.prepare_data()
+        # Setup the datamodule.
         self.dm.setup()
 
     def test_datasets(self):
@@ -113,12 +115,13 @@ class TestPCDDataModule(unittest.TestCase):
             # Check that dataloaders use appropriate settings.
             if i == 0:
                 self.assertIsInstance(dl.sampler, RandomSampler)
-                self.assertEqual(dl.batch_size, self.train_bs)
+                self.assertIs(dl.batch_size, self.train_bs)
+                self.assertIs(dl.drop_last, self.drop_last)
             else:
                 self.assertIsInstance(dl.sampler, SequentialSampler)
-                self.assertEqual(dl.batch_size, self.eval_bs)
+                self.assertIs(dl.batch_size, self.eval_bs)
 
-            self.assertEqual(dl.collate_fn, self.config_dataloaders['collate_fn'])
+            self.assertIs(dl.collate_fn, self.config_dataloaders['collate_fn'])
 
             # Check that collate function is used properly.
             for x, y in dl:
@@ -128,6 +131,3 @@ class TestPCDDataModule(unittest.TestCase):
         # Check that each dataloaders loads the correct dataset.
         for dl, ds in zip(dataloaders, datasets):
             self.assertIs(dl.dataset, ds)
-
-    def tearDown(self):
-        ...
