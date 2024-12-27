@@ -99,7 +99,7 @@ class PCDDataModule(L.LightningDataModule):
     """
     def __init__(
             self, path_to_X: str, path_to_Y: str,
-            index_col: str, labels: list,
+            index_col: str, labels: Sequence,
             train_size: int=None,
             train_transform_x: Callable=None,
             eval_transform_x: Callable=None,
