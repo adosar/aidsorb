@@ -47,7 +47,7 @@ class PCDLit(L.LightningModule):
     ----------
     model : :class:`~torch.nn.Module`
         Custom architecture or one from :mod:`aidsorb.models`.
-    loss : callable
+    criterion : callable
         Loss function to be optimized during training.
     metric : :class:`~torchmetrics.MetricCollection`
         Metric(s) to be logged and optionally monitored.
@@ -62,8 +62,8 @@ class PCDLit(L.LightningModule):
     >>> from torchmetrics import MetricCollection, R2Score, MeanAbsoluteError as MAE
 
     >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
-    >>> loss, metric = MSELoss(), MetricCollection(R2Score(), MAE())
-    >>> litmodel = PCDLit(model=model, loss=loss, metric=metric)
+    >>> criterion, metric = MSELoss(), MetricCollection(R2Score(), MAE())
+    >>> litmodel = PCDLit(model=model, criterion=criterion, metric=metric)
 
     >>> x = torch.randn(32, 5, 100)
     >>> out = litmodel(x)
@@ -72,18 +72,18 @@ class PCDLit(L.LightningModule):
     """
     def __init__(
             self, model: torch.nn.Module,
-            loss: Callable, metric: torchmetrics.MetricCollection,
+            criterion: Callable, metric: torchmetrics.MetricCollection,
             lr: float=1e-3
             ):
         super().__init__()
 
         self.model = model
         self.lr = lr
-        self.loss = loss
+        self.criterion = criterion
         self.metric = metric
 
         # Ignore nn.Modules for reducing the size of checkpoints.
-        self.save_hyperparameters(ignore=['model', 'loss', 'metric'])
+        self.save_hyperparameters(ignore=['model', 'criterion', 'metric'])
 
         # For epoch-level operations.
         self.train_metric = metric.clone(prefix='train_')
@@ -111,7 +111,7 @@ class PCDLit(L.LightningModule):
         preds = self(x)
 
         # Compute training loss.
-        loss = self.loss(input=preds, target=y)
+        loss = self.criterion(input=preds, target=y)
 
         # Log metric on epoch-level.
         self.train_metric.update(preds=preds, target=y)

@@ -30,7 +30,7 @@ data:
 # Here you setup the LightningModule (PCDLit).
 # For more information 👉 aidsorb.litmodels.
 model:
-  loss:
+  criterion:
     class_path: torch.nn.MSELoss
   metric:
     class_path: torchmetrics.MetricCollection

@@ -31,7 +31,7 @@ data:
     num_workers: 4
 
 model:
-  loss:
+  criterion:
     class_path: torch.nn.MSELoss
   metric:
     class_path: torchmetrics.MetricCollection
