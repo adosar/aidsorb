@@ -17,10 +17,12 @@
 r"""
 :class:`~lightning.pytorch.core.LightningModule`'s for use with |lightning|.
 """
-from collections.abc import Callable
+
+from collections.abc import Callable, Sequence
 import torch
 import torchmetrics
 import lightning as L
+from . _litmodels_utils import get_optimizers
 
 
 class PCDLit(L.LightningModule):
@@ -32,16 +34,17 @@ class PCDLit(L.LightningModule):
         * ``*_step`` methods expect a ``batch`` of the form ``(pcds, labels)``.
 
     .. tip::
-        You can use ``'val_<MetricName>'`` as the quantity to `monitor`_.
-        For example, if ``metric=MetricCollection(R2Score(),
-        MeanAbsoluteError())`` and you want to monitor ``R2Score``, configure
-        the :class:`~lightning.pytorch.callbacks.ModelCheckpoint` as following::
+        You can use ``'val_<MetricName>'`` as the quantity to monitor. For
+        example, if::
+
+            from torchmetrics import R2Score, MeanAbsoluteError, MetricCollection
+            metric = MetricCollection(R2Score(), MeanAbsoluteError())
+
+        and you want to monitor ``R2Score``, configure the
+        :class:`~lightning.pytorch.callbacks.ModelCheckpoint` as following::
 
             from lightning.pytorch.callbacks import ModelCheckpoint
-
             checkpoint_callback = ModelCheckpoint(monitor='val_R2Score', mode='max', ...)
-
-    .. _monitor: https://lightning.ai/docs/pytorch/stable/api/lightning.pytorch.callbacks.ModelCheckpoint.html#modelcheckpoint
 
     Parameters
     ----------
@@ -51,8 +54,19 @@ class PCDLit(L.LightningModule):
         Loss function to be optimized during training.
     metric : :class:`~torchmetrics.MetricCollection`
         Metric(s) to be logged and optionally monitored.
-    lr : float, default=0.001
-        Learning rate for :class:`~torch.optim.Adam` optimizer.
+    config_optimizer : dict, default=None
+        Dictionary for configuring optimizer. If ``None``, the
+        :class:`~torch.optim.Adam` optimizer with default hyperparameters is
+        used.
+        
+        * ``'name'`` optimizer's class name :class:`str`
+        * ``'hparams'`` scheduler's hyperparameters :class:`dict`
+    config_scheduler : dict, optional
+        Dictionary for configuring learning rate scheduler.
+        
+        * ``'name'`` scheduler's class name :class:`str`
+        * ``'hparams'`` scheduler's hyperparameters :class:`dict`
+        * ``'config'`` scheduler's config  :class:`dict`
 
     Examples
     --------
@@ -63,26 +77,44 @@ class PCDLit(L.LightningModule):
 
     >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
     >>> criterion, metric = MSELoss(), MetricCollection(R2Score(), MAE())
-    >>> litmodel = PCDLit(model=model, criterion=criterion, metric=metric)
 
+    >>> # Adam optimizer with default hyperparameters, no scheduler.
+    >>> litmodel = PCDLit(model, criterion, metric)
+
+    >>> # Custom optimizer and scheduler.
+    >>> config_optimizer = {
+    ... 'name': 'SGD',
+    ... 'hparams': {'lr': 0.1},
+    ... }
+    >>> config_scheduler = {
+    ... 'name': 'StepLR',
+    ... 'hparams': {'step_size': 2},
+    ... 'config': {'interval': 'step'},
+    ... }
+    >>> litmodel = PCDLit(model, criterion, metric, config_optimizer, config_scheduler)
+
+    >>> # Forward pass.
     >>> x = torch.randn(32, 5, 100)
-    >>> out = litmodel(x)
-    >>> out.shape
+    >>> litmodel(x).shape
     torch.Size([32, 10])
     """
     def __init__(
             self, model: torch.nn.Module,
             criterion: Callable, metric: torchmetrics.MetricCollection,
-            lr: float=1e-3
+            config_optimizer: dict=None,
+            config_scheduler: dict=None,
             ):
         super().__init__()
 
         self.model = model
-        self.lr = lr
         self.criterion = criterion
         self.metric = metric
 
+        self.config_optimizer = config_optimizer
+        self.config_scheduler = config_scheduler
+
         # Ignore nn.Modules for reducing the size of checkpoints.
+        # THIS NEEDS TO BE REMOVED!
         self.save_hyperparameters(ignore=['model', 'criterion', 'metric'])
 
         # For epoch-level operations.
@@ -91,9 +123,7 @@ class PCDLit(L.LightningModule):
         self.test_metric = metric.clone(prefix='test_')
 
     def forward(self, x):
-        r"""
-        Run forward pass (forward method) of ``model``.
-        """
+        r"""Run forward pass (forward method) of ``model``."""
         return self.model(x)
 
     def training_step(self, batch, batch_idx):
@@ -144,13 +174,23 @@ class PCDLit(L.LightningModule):
         self.log_dict(self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
 
     def predict_step(self, batch, batch_idx):
-        r"""
-        Return predictions on a single batch.
-        """
+        r"""Return predictions on a single batch."""
         x, _ = batch
 
         return self(x)
 
     def configure_optimizers(self):
-        r""" Return the optimizer."""
-        return torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        r"""
+        Configure optimizer and optionally learning rate scheduler.
+
+        Returns
+        -------
+        optimizers : :class:`~torch.optim.Optimizer` or dict
+            Single optimizer if ``scheduler=None``, else dictionary with keys:
+            ``'optimizer'`` and ``'lr_scheduler'``.
+        """
+        return get_optimizers(
+               params=self.model.parameters(),
+               config_optim=self.config_optimizer,
+               config_lrs=self.config_scheduler,
+               )
