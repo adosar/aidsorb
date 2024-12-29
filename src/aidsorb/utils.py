@@ -128,7 +128,7 @@ def pcd_from_files(filenames, outname, features=None):
             print(e)
 
 
-def pcd_from_dir(dirname: str, outname: str, features: list=None):
+def pcd_from_dir(dirname: str, outname: str, features: list = None):
     r"""
     Create molecular point clouds from a directory and store them.
 

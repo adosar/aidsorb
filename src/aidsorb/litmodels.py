@@ -99,8 +99,10 @@ class PCDLit(L.LightningModule):
     torch.Size([32, 10])
     """
     def __init__(
-            self, model: torch.nn.Module,
-            criterion: Callable, metric: torchmetrics.MetricCollection,
+            self,
+            model: torch.nn.Module,
+            criterion: Callable,
+            metric: torchmetrics.MetricCollection,
             config_optimizer: dict=None,
             config_scheduler: dict=None,
             ):

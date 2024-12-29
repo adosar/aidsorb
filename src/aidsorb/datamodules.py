@@ -98,16 +98,19 @@ class PCDDataModule(L.LightningDataModule):
         ``config_dataloaders``.
     """
     def __init__(
-            self, path_to_X: str, path_to_Y: str,
-            index_col: str, labels: Sequence,
-            train_size: int=None,
-            train_transform_x: Callable=None,
-            eval_transform_x: Callable=None,
-            transform_y: Callable=None,
-            shuffle: bool=False,
-            drop_last: bool=False,
-            train_batch_size: int=32,
-            eval_batch_size: int=32,
+            self,
+            path_to_X: str,
+            path_to_Y: str,
+            index_col: str,
+            labels: Sequence,
+            train_size: int = None,
+            train_transform_x: Callable = None,
+            eval_transform_x: Callable = None,
+            transform_y: Callable = None,
+            shuffle: bool = False,
+            drop_last: bool = False,
+            train_batch_size: int = 32,
+            eval_batch_size: int = 32,
             config_dataloaders=None,
             ):
         super().__init__()

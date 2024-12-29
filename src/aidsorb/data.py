@@ -30,7 +30,7 @@ from torch.nn.utils.rnn import pad_sequence
 from . _internal import _SEED, pd
 
 
-def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int=_SEED):
+def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int = _SEED):
     r"""
     Split point clouds into train, validation and test sets.
 
@@ -413,9 +413,14 @@ class PCDDataset(Dataset):
     :mod:`aidsorb.transforms` : For available point cloud transformations.
     """
     def __init__(
-            self, pcd_names, path_to_X,
-            path_to_Y=None, index_col=None, labels=None,
-            transform_x=None, transform_y=None,
+            self,
+            pcd_names,
+            path_to_X,
+            path_to_Y=None,
+            index_col=None,
+            labels=None,
+            transform_x=None,
+            transform_y=None,
             ):
 
         self._pcd_names = tuple(pcd_names)  # Immutable for safety.
