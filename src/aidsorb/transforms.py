@@ -30,7 +30,7 @@ Helper functions and classes for transforming point clouds.
 
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-from . _internal import _check_shape
+from . _internal import check_shape
 
 
 def split_pcd(pcd):
@@ -66,7 +66,7 @@ def split_pcd(pcd):
     >>> feats.shape
     (15, 0)
     """
-    _check_shape(pcd)
+    check_shape(pcd)
 
     return pcd[:, :3].copy(), pcd[:, 3:].copy()
 
@@ -109,7 +109,7 @@ def transform_pcd(pcd, tfm):
         ...
     ValueError: Expecting array of shape (N, 3+C) but got array of shape (424, 2)!
     """
-    _check_shape(pcd)
+    check_shape(pcd)
 
     if not tfm.shape == (3, 3):
         raise ValueError(
@@ -154,7 +154,7 @@ def center_pcd(pcd):
         ...
     ValueError: Expecting array of shape (N, 3+C) but got array of shape (100, 2)!
     """
-    _check_shape(pcd)
+    check_shape(pcd)
 
     centroid = pcd.mean(axis=0)
     centroid[3:] = 0  # Center only the coordinates.
@@ -221,7 +221,7 @@ class RandomRotation():
     True
     """
     def __call__(self, pcd):
-        _check_shape(pcd)
+        check_shape(pcd)
 
         coords, feats = split_pcd(pcd)
         new_coords = R.random().apply(coords)
@@ -258,7 +258,7 @@ class Jitter():
         self.std = std
 
     def __call__(self, pcd):
-        _check_shape(pcd)
+        check_shape(pcd)
 
         noise = np.random.normal(loc=0, scale=self.std, size=pcd.shape)
         noise[:, 3:] = 0  # Jitter only the coordinates.
@@ -289,7 +289,7 @@ class RandomErase():
         self.n_points = n_points
 
     def __call__(self, pcd):
-        _check_shape(pcd)
+        check_shape(pcd)
 
         # Indices of points to keep.
         keep_size = len(pcd) - self.n_points

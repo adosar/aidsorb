@@ -22,7 +22,7 @@ from importlib.resources import files
 import pandas as pd
 
 
-def _check_shape(array):
+def check_shape(array):
     r"""
     Check if ``array`` has valid shape to be considered a point cloud.
 
@@ -42,7 +42,7 @@ def _check_shape(array):
                 )
 
 
-def _check_shape_vis(array):
+def check_shape_vis(array):
     r"""
     Check if ``array`` has valid shape to be considered a molecular point cloud.
 
@@ -63,11 +63,11 @@ def _check_shape_vis(array):
 
 
 # Default value for controlling randomness.
-_SEED = 1
+SEED = 1
 
 # This will be the default on Pandas 3.0
 pd.options.mode.copy_on_write = True
 
 # Load the periodic table.
 with files('aidsorb.pkg_data').joinpath('periodic_table.csv').open() as fhand:
-    _ptable = pd.read_csv(fhand, index_col='atomic_number')
+    ptable = pd.read_csv(fhand, index_col='atomic_number')

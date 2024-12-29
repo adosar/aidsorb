@@ -24,7 +24,7 @@ import warnings
 import numpy as np
 from tqdm import tqdm
 from ase.io import read
-from . _internal import _ptable
+from . _internal import ptable
 warnings.filterwarnings('ignore')
 
 
@@ -78,7 +78,7 @@ def pcd_from_file(filename, features=None):
     atoms = structure.numbers
 
     if features is not None:
-        feats = _ptable.loc[atoms, features].to_numpy()
+        feats = ptable.loc[atoms, features].to_numpy()
         pcd = np.hstack((positions, atoms[:, None], feats), dtype='float32')
     else:
         pcd = np.hstack((positions, atoms[:, None]), dtype='float32')

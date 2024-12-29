@@ -18,7 +18,7 @@ r"""
 :class:`~lightning.pytorch.core.LightningModule`'s for use with |lightning|.
 """
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 import torch
 import torchmetrics
 import lightning as L

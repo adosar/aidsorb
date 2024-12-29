@@ -38,7 +38,7 @@ Helper functions for visualizing molecular point clouds.
 
 import numpy as np
 import plotly.graph_objects as go
-from . _internal import _check_shape_vis, _ptable
+from . _internal import check_shape_vis, ptable
 from . utils import pcd_from_file
 
 
@@ -58,7 +58,7 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
     atomic_numbers = np.array(atomic_numbers)
     scheme += '_color'
 
-    return _ptable.loc[atomic_numbers, scheme].to_numpy()
+    return ptable.loc[atomic_numbers, scheme].to_numpy()
 
 
 def get_elements(atomic_numbers):
@@ -81,7 +81,7 @@ def get_elements(atomic_numbers):
     """
     atomic_numbers = np.array(atomic_numbers)
 
-    return _ptable.loc[atomic_numbers, 'name'].to_numpy()
+    return ptable.loc[atomic_numbers, 'name'].to_numpy()
 
 
 def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs):
@@ -119,7 +119,7 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     >>> pcd = np.random.randint(1, 30, (100, 5))
     >>> fig = draw_pcd(pcd, feature_to_color=(0, 'x coord'), colorscale='viridis')
     """
-    _check_shape_vis(pcd)
+    check_shape_vis(pcd)
 
     atomic_numbers = pcd[:, 3]
     elements = get_elements(atomic_numbers)
