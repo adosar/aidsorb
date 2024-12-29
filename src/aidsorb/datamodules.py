@@ -137,6 +137,9 @@ class PCDDataModule(L.LightningDataModule):
         if config_dataloaders is not None:
             self.config_dataloaders = config_dataloaders
 
+        # For convenience with load_from_checkpoint.
+        self.save_hyperparameters()
+
         self._path_to_names = Path(self.path_to_X).parent
 
     def setup(self, stage=None):
