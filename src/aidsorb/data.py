@@ -431,11 +431,8 @@ class PCDDataset(Dataset):
         self.transform_x = transform_x
         self.transform_y = transform_y
 
-        self.X = None
         self.Y = None
-
-        # Only for labeled datasets.
-        if self.path_to_Y is not None:
+        if self.path_to_Y is not None:  # Only for labeled datasets.
             self.Y = pd.read_csv(
                     self.path_to_Y,
                     index_col=self.index_col,
