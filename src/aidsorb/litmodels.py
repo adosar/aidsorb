@@ -48,8 +48,8 @@ class PCDLit(L.LightningModule):
 
     Parameters
     ----------
-    model : :class:`~torch.nn.Module`
-        Custom architecture or one from :mod:`aidsorb.models`.
+    model : callable
+        Custom :class:`~torch.nn.Module` or one from :mod:`aidsorb.models`.
     criterion : callable
         Loss function to be optimized during training.
     metric : :class:`~torchmetrics.MetricCollection`
@@ -100,7 +100,7 @@ class PCDLit(L.LightningModule):
     """
     def __init__(
             self,
-            model: torch.nn.Module,
+            model: Callable,
             criterion: Callable,
             metric: torchmetrics.MetricCollection,
             config_optimizer: dict=None,
