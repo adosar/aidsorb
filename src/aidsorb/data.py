@@ -133,7 +133,7 @@ def upsample_pcd(pcd, size):
 
     Returns
     -------
-    new_pcd : tensor of shape (size, C).
+    new_pcd : tensor of shape (size, C)
 
     Examples
     --------

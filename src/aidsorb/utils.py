@@ -57,13 +57,12 @@ def pcd_from_file(filename, features=None):
 
     Returns
     -------
-    name_and_pcd : tuple of length 2
-        * ``name_and_pcd[0] == name``
-        * ``name_and_pcd[1] == pcd``
+     data : tuple of length 2
+        Molecular point cloud and its name as ``(name, pcd)``.
 
     Notes
     -----
-    The ``name`` of the molecule is the ``basename`` of ``filename`` with its
+    The ``name`` of the molecule is the basename of ``filename`` with its
     suffix removed.
 
     Examples
