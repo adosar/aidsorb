@@ -35,8 +35,8 @@ dependencies = [
     "tqdm>=4.66.2",
     "pandas>=2.2.0",
     "scipy>=1.12.0",
-    "lightning>=2.2.1",
-    "jsonargparse[signatures]>=4.27.7",
+    "lightning>=2.5.0",
+    "jsonargparse[signatures]>=4.35.0",
     "numpy<=1.26.4",  # Temporarily, for avoiding dependency conflicts.
 ]
 
