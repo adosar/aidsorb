@@ -157,7 +157,7 @@ def upsample_pcd(pcd, size):
 
     """
     n_samples = size - len(pcd)
-    indices = torch.from_numpy(np.random.choice(len(pcd), n_samples, replace=True))
+    indices = torch.randint(len(pcd), (n_samples,))  # With replacement.
     new_points = pcd[indices]
 
     return torch.cat((pcd, new_points))
