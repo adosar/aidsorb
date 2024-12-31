@@ -22,23 +22,22 @@ from importlib.resources import files
 import pandas as pd
 
 
-def check_shape(array):
+def check_shape(obj):
     r"""
-    Check if ``array`` has valid shape to be considered a point cloud.
+    Check if ``obj`` has valid shape to be considered a point cloud.
 
     Parameters
     ----------
-    array
+    obj : array/tensor
 
     Raises
     ------
     ValueError
-        If ``array.shape != (N, 3+C)``.
+        If ``obj.shape != (N, 3+C)``.
     """
-    if not ((array.ndim == 2) and (array.shape[1] >= 3)):
+    if not ((obj.ndim == 2) and (obj.shape[1] >= 3)):
         raise ValueError(
-                'Expecting array of shape (N, 3+C) '
-                f'but got array of shape {array.shape}!'
+                f'Expecting shape (N, 3+C) but got shape {tuple(obj.shape)}!'
                 )
 
 

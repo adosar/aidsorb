@@ -28,6 +28,7 @@ import torch
 from torch.utils.data import random_split, Dataset
 from torch.nn.utils.rnn import pad_sequence
 from . _internal import SEED, pd
+from . transforms import upsample_pcd
 
 
 def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int = SEED):
@@ -50,11 +51,8 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int =
     source : str
         Absolute or relative path to the directory holding the point clouds.
     split_ratio : sequence, default=(0.8, 0.1, 0.1)
-        Absolute sizes or fractions of splits.
-
-        * ``split_ratio[0] == train``
-        * ``split_ratio[1] == validation``
-        * ``split_ratio[2] == test``
+        Absolute sizes or fractions of splits of the form ``(train, val,
+        test)``.
 
     seed : int, default=1
         Controls randomness of the ``rng`` used for splitting.
@@ -118,49 +116,6 @@ def get_names(filename):
         names = tuple(json.load(fhand))
 
     return names
-
-
-def upsample_pcd(pcd, size):
-    r"""
-    Upsample ``pcd`` to a new ``size`` by sampling with replacement from ``pcd``.
-
-    Parameters
-    ----------
-    pcd : tensor of shape (N, C)
-        Original point cloud of size ``N``.
-    size : int
-        Size of the new point cloud.
-
-    Returns
-    -------
-    new_pcd : tensor of shape (size, C)
-
-    Examples
-    --------
-    >>> pcd = torch.tensor([[2, 4, 5, 6]])
-    >>> upsample_pcd(pcd, 3)
-    tensor([[2, 4, 5, 6],
-            [2, 4, 5, 6],
-            [2, 4, 5, 6]])
-
-    >>> # New points point must be from pcd.
-    >>> pcd = torch.randn(10, 4)
-    >>> new_pcd = upsample_pcd(pcd, 20)
-    >>> (new_pcd[-1] == pcd).all(1).any()  # Check for last point.
-    tensor(True)
-
-    >>> # No upsampling.
-    >>> pcd = torch.randn(100, 4)
-    >>> new_pcd = upsample_pcd(pcd, len(pcd))
-    >>> torch.equal(pcd, new_pcd)
-    True
-
-    """
-    n_samples = size - len(pcd)
-    indices = torch.randint(len(pcd), (n_samples,))  # With replacement.
-    new_points = pcd[indices]
-
-    return torch.cat((pcd, new_points))
 
 
 def pad_pcds(pcds, channels_first=True, mode='upsample'):
@@ -233,7 +188,7 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
              [8, 9]]])
     """
     if mode == 'zeropad':
-        batch = pad_sequence(pcds, batch_first=True, padding_value=0)
+        batch = pad_sequence(pcds, batch_first=True, padding_value=0.0)
 
     elif mode == 'upsample':
         max_len = max(len(i) for i in pcds)
@@ -328,20 +283,20 @@ class Collator():
     tensor([0, 1])
 
     >>> # Label is None, i.e. unlabeled data.
-    >>> sample1 = (torch.tensor([[1, 0, 1, 0]]), None)
-    >>> sample2 = (torch.tensor([[5, 2, 2, 0], [9, 0, 0, 1]]), None)
-    >>> collate_fn = Collator()
+    >>> sample1 = (torch.tensor([[1., 0., 1., 0.]]), None)
+    >>> sample2 = (torch.tensor([[5., 2., 2., 0.], [9., 0., 0., 1.]]), None)
+    >>> collate_fn = Collator(mode='zeropad')
     >>> x, y = collate_fn((sample1, sample2))
     >>> x
-    tensor([[[1, 1],
-             [0, 0],
-             [1, 1],
-             [0, 0]],
+    tensor([[[1., 0.],
+             [0., 0.],
+             [1., 0.],
+             [0., 0.]],
     <BLANKLINE>
-            [[5, 9],
-             [2, 0],
-             [2, 0],
-             [0, 1]]])
+            [[5., 9.],
+             [2., 0.],
+             [2., 0.],
+             [0., 1.]]])
     >>> y
     """
     def __init__(self, channels_first=True, mode='upsample'):
@@ -353,16 +308,13 @@ class Collator():
         Parameters
         ----------
         samples : sequence of tuples
-            Each sample is a tuple of tensors ``(pcd, label)`` where
-            ``pcd.shape == (n_points, C)`` and ``label`` has shape
-            ``(n_outputs,)`` or ``()``.
+            Each sample is a tuple of tensors ``(pcd, label)`` or ``(pcd,
+            None)``.
 
         Returns
         -------
         batch : tuple of length 2
-            * ``batch[0] == x`` with shape ``(B, C, T)`` or ``(B, T, C)``, where
-              ``T`` is the size of the largest point cloud.
-            * ``batch[1] == y`` with shape ``(B, n_outputs)`` or ``(B,)``.
+            Batch of the form ``(x, y)`` or ``(x, None)``.
         """
         pcds, labels = list(zip(*samples))
         
@@ -382,7 +334,7 @@ class PCDDataset(Dataset):
     .. note::
         * ``x`` and ``y`` are tensors of ``dtype=torch.float``.
         * ``y`` has shape ``(len(labels),)``.
-        * ``transform_x`` and ``transform_y`` expect :class:`~numpy.ndarray` as
+        * ``transform_x`` and ``transform_y`` expect :class:`~torch.Tensor` as
           input.
 
     .. warning::
@@ -450,21 +402,20 @@ class PCDDataset(Dataset):
     def __getitem__(self, idx):
         pcd_name = self.pcd_names[idx]
         pcd_path = os.path.join(self.path_to_X, f'{pcd_name}.npy')
-        sample_x = np.load(pcd_path)
-        sample_y = None
+
+        pcd = torch.tensor(np.load(pcd_path), dtype=torch.float)
+        label = None
 
         if self.transform_x is not None:
-            sample_x = self.transform_x(sample_x)
+            pcd = self.transform_x(pcd)
 
-        sample_x = torch.tensor(sample_x, dtype=torch.float)
-
-        # Only for labeled data.
         if self.Y is not None:
-            sample_y = self.Y.loc[pcd_name].to_numpy()
+            label = torch.tensor(
+                    self.Y.loc[pcd_name].to_numpy(),
+                    dtype=torch.float,
+                    )
 
             if self.transform_y is not None:
-                sample_y = self.transform_y(sample_y)
+                label = self.transform_y(label)
 
-            sample_y = torch.tensor(sample_y, dtype=torch.float)
-
-        return sample_x, sample_y
+        return pcd, label

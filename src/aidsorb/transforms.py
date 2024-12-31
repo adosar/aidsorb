@@ -18,7 +18,10 @@ r"""
 Helper functions and classes for transforming point clouds.
 
 .. note::
-    ``pcd`` must be a :class:`~numpy.ndarray` of shape ``(N, 3+C)``.
+    ``pcd`` must be a :class:`~torch.Tensor` of shape ``(N, 3+C)``.
+
+.. warning::
+    For efficiency reasons, **transformations do not copy input tensors**.
 
 .. tip::
     For implementing your own transforms, have a look at the transforms
@@ -28,47 +31,87 @@ Helper functions and classes for transforming point clouds.
     .. _tutorial: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
 """
 
-import numpy as np
-from scipy.spatial.transform import Rotation as R
+import torch
+from roma import random_rotmat
 from . _internal import check_shape
+
+
+def upsample_pcd(pcd, size):
+    r"""
+    Upsample ``pcd`` to a new ``size`` by sampling with replacement from ``pcd``.
+
+    Parameters
+    ----------
+    pcd : tensor of shape (N, C)
+        Original point cloud of size ``N``.
+    size : int
+        Size of the new point cloud.
+
+    Returns
+    -------
+    new_pcd : tensor of shape (size, C)
+
+    Examples
+    --------
+    >>> pcd = torch.tensor([[2, 4, 5, 6]])
+    >>> upsample_pcd(pcd, 3)
+    tensor([[2, 4, 5, 6],
+            [2, 4, 5, 6],
+            [2, 4, 5, 6]])
+
+    >>> # New points point must be from pcd.
+    >>> pcd = torch.randn(10, 4)
+    >>> new_pcd = upsample_pcd(pcd, 20)
+    >>> (new_pcd[-1] == pcd).all(1).any()  # Check for last point.
+    tensor(True)
+
+    >>> # No upsampling.
+    >>> pcd = torch.randn(100, 4)
+    >>> new_pcd = upsample_pcd(pcd, len(pcd))
+    >>> torch.equal(pcd, new_pcd)
+    True
+
+    """
+    n_samples = size - len(pcd)
+    indices = torch.randint(len(pcd), (n_samples,))  # With replacement.
+    new_points = pcd[indices]
+
+    return torch.cat((pcd, new_points))
 
 
 def split_pcd(pcd):
     r"""
     Split a point cloud to coordinates and features.
 
-    .. note::
-        Returned arrays are copies.
-
     Parameters
     ----------
-    pcd : array of shape (N, 3+C)
+    pcd : tensor of shape (N, 3+C)
 
     Returns
     -------
-    coords_and_feats : tuple of length 2
-        * ``coords_and_feats[0] == coords`` array of shape (N, 3).
-        * ``coords_and_feats[1] == feats`` array of shape (N, C).
+    coords_feats : tuple of length 2
+        * ``coords_and_feats[0] == coords`` tensor of shape (N, 3).
+        * ``coords_and_feats[1] == feats`` tensor of shape (N, C).
 
     Examples
     --------
-    >>> pcd = np.random.randn(25, 7)  # Point cloud with 4 features.
+    >>> pcd = torch.randn(25, 7)  # Point cloud with 4 features.
     >>> coords, feats = split_pcd(pcd)
     >>> coords.shape
-    (25, 3)
+    torch.Size([25, 3])
     >>> feats.shape
-    (25, 4)
+    torch.Size([25, 4])
 
-    >>> pcd = np.random.randn(15, 3)  # Point cloud with no features.
+    >>> pcd = torch.randn(15, 3)  # Point cloud with no features.
     >>> coords, feats = split_pcd(pcd)
     >>> coords.shape
-    (15, 3)
+    torch.Size([15, 3])
     >>> feats.shape
-    (15, 0)
+    torch.Size([15, 0])
     """
     check_shape(pcd)
 
-    return pcd[:, :3].copy(), pcd[:, 3:].copy()
+    return pcd[:, :3], pcd[:, 3:]
 
 
 def transform_pcd(pcd, tfm):
@@ -79,15 +122,15 @@ def transform_pcd(pcd, tfm):
 
     Parameters
     ----------
-    pcd : array of shape (N, 3+C)
+    pcd : tensor of shape (N, 3+C)
         Original point cloud.
 
-    tfm : array of shape (3, 3)
+    tfm : tensor of shape (3, 3)
         Transformation matrix.
 
     Returns
     -------
-    new_pcd : array of shape (N, 3+C)
+    new_pcd : tensor of shape (N, 3+C)
         Transformed point cloud.
 
     Raises
@@ -97,17 +140,17 @@ def transform_pcd(pcd, tfm):
 
     Examples
     --------
-    >>> pcd = np.array([[3, -9, 2, 6], [3, 4, -1, 8]])
-    >>> tfm = np.array([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
+    >>> pcd = torch.tensor([[3, -9, 2, 6], [3, 4, -1, 8]])
+    >>> tfm = torch.tensor([[0, -1, 0], [1, 0, 0], [0, 0, 1]])
     >>> transform_pcd(pcd, tfm)
-    array([[ 9,  3,  2,  6],
-           [-4,  3, -1,  8]])
+    tensor([[ 9,  3,  2,  6],
+            [-4,  3, -1,  8]])
 
-    >>> pcd = np.random.randn(424, 2)  # Invalid shape.
+    >>> pcd = torch.randn(424, 2)  # Invalid shape.
     >>> transform_pcd(pcd, tfm)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting array of shape (N, 3+C) but got array of shape (424, 2)!
+    ValueError: Expecting shape (N, 3+C) but got shape (424, 2)!
     """
     check_shape(pcd)
 
@@ -120,7 +163,7 @@ def transform_pcd(pcd, tfm):
     coords, feats = split_pcd(pcd)
     new_coords = coords @ tfm.T  # Transpose the matrix.
 
-    return np.hstack((new_coords, feats))
+    return torch.hstack((new_coords, feats))
 
 
 def center_pcd(pcd):
@@ -129,11 +172,11 @@ def center_pcd(pcd):
 
     Parameters
     ----------
-    pcd : array of shape (N, 3+C)
+    pcd : tensor of shape (N, 3+C)
 
     Returns
     -------
-    new_pcd : array of shape (N, 3+C)
+    new_pcd : tensor of shape (N, 3+C)
         Centered point cloud.
 
     Raises
@@ -143,20 +186,20 @@ def center_pcd(pcd):
 
     Examples
     --------
-    >>> pcd = np.array([[2, 1, 3, 9, 6], [-3, 2, 8, 7, 8]])
+    >>> pcd = torch.tensor([[2., 1., 3., 6.], [-3., 2., 8., 8.]])
     >>> new_pcd = center_pcd(pcd)
-    >>> new_pcd.mean(axis=0)
-    array([0., 0., 0., 8., 7.])
+    >>> new_pcd.mean(dim=0)
+    tensor([0., 0., 0., 7.])
 
-    >>> pcd = np.random.randn(100, 2)  # Invalid shape.
+    >>> pcd = torch.randn(5, 2)  # Invalid shape.
     >>> new_pcd = center_pcd(pcd)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting array of shape (N, 3+C) but got array of shape (100, 2)!
+    ValueError: Expecting shape (N, 3+C) but got shape (5, 2)!
     """
     check_shape(pcd)
 
-    centroid = pcd.mean(axis=0)
+    centroid = pcd.mean(dim=0)
     centroid[3:] = 0  # Center only the coordinates.
 
     return pcd - centroid
@@ -172,32 +215,15 @@ class Center():
         For a functional interface.
     Examples
     --------
-    >>> pcd = np.array([[1., 2., 3., 5.], [2., 4., 5., 3.]])
+    >>> x = torch.arange(4.)
+    >>> pcd = torch.stack((x, x))
     >>> center = Center()
     >>> center(pcd)
-    array([[-0.5, -1. , -1. ,  5. ],
-           [ 0.5,  1. ,  1. ,  3. ]])
-
-    >>> center(pcd).mean(axis=0)
-    array([0., 0., 0., 4.])
+    tensor([[0., 0., 0., 3.],
+            [0., 0., 0., 3.]])
     """
     def __call__(self, pcd):
         return center_pcd(pcd)  # Checks also for shape.
-
-
-class Identity():
-    r"""
-    Leave the point cloud unchanged.
-
-    Examples
-    --------
-    >>> pcd = np.random.randn(300, 4)
-    >>> identity = Identity()
-    >>> np.array_equal(identity(pcd), pcd)
-    True
-    """
-    def __call__(self, pcd):
-        return pcd
 
 
 class RandomRotation():
@@ -206,61 +232,59 @@ class RandomRotation():
 
     Examples
     --------
-    >>> pcd = np.random.randn(25, 4)
+    >>> pcd = torch.randn(25, 4)
     >>> rot = RandomRotation()
     >>> new_pcd = rot(pcd)
     >>> new_pcd.shape
-    (25, 4)
+    torch.Size([25, 4])
 
     >>> coords, feats = split_pcd(pcd)
     >>> new_coords, new_feats = split_pcd(new_pcd)
 
-    >>> np.array_equal(new_coords, coords)  # Coordinates are affected.
+    >>> torch.equal(new_coords, coords)  # Coordinates are affected.
     False
-    >>> np.array_equal(new_feats, feats)  # Features are not affected.
+    >>> torch.equal(new_feats, feats)  # Features are not affected.
     True
     """
     def __call__(self, pcd):
         check_shape(pcd)
+        rr = random_rotmat()
 
-        coords, feats = split_pcd(pcd)
-        new_coords = R.random().apply(coords)
-
-        return np.hstack((new_coords, feats))
+        return transform_pcd(pcd=pcd, tfm=rr)
 
 
 class Jitter():
     r"""
-    Jitter the coordinates of a point cloud by adding normal noise.
+    Jitter the coordinates of a point cloud by adding zero-mean normal noise.
 
     Parameters
     ----------
-    std: float, default=0.01
+    std: float
         Standard deviation of the normal noise.
 
     Examples
     --------
-    >>> pcd = np.random.randn(100, 5)
-    >>> jitter = Jitter()
+    >>> pcd = torch.randn(100, 5)
+    >>> jitter = Jitter(0.01)
     >>> new_pcd = jitter(pcd)
     >>> new_pcd.shape
-    (100, 5)
+    torch.Size([100, 5])
 
     >>> coords, feats = split_pcd(pcd)
     >>> new_coords, new_feats = split_pcd(new_pcd)
 
-    >>> np.array_equal(new_coords, coords)  # Coordinates are affected.
+    >>> torch.equal(new_coords, coords)  # Coordinates are affected.
     False
-    >>> np.array_equal(new_feats, feats)  # Features are not affected.
+    >>> torch.equal(new_feats, feats)  # Features are not affected.
     True
     """
-    def __init__(self, std=0.01):
+    def __init__(self, std):
         self.std = std
 
     def __call__(self, pcd):
         check_shape(pcd)
 
-        noise = np.random.normal(loc=0, scale=self.std, size=pcd.shape)
+        noise = torch.normal(mean=0, std=self.std, size=pcd.shape)
         noise[:, 3:] = 0  # Jitter only the coordinates.
 
         return pcd + noise
@@ -280,12 +304,12 @@ class RandomErase():
 
     Examples
     --------
-    >>> pcd = np.random.randn(100, 5)
+    >>> pcd = torch.randn(100, 5)
     >>> erase = RandomErase(n_points=10)
     >>> erase(pcd).shape
-    (90, 5)
+    torch.Size([90, 5])
     """
-    def __init__(self, n_points=5):
+    def __init__(self, n_points):
         self.n_points = n_points
 
     def __call__(self, pcd):
@@ -293,6 +317,6 @@ class RandomErase():
 
         # Indices of points to keep.
         keep_size = len(pcd) - self.n_points
-        indices = np.random.choice(len(pcd), size=keep_size, replace=False)
+        indices = torch.randperm(len(pcd))[:keep_size]
 
         return pcd[indices]

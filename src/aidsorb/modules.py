@@ -52,15 +52,11 @@ def conv1d_block(in_channels, out_channels, **kwargs):
         If ``None``, the ``conv_layer`` is lazy initialized.
     out_channels : int
     **kwargs
-        Valid keyword arguments for :class:`torch.nn.Conv1d`.
+        Valid keyword arguments for :class:`~torch.nn.Conv1d`.
 
     Returns
     -------
-    block : :class:`torch.nn.Sequential`
-
-    See Also
-    --------
-    :class:`torch.nn.Conv1d` : For a description of the parameters.
+    block : :class:`~torch.nn.Sequential`
 
     Examples
     --------
@@ -106,15 +102,11 @@ def dense_block(in_features, out_features, **kwargs):
         If ``None``, the ``linear_layer`` is lazy initialized.
     out_features : int
     **kwargs
-        Valid keyword arguments for :class:`torch.nn.Linear`.
+        Valid keyword arguments for :class:`~torch.nn.Linear`.
 
     Returns
     -------
-    block : :class:`torch.nn.Sequential`
-
-    See Also
-    --------
-    :class:`torch.nn.Linear` : For a description of the parameters.
+    block : :class:`~torch.nn.Sequential`
 
     Examples
     --------

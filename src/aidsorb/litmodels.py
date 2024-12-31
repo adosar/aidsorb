@@ -19,8 +19,7 @@ r"""
 """
 
 from collections.abc import Callable
-import torch
-import torchmetrics
+from torchmetrics import MetricCollection
 import lightning as L
 from . _litmodels_utils import get_optimizers
 
@@ -72,11 +71,11 @@ class PCDLit(L.LightningModule):
     --------
     >>> from aidsorb.modules import PointNetClsHead
     >>> from aidsorb.models import PointNet
-    >>> from torch.nn import MSELoss
+    >>> import torch
     >>> from torchmetrics import MetricCollection, R2Score, MeanAbsoluteError as MAE
 
     >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
-    >>> criterion, metric = MSELoss(), MetricCollection(R2Score(), MAE())
+    >>> criterion, metric = torch.nn.MSELoss(), MetricCollection(R2Score(), MAE())
 
     >>> # Adam optimizer with default hyperparameters, no scheduler.
     >>> litmodel = PCDLit(model, criterion, metric)
@@ -102,7 +101,7 @@ class PCDLit(L.LightningModule):
             self,
             model: Callable,
             criterion: Callable,
-            metric: torchmetrics.MetricCollection,
+            metric: MetricCollection,
             config_optimizer: dict=None,
             config_scheduler: dict=None,
             ):
