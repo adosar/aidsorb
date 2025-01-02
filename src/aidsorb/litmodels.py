@@ -59,7 +59,7 @@ class PCDLit(L.LightningModule):
         used.
         
         * ``'name'`` optimizer's class name :class:`str`
-        * ``'hparams'`` scheduler's hyperparameters :class:`dict`
+        * ``'hparams'`` optimizer's hyperparameters :class:`dict`
     config_scheduler : dict, optional
         Dictionary for configuring learning rate scheduler.
         

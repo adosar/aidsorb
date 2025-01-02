@@ -28,6 +28,7 @@ extensions = [
         'sphinx.ext.intersphinx',
         'sphinx.ext.viewcode',
         'sphinx.ext.autosummary',
+        'sphinx.ext.extlinks',
         'sphinx_design',
         'sphinx_copybutton',
         'sphinx_gallery.gen_gallery',
@@ -58,6 +59,8 @@ intersphinx_mapping = {
         'ase': ('https://wiki.fysik.dtu.dk/ase/', None),
         'plotly': ('https://plotly.com/python-api-reference/', None),
         }
+
+extlinks = {'issue': ('https://github.com/adosar/aidsorb/issues/%s', '#%s')}
 
 # For commonly used links and inline text.
 rst_epilog = '''

@@ -273,8 +273,7 @@ class PointNetBackbone(nn.Module):
         Returns
         -------
         out : tuple of length 2
-            * ``out[0] == features``
-            * ``out[1] == critical_indices``
+            Output in the form ``(features, critical_indices)``.
         """
         n_points = x.shape[2]
 
