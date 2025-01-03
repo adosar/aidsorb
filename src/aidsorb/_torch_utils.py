@@ -19,6 +19,41 @@ r"""Helper module for simplifying PyTorch related components."""
 import torch
 
 
+def get_activation(config=None):
+    r"""
+    Return an instance of activation function.
+
+    Parameters
+    ----------
+    config : dict, default=None
+        Dictionary for configuring activation function. If ``None``, the
+        :class:`~torch.nn.modules.activation.ReLU` activation is used.
+
+        * ``'name'`` activation's class name :class:`str`
+        * ``'hparams'`` activation's hyperparameters :class:`dict`
+
+    Returns
+    -------
+    activation
+
+    Examples
+    --------
+    >>> get_activation()  # ReLU, default activation.
+    ReLU()
+
+    >>> config = {'name': 'LeakyReLU', 'hparams': {'negative_slope': 0.05}}
+    >>> get_activation(config)
+    LeakyReLU(negative_slope=0.05)
+    """
+    if config is None:
+        return torch.nn.ReLU()
+
+    act_cls = getattr(torch.nn.modules.activation, config['name'])
+    activation = act_cls(**config['hparams'])
+
+    return activation
+
+
 def get_optim_cls(name):
     r"""
     Return optimizer class from name.
