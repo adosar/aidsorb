@@ -32,9 +32,10 @@ in :class:`aidsorb.models`.
 
 import torch
 from torch import nn
+from . _torch_utils import get_activation
 
 
-def conv1d_block(in_channels, out_channels, **kwargs):
+def conv1d_block(in_channels, out_channels, config_activation=None, **kwargs):
     r"""
     Return a 1D convolutional block.
 
@@ -43,7 +44,7 @@ def conv1d_block(in_channels, out_channels, **kwargs):
         block = nn.Sequential(
             conv_layer,
             nn.BatchNorm1d(out_channels),
-            nn.ReLU(),
+            activation_fn
             )
 
     Parameters
@@ -51,6 +52,12 @@ def conv1d_block(in_channels, out_channels, **kwargs):
     in_channels : int or None
         If ``None``, the ``conv_layer`` is lazy initialized.
     out_channels : int
+    config_activation : dict, default=None
+        Dictionary for configuring activation function. If ``None``, the
+        :class:`~torch.nn.modules.activation.ReLU` activation is used.
+
+        * ``'name'`` activation's class name :class:`str`
+        * ``'hparams'`` activation's hyperparameters :class:`dict`
     **kwargs
         Valid keyword arguments for :class:`~torch.nn.Conv1d`.
 
@@ -60,15 +67,28 @@ def conv1d_block(in_channels, out_channels, **kwargs):
 
     Examples
     --------
+    >>> inp, out = 4, 128
     >>> x = torch.randn(32, 4, 100)  # Shape (B, C_in, N).
-    >>> block = conv1d_block(4, 128, kernel_size=1)
-    >>> block(x).shape  # Shape (B, C_out, N).
+    >>> config_afn = {'name': 'LeakyReLU', 'hparams': {'negative_slope': 0.5}}
+
+    >>> # Default activation function (ReLU).
+    >>> block = conv1d_block(inp, out, kernel_size=1)
+    >>> block(x).shape
     torch.Size([32, 128, 100])
+    >>> block[2]
+    ReLU()
+
+    >>> # Custom activation function.
+    >>> block = conv1d_block(inp, out, config_afn, kernel_size=1)
+    >>> block(x).shape
+    torch.Size([32, 128, 100])
+    >>> block[2]
+    LeakyReLU(negative_slope=0.5)
 
     >>> # Lazy initialized.
-    >>> block = conv1d_block(None, 16, kernel_size=1)
+    >>> block = conv1d_block(None, out, kernel_size=1)
     >>> block(x).shape
-    torch.Size([32, 16, 100])
+    torch.Size([32, 128, 100])
     """
     if in_channels is not None:
         conv_layer = nn.Conv1d(in_channels, out_channels, **kwargs)
@@ -78,13 +98,13 @@ def conv1d_block(in_channels, out_channels, **kwargs):
     block = nn.Sequential(
             conv_layer,
             nn.BatchNorm1d(out_channels),
-            nn.ReLU(),
+            get_activation(config_activation)
             )
 
     return block
 
 
-def dense_block(in_features, out_features, **kwargs):
+def dense_block(in_features, out_features, config_activation=None, **kwargs):
     r"""
     Return a dense block.
 
@@ -93,7 +113,7 @@ def dense_block(in_features, out_features, **kwargs):
         block = nn.Sequential(
             linear_layer,
             nn.BatchNorm1d(out_features),
-            nn.ReLU(),
+            activation_fn,
             )
 
     Parameters
@@ -101,6 +121,12 @@ def dense_block(in_features, out_features, **kwargs):
     in_features : int or None
         If ``None``, the ``linear_layer`` is lazy initialized.
     out_features : int
+    config_activation : dict, default=None
+        Dictionary for configuring activation function. If ``None``, the
+        :class:`~torch.nn.modules.activation.ReLU` activation is used.
+
+        * ``'name'`` activation's class name :class:`str`
+        * ``'hparams'`` activation's hyperparameters :class:`dict`
     **kwargs
         Valid keyword arguments for :class:`~torch.nn.Linear`.
 
@@ -110,10 +136,23 @@ def dense_block(in_features, out_features, **kwargs):
 
     Examples
     --------
-    >>> x = torch.randn(64, 3)  # Shape (B, in_features).
-    >>> block = dense_block(3, 10)
-    >>> block(x).shape  # Shape (B, out_features).
+    >>> inp, out = 3, 10
+    >>> x = torch.randn(64, inp)  # Shape (B, in_features).
+    >>> config_afn = {'name': 'SELU', 'hparams': {}}
+
+    >>> # Default activation function (ReLU).
+    >>> block = dense_block(inp, out)
+    >>> block(x).shape
     torch.Size([64, 10])
+    >>> block[2]
+    ReLU()
+
+    >>> # Custom activation function.
+    >>> block = dense_block(inp, out, config_afn)
+    >>> block(x).shape
+    torch.Size([64, 10])
+    >>> block[2]
+    SELU()
 
     >>> # Lazy initialized.
     >>> block = dense_block(None, 16)
@@ -128,7 +167,7 @@ def dense_block(in_features, out_features, **kwargs):
     block = nn.Sequential(
             linear_layer,
             nn.BatchNorm1d(out_features),
-            nn.ReLU(),
+            get_activation(config_activation)
             )
 
     return block

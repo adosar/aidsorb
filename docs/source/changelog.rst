@@ -6,6 +6,8 @@ Version 2.0.0
 
 .. versionadded:: 2.0.0
     
+    * Option ``config_activation`` for :func:`~.conv1d_block` and
+      :func:`~.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for
       :class:`~.PCDLit` and :class:`~.PCDDataModule`.
     * Support for unlabeled data in :class:`~.PCDDataset` and
