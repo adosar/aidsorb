@@ -21,7 +21,7 @@ r"""
 from collections.abc import Callable
 from torchmetrics import MetricCollection
 import lightning as L
-from . _litmodels_utils import get_optimizers
+from . _torch_utils import get_optimizers
 
 
 class PCDLit(L.LightningModule):

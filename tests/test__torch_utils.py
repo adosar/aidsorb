@@ -15,16 +15,16 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Unit tests for the aidsorb._litmodels_utils module.
+Unit tests for the aidsorb._torch_utils module.
 
 Run from: project's root directory
-Command: python -m unittest tests.test__litmodels_utils
+Command: python -m unittest tests.test__torch_utils
 """
 
 import doctest
-from aidsorb import _litmodels_utils
+from aidsorb import _torch_utils
 
 
 def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite(_litmodels_utils))
+    tests.addTests(doctest.DocTestSuite(_torch_utils))
     return tests
