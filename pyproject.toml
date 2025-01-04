@@ -37,7 +37,7 @@ dependencies = [
     "roma>=1.5.1",
     "lightning>=2.5.0",
     "jsonargparse[signatures]>=4.35.0",
-    "numpy<=1.26.4",  # Temporarily, for avoiding dependency conflicts.
+    "numpy==1.26.4",  # Temporarily, for avoiding dependency conflicts.
 ]
 
 [project.urls]
