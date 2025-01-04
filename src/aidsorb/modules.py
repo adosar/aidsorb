@@ -317,10 +317,7 @@ class PointNetBackbone(nn.Module):
         n_points = x.shape[2]
 
         x = self.shared_mlp_1(x)
-
-        if self.local_feats:
-            point_feats = x.clone()
-
+        point_feats = x
         x = self.shared_mlp_2(x)
 
         # Shape (B, n_global_feats).
