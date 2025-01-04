@@ -333,7 +333,7 @@ class PCDDataset(Dataset):
 
     .. note::
         * ``x`` and ``y`` are tensors of ``dtype=torch.float``.
-        * ``y`` has shape ``(len(labels),)``.
+        * ``y`` has shape ``(len(labels),)`` if ``transform_y=None``.
         * ``transform_x`` and ``transform_y`` expect :class:`~torch.Tensor` as
           input.
 
