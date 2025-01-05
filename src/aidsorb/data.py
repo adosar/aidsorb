@@ -329,13 +329,15 @@ class PCDDataset(Dataset):
     ``Dataset`` for point clouds.
 
     Indexing the dataset returns ``(x, None)`` if data are unlabeled, i.e.
-    ``path_to_Y=None``, else ``(x, y)``.
+    ``path_to_Y=None``, else ``(x, y)``, where ``x`` and ``y`` are the results of
+    ``transform_x`` and ``transform_y``, respectively.
 
     .. note::
-        * ``x`` and ``y`` are tensors of ``dtype=torch.float``.
         * ``y`` has shape ``(len(labels),)`` if ``transform_y=None``.
-        * ``transform_x`` and ``transform_y`` expect :class:`~torch.Tensor` as
-          input.
+        * All data (i.e. point cloud and its label) are converted to
+          :class:`~.torch.Tensor`'s of ``dtype=torch.float`` before passed to
+          transforms. As such, ``transform_x`` and ``transform_y`` expect
+          :class:`~.torch.Tensor` as input.
 
     .. warning::
         Comma ``,`` is assumed as the field separator in ``.csv`` file.
@@ -356,9 +358,9 @@ class PCDDataset(Dataset):
         Column names of the ``.csv`` file containing the properties to be
         predicted. No effect if ``path_to_Y=None``.
     transform_x : callable, optional
-        Transforms applied to point cloud.
+        Transformation to apply to point cloud.
     transform_y : callable, optional
-        Transforms applied to label. No effect if ``path_to_Y=None``.
+        Transformation to apply to label. No effect if ``path_to_Y=None``.
 
     See Also
     --------

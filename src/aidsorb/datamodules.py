@@ -28,22 +28,25 @@ from . data import get_names, PCDDataset
 
 class PCDDataModule(L.LightningDataModule):
     r"""
-    ``LightningDataModule`` for supervised learning on point clouds.
+    ``LightningDataModule`` for the :class:`~.PCDDataset`.
+
+    This datamodule assumes the following directory structure::
+
+        project_root
+        ├── source      <-- path_to_X
+        │   ├── foo.npy
+        │   ├── ...
+        │   └── bar.npy
+        ├── test.json
+        ├── train.json
+        └── validation.json
+
+    and setups the train, validation, and test datasets, all of which are
+    instances of :class:`~.PCDDataset`.
 
     .. note::
-        * The following directory structure is assumed::
-
-            project_root
-            ├── source      <-- path_to_X
-            │   ├── foo.npy
-            │   ├── ...
-            │   └── bar.npy
-            ├── test.json
-            ├── train.json
-            └── validation.json
-
-        * For validation and test dataloaders, ``shuffle=False`` and
-          ``drop_last=False``.
+        For validation and test dataloaders, ``shuffle=False`` and
+        ``drop_last=False``.
 
     .. warning::
         * Comma ``,`` is assumed as the field separator in ``.csv`` file.
@@ -70,11 +73,11 @@ class PCDDataModule(L.LightningDataModule):
     train_size : int, optional
         Number of training samples. If ``None``, all training samples are used.
     train_transform_x : callable, optional
-        Transforms applied to point cloud during training.
+        Transformation to apply to point cloud during training.
     eval_transform_x : callable, optional
-        Transforms applied to point cloud during validation and testing.
+        Transformation to apply to point cloud during validation and testing.
     transform_y : callable, optional
-        Transforms applied to label.
+        Transformation to apply to label.
     shuffle : bool, default=False
         Only for train dataloader.
     drop_last : bool, default=False
@@ -147,8 +150,7 @@ class PCDDataModule(L.LightningDataModule):
         Setup train, validation and test datasets.
 
         .. tip::
-            * Datasets are instances of :class:`~aidsorb.data.PCDDataset`.
-            * Datasets are accesible via ``self.{train,validation,test}_dataset``.
+            Datasets are accesible via ``self.{train,validation,test}_dataset``.
 
         Parameters
         ----------
