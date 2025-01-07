@@ -62,12 +62,12 @@ class PCDDataModule(L.LightningDataModule):
     ----------
     path_to_X : str
         Absolute or relative path to the directory holding the point clouds.
-    path_to_Y : str
+    path_to_Y : str, optional
         Absolute or relative path to the ``.csv`` file holding the labels of the
         point clouds.
-    index_col : str
+    index_col : str, optional
         Column name of the ``.csv`` file to be used for indexing.
-    labels : sequence
+    labels : sequence, optional
         Column names of the ``.csv`` file containing the properties to be
         predicted.
     train_size : int, optional
@@ -103,9 +103,9 @@ class PCDDataModule(L.LightningDataModule):
     def __init__(
             self,
             path_to_X: str,
-            path_to_Y: str,
-            index_col: str,
-            labels: Sequence,
+            path_to_Y: str = None,
+            index_col: str = None,
+            labels: Sequence = None,
             train_size: int = None,
             train_transform_x: Callable = None,
             eval_transform_x: Callable = None,
