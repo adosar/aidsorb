@@ -33,10 +33,7 @@ from torch.utils.data import DataLoader
 from aidsorb import data
 from aidsorb.utils import pcd_from_dir
 from aidsorb.transforms import Center
-from aidsorb.data import (
-        get_names, prepare_data, PCDDataset,
-        pad_pcds, Collator
-        )
+from aidsorb.data import get_names, prepare_data, PCDDataset, Collator
 
 
 class TestPrepareData(unittest.TestCase):

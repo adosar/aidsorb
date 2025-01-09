@@ -56,7 +56,7 @@ class TestLightning(unittest.TestCase):
                 }
         config_scheduler = {
                 'name': 'ConstantLR',
-                'hparams': dict(),  # Default hyperparameters.
+                'hparams': {},  # Default hyperparameters.
                 'config': {'interval': 'step'},
                 }
 

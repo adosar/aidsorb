@@ -21,13 +21,9 @@ Run from: project's root directory
 Command: python -m unittest tests.test_datamodules
 """
 
-import os
-import unittest
-import tempfile
 from itertools import combinations
 from torch.utils.data import RandomSampler, SequentialSampler
-from aidsorb.utils import pcd_from_dir
-from aidsorb.data import prepare_data, Collator, get_names
+from aidsorb.data import Collator, get_names
 from aidsorb.transforms import Center, RandomRotation
 from aidsorb.datamodules import PCDDataModule
 
