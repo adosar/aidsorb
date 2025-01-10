@@ -21,6 +21,7 @@ Run from: project's root directory
 Command: python -m unittest tests.test_datamodules
 """
 
+import unittest
 from itertools import combinations
 from torch.utils.data import RandomSampler, SequentialSampler
 from aidsorb.data import Collator, get_names
