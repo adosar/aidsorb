@@ -31,7 +31,7 @@ from . _internal import SEED, pd
 from . transforms import upsample_pcd
 
 
-def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int = SEED):
+def prepare_data(source: str, split_ratio: Sequence = None, seed: int = SEED):
     r"""
     Split point clouds into train, validation and test sets.
 
@@ -50,9 +50,9 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int =
     ----------
     source : str
         Absolute or relative path to the directory holding the point clouds.
-    split_ratio : sequence, default=(0.8, 0.1, 0.1)
+    split_ratio : sequence, default=None
         Absolute sizes or fractions of splits of the form ``(train, val,
-        test)``.
+        test)``. If ``None``, it is set to ``(0.8, 0.1, 0.1)``.
 
     seed : int, default=1
         Controls randomness of the ``rng`` used for splitting.
@@ -83,6 +83,10 @@ def prepare_data(source: str, split_ratio: Sequence=(0.8, 0.1, 0.1), seed: int =
     rng = torch.Generator().manual_seed(seed)
     path = Path(source).parent
     pcd_names = [name.removesuffix('.npy') for name in os.listdir(source)]
+
+    # Set default split ratio.
+    if split_ratio is None:
+        split_ratio = (0.8, 0.1, 0.1)
 
     # Split the names of the point clouds.
     train, val, test = random_split(pcd_names, split_ratio, generator=rng)
