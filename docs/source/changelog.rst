@@ -10,8 +10,8 @@ Version 2.0.0
       :func:`~.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for
       :class:`~.PCDLit` and :class:`~.PCDDataModule`.
-    * Support for unlabeled data in :class:`~.PCDDataset` and
-      :class:`~.Collator`.
+    * Support for unlabeled data in :class:`~.PCDDataset`,
+      :class:`~.PCDDataModule` and :class:`~.Collator`.
     * Option ``drop_last`` for :class:`~.PCDDataModule`.
     * :class:`~.PCDLit` which supports customization for optimizer and
       scheduler (:issue:`25`).
@@ -19,7 +19,7 @@ Version 2.0.0
 
 .. versionchanged:: 2.0.0
 
-    * :func:`~.get_names` returns tuple.
+    * :func:`~.get_names` now returns :class:`tuple` instead of :class:`list`.
     * Bumped Lightning version to ``>=2.5.0`` (:issue:`29`).
     * :func:`~.upsample_pcd` moved from :mod:`~aidsorb.data` to :mod:`~aidsorb.transforms`.
     * :func:`~.split_pcd` moved from :mod:`~aidsorb.utils` to
