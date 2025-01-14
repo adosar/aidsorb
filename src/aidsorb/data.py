@@ -27,11 +27,11 @@ import numpy as np
 import torch
 from torch.utils.data import random_split, Dataset
 from torch.nn.utils.rnn import pad_sequence
-from . _internal import SEED, pd
+from . _internal import pd
 from . transforms import upsample_pcd
 
 
-def prepare_data(source: str, split_ratio: Sequence = None, seed: int = SEED):
+def prepare_data(source: str, split_ratio: Sequence = None, seed: int = 1):
     r"""
     Split point clouds into train, validation and test sets.
 

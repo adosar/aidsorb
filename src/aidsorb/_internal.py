@@ -61,9 +61,6 @@ def check_shape_vis(array):
                 )
 
 
-# Default value for controlling randomness.
-SEED = 1
-
 # This will be the default on Pandas 3.0
 pd.options.mode.copy_on_write = True
 
