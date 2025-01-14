@@ -51,6 +51,11 @@ def upsample_pcd(pcd, size):
     -------
     new_pcd : tensor of shape (size, C)
 
+    Raises
+    ------
+    ValueError
+        If ``size <= N``.
+
     Examples
     --------
     >>> pcd = torch.tensor([[2, 4, 5, 6]])
@@ -65,13 +70,18 @@ def upsample_pcd(pcd, size):
     >>> (new_pcd[-1] == pcd).all(1).any()  # Check for last point.
     tensor(True)
 
-    >>> # No upsampling.
-    >>> pcd = torch.randn(100, 4)
-    >>> new_pcd = upsample_pcd(pcd, len(pcd))
-    >>> torch.equal(pcd, new_pcd)
-    True
-
+    >>> # New size must be greater than the original.
+    >>> pcd = torch.randn(10, 4)
+    >>> new_pcd = upsample_pcd(pcd, 5)
+    Traceback (most recent call last):
+        ..
+    ValueError: Target size (5) must be greater than the original size (10)!
     """
+    if size <= len(pcd):
+        raise ValueError(
+        f'Target size ({size}) must be greater than the original size ({len(pcd)})!'
+        )
+
     n_samples = size - len(pcd)
     indices = torch.randint(len(pcd), (n_samples,))  # With replacement.
     new_points = pcd[indices]
