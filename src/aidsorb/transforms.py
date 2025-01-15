@@ -302,15 +302,14 @@ class Jitter():
 
 class RandomErase():
     r"""
-    Randomly erase a number of points from the point cloud.
-
-    .. todo::
-        Consider adding the option for a fraction of points to be erased.
+    Randomly erase points from the point cloud.
 
     Parameters
     ----------
-    n_points : int, default=5
-        Number of points to be erased.
+    n_points : int or float
+        Number or fraction of points to be erased. If :class:`float`, it shoud
+        be in the interval ``(0, 1)``. In this case, ``int(len(pcd) *
+        n_points)`` points are erased.
 
     Examples
     --------
@@ -318,6 +317,17 @@ class RandomErase():
     >>> erase = RandomErase(n_points=10)
     >>> erase(pcd).shape
     torch.Size([90, 5])
+
+    >>> # Erase a fraction of points.
+    >>> erase = RandomErase(n_points=0.4)
+    >>> erase(pcd).shape
+    torch.Size([60, 5])
+
+    >>> erase = RandomErase(n_points=100)
+    >>> erase(pcd)
+    Traceback (most recent call last):
+        ..
+    ValueError: Resulting point cloud has no points.
     """
     def __init__(self, n_points):
         self.n_points = n_points
@@ -325,8 +335,18 @@ class RandomErase():
     def __call__(self, pcd):
         check_shape(pcd)
 
+        if self.n_points < 0:
+            raise ValueError("'n_points' can't be negative")
+
+        if 0 < self.n_points < 1:
+            keep_size = len(pcd) - int(len(pcd) * self.n_points)
+        else:
+            keep_size = len(pcd) - self.n_points
+
+        if keep_size < 1:
+            raise ValueError('Resulting point cloud has no points.')
+
         # Indices of points to keep.
-        keep_size = len(pcd) - self.n_points
         indices = torch.randperm(len(pcd))[:keep_size]
 
         return pcd[indices]

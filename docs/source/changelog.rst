@@ -6,6 +6,7 @@ Version 2.0.0
 
 .. versionadded:: 2.0.0
     
+    * Support for erasing a fraction of points in :class:`~.RandomErase`.
     * Option ``config_activation`` for :func:`~.conv1d_block` and
       :func:`~.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for
