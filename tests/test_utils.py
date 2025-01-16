@@ -92,13 +92,12 @@ class TestPCDFromDir(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
         self.outname = os.path.join(self.tempdir.name, 'pcd_data')
         self.dirname = 'tests/structures'
-        self.names = [Path(i).stem for i in os.listdir(self.dirname)]
 
     def test_pcd_from_dir(self):
         pcd_from_dir(dirname=self.dirname, outname=self.outname)
 
         # Check the number of converted files.
-        self.assertEqual(len(self.names), len(os.listdir(self.outname)))
+        self.assertEqual(len(os.listdir(self.dirname)), len(os.listdir(self.outname)))
 
     def tearDown(self):
         self.tempdir.cleanup()
