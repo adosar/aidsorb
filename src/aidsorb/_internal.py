@@ -28,7 +28,7 @@ def check_shape(obj):
 
     Parameters
     ----------
-    obj : array/tensor
+    obj : array or tensor
 
     Raises
     ------
@@ -37,7 +37,7 @@ def check_shape(obj):
     """
     if not ((obj.ndim == 2) and (obj.shape[1] >= 3)):
         raise ValueError(
-                f'Expecting shape (N, 3+C) but got shape {tuple(obj.shape)}!'
+                f'expecting shape (N, 3+C) but got shape {tuple(obj.shape)}'
                 )
 
 
@@ -56,8 +56,8 @@ def check_shape_vis(array):
     """
     if not ((array.ndim == 2) and (array.shape[1] >= 4)):
         raise ValueError(
-                'Expecting array of shape (N, 4+C) '
-                f'but got array of shape {array.shape}!'
+                'expecting array of shape (N, 4+C) '
+                f'but got array of shape {array.shape}'
                 )
 
 

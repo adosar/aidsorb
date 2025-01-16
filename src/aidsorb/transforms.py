@@ -75,11 +75,11 @@ def upsample_pcd(pcd, size):
     >>> new_pcd = upsample_pcd(pcd, 5)
     Traceback (most recent call last):
         ..
-    ValueError: Target size (5) must be greater than the original size (10)!
+    ValueError: target size (5) must be greater than the original size (10)
     """
     if size <= len(pcd):
         raise ValueError(
-        f'Target size ({size}) must be greater than the original size ({len(pcd)})!'
+        f'target size ({size}) must be greater than the original size ({len(pcd)})'
         )
 
     n_samples = size - len(pcd)
@@ -160,14 +160,14 @@ def transform_pcd(pcd, tfm):
     >>> transform_pcd(pcd, tfm)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting shape (N, 3+C) but got shape (424, 2)!
+    ValueError: expecting shape (N, 3+C) but got shape (424, 2)
     """
     check_shape(pcd)
 
     if not tfm.shape == (3, 3):
         raise ValueError(
-                'Expecting array of shape (3, 3) '
-                f'but got array of shape {tfm.shape}!'
+                'expecting array of shape (3, 3) '
+                f'but got array of shape {tfm.shape}'
                 )
 
     coords, feats = split_pcd(pcd)
@@ -205,7 +205,7 @@ def center_pcd(pcd):
     >>> new_pcd = center_pcd(pcd)
     Traceback (most recent call last):
         ...
-    ValueError: Expecting shape (N, 3+C) but got shape (5, 2)!
+    ValueError: expecting shape (N, 3+C) but got shape (5, 2)
     """
     check_shape(pcd)
 
@@ -327,7 +327,7 @@ class RandomErase():
     >>> erase(pcd)
     Traceback (most recent call last):
         ..
-    ValueError: Resulting point cloud has no points.
+    ValueError: resulting point cloud has no points
     """
     def __init__(self, n_points):
         self.n_points = n_points
@@ -344,7 +344,7 @@ class RandomErase():
             keep_size = len(pcd) - self.n_points
 
         if keep_size < 1:
-            raise ValueError('Resulting point cloud has no points.')
+            raise ValueError('resulting point cloud has no points')
 
         # Indices of points to keep.
         indices = torch.randperm(len(pcd))[:keep_size]
