@@ -51,11 +51,6 @@ def upsample_pcd(pcd, size):
     -------
     new_pcd : tensor of shape (size, C)
 
-    Raises
-    ------
-    ValueError
-        If ``size <= N``.
-
     Examples
     --------
     >>> pcd = torch.tensor([[2, 4, 5, 6]])
@@ -143,11 +138,6 @@ def transform_pcd(pcd, tfm):
     new_pcd : tensor of shape (N, 3+C)
         Transformed point cloud.
 
-    Raises
-    ------
-    ValueError
-        If ``pcd`` or ``tfm`` do not have the expected shape.
-
     Examples
     --------
     >>> pcd = torch.tensor([[3, -9, 2, 6], [3, 4, -1, 8]])
@@ -188,11 +178,6 @@ def center_pcd(pcd):
     -------
     new_pcd : tensor of shape (N, 3+C)
         Centered point cloud.
-
-    Raises
-    ------
-    ValueError
-        If ``pcd`` does not have the expected shape.
 
     Examples
     --------
