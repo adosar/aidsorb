@@ -143,7 +143,7 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
          
     See Also
     --------
-    :func:`upsample_pcd` : For a description of ``'upsample'`` mode.
+    :func:`~.upsample_pcd` : For a description of ``'upsample'`` mode.
     :func:`torch.nn.utils.rnn.pad_sequence` : For a description of ``'zeropad'`` mode.
 
     Examples
