@@ -248,7 +248,7 @@ class RandomRotation():
         return transform_pcd(pcd=pcd, tfm=rr)
 
 
-class Jitter():
+class RandomJitter():
     r"""
     Jitter the coordinates of a point cloud by adding zero-mean normal noise.
 
@@ -260,7 +260,7 @@ class Jitter():
     Examples
     --------
     >>> pcd = torch.randn(100, 5)
-    >>> jitter = Jitter(0.01)
+    >>> jitter = RandomJitter(0.01)
     >>> new_pcd = jitter(pcd)
     >>> new_pcd.shape
     torch.Size([100, 5])

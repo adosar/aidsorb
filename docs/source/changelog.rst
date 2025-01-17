@@ -20,6 +20,7 @@ Version 2.0.0
 
 .. versionchanged:: 2.0.0
 
+    * Rename :class:`Jitter` to :class:`~.RandomJitter`.
     * :func:`~.get_names` now returns :class:`tuple` instead of :class:`list`.
     * Bumped Lightning version to ``>=2.5.0`` (:issue:`29`).
     * :func:`~.upsample_pcd` moved from :mod:`~aidsorb.data` to
