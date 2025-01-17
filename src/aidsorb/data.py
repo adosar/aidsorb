@@ -206,7 +206,7 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     return batch
 
 
-class Collator():
+class Collator:
     r"""
     Collate a sequence of samples into a batch.
 

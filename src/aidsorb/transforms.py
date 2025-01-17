@@ -200,7 +200,7 @@ def center_pcd(pcd):
     return pcd - centroid
 
 
-class Center():
+class Center:
     r"""
     Center the coordinates of a point cloud by subtracting their centroid.
 
@@ -221,7 +221,7 @@ class Center():
         return center_pcd(pcd)  # Checks also for shape.
 
 
-class RandomRotation():
+class RandomRotation:
     r"""
     Randomly rotate the coordinates of a point cloud.
 
@@ -248,7 +248,7 @@ class RandomRotation():
         return transform_pcd(pcd=pcd, tfm=rr)
 
 
-class RandomJitter():
+class RandomJitter:
     r"""
     Jitter the coordinates of a point cloud by adding zero-mean normal noise.
 
@@ -285,7 +285,7 @@ class RandomJitter():
         return pcd + noise
 
 
-class RandomErase():
+class RandomErase:
     r"""
     Randomly erase points from the point cloud.
 
