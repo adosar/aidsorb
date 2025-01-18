@@ -304,10 +304,12 @@ class RandomErase:
     torch.Size([90, 5])
 
     >>> # Erase a fraction of points.
+    >>> pcd = torch.randn(100, 5)
     >>> erase = RandomErase(n_points=0.4)
     >>> erase(pcd).shape
     torch.Size([60, 5])
 
+    >>> pcd = torch.randn(100, 5)
     >>> erase = RandomErase(n_points=100)
     >>> erase(pcd)
     Traceback (most recent call last):
@@ -333,5 +335,47 @@ class RandomErase:
 
         # Indices of points to keep.
         indices = torch.randperm(len(pcd))[:keep_size]
+
+        return pcd[indices]
+
+
+class RandomSample:
+    r"""
+    Sample without replacement a number of points from the point cloud.
+
+    If ``size >= len(pcd)``, then ``pcd`` is returned.
+
+    Parameters
+    ----------
+    size : int
+        Nummber of points to sample.
+
+    Examples
+    --------
+    >>> pcd = torch.randn(10, 4)
+    >>> sample = RandomSample(size=5)
+    >>> sample(pcd).shape
+    torch.Size([5, 4])
+
+    >>> # No sampling, original point cloud is returned.
+    >>> pcd = torch.randn(10, 4)
+    >>> sample = RandomSample(size=100)
+    >>> torch.equal(pcd, sample(pcd))
+    True
+    """
+    def __init__(self, size):
+        self.size = size
+
+    def __call__(self, pcd):
+        check_shape(pcd)
+
+        if self.size < 0:
+            raise ValueError("'size' can't be negative")
+
+        if self.size >= len(pcd):
+            return pcd
+
+        # Indices of points to keep.
+        indices = torch.randperm(len(pcd))[:self.size]
 
         return pcd[indices]

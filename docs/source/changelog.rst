@@ -6,6 +6,8 @@ Version 2.0.0
 
 .. versionadded:: 2.0.0
     
+    * Add :class:`~.RandomSample`, a transformation that "clips" a point cloud to
+      a fixed size.
     * Support for erasing a fraction of points in :class:`~.RandomErase`.
     * Option ``config_activation`` for :func:`~.conv1d_block` and
       :func:`~.dense_block`.
@@ -29,8 +31,8 @@ Version 2.0.0
     * :func:`~.split_pcd` moved from :mod:`~aidsorb.utils` to
       :mod:`~aidsorb.transforms` and *no longer copies data*.
     * :mod:`~.transforms` use :mod:`torch` instead of :mod:`numpy` (:issue:`32`).
-    * Remove defaults for :class:`~.Jitter` and :class:`~.RandomErase`,
-      since there is no consensus on "good" defaults.
+    * Remove defaults for :mod:`~aidsorb.transforms` since there is no consensus
+      on "good" defaults.
     * Point clouds are stored as plain ``.npy`` files under a directory files
       instead of a single ``.npz`` (:issue:`3`).
 
