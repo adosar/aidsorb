@@ -21,7 +21,10 @@ Helper functions and classes for transforming point clouds.
     ``pcd`` must be a :class:`~torch.Tensor` of shape ``(N, 3+C)``.
 
 .. warning::
-    For efficiency reasons, **transformations do not copy input tensors**.
+    Transformations avoid in-place modifications. However, **the output
+    tensor(s) might be view(s) of the input tensor**. If it is necessary to
+    preserve the original data, it is recommended to copy them before applying
+    the transformation.
 
 .. tip::
     For implementing your own transforms, have a look at the transforms
@@ -379,3 +382,41 @@ class RandomSample:
         indices = torch.randperm(len(pcd))[:self.size]
 
         return pcd[indices]
+
+
+class RandomFlip:
+    r"""
+    Flip the coordinates of a point cloud along a randomly selected axis.
+
+    Notes
+    -----
+    The input tensor is copied to prevent in-place modifications and preserve
+    the original data.
+
+    Examples
+    --------
+    >>> pcd = torch.randn(10, 5)
+    >>> flip = RandomFlip()
+    >>> new_pcd = flip(pcd)
+    >>> new_pcd.shape
+    torch.Size([10, 5])
+
+    >>> coords, feats = split_pcd(pcd)
+    >>> new_coords, new_feats = split_pcd(new_pcd)
+    >>> torch.equal(coords, new_coords)  # Coordinates are affected.
+    False
+    >>> torch.equal(feats, new_feats)  # Features are not affected.
+    True
+
+    >>> # Only one axis is flipped.
+    >>> (pcd == -new_pcd).all(0).sum()
+    tensor(1)
+    """
+    def __call__(self, pcd):
+        check_shape(pcd)
+        new_pcd = pcd.clone()  # Copy to avoid modifying original tensor.
+
+        axis = torch.randint(3, ()).item()  # Choose an axis randomly.
+        new_pcd[:, axis] *= -1
+
+        return new_pcd

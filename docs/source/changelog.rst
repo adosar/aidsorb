@@ -8,8 +8,7 @@ Version 2.0.0
     
     * Support for visualizing ``.npy`` file with :func:`~.draw_pcd_from_file` and
       ``aidsorb visualize``.
-    * :class:`~.RandomSample` transformation which "clips" point cloud to
-      a fixed size.
+    * :class:`~.RandomSample` and :class:`~.RandomFlip` transformations.
     * Support for erasing a fraction of points in :class:`~.RandomErase`.
     * Option ``config_activation`` for :func:`~.conv1d_block` and
       :func:`~.dense_block`.
