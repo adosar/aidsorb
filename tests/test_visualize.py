@@ -27,8 +27,10 @@ from aidsorb import visualize
 
 
 class TestDrawPCDFromFile(unittest.TestCase):
-    def test_draw(self):
+    def test_draw_from_structure(self):
         visualize.draw_pcd_from_file('tests/structures/IRMOF-1.xyz')
+    def test_draw_from_npy(self):
+        visualize.draw_pcd_from_file('tests/dummy/toy_project/pcd_data/ZnMOF-74.npy')
 
 
 def load_tests(loader, tests, ignore):

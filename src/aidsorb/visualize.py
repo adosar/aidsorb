@@ -84,7 +84,12 @@ def get_elements(atomic_numbers):
     return ptable.loc[atomic_numbers, 'name'].to_numpy()
 
 
-def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs):
+def draw_pcd(
+        pcd: np.ndarray,
+        scheme: str = 'cpk',
+        feature_to_color: tuple = None,
+        colorscale: str = None,
+        ):
     r"""
     Visualize molecular point cloud with Plotly.
 
@@ -107,8 +112,6 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
     colorscale : str, optional
         No effect if ``feature_to_color=None``. For available options, see
         `colorscale`_.
-    **kwargs
-        Valid keword arguments for :class:`~plotly.graph_objects.Figure`.
 
     Returns
     -------
@@ -145,7 +148,6 @@ def draw_pcd(pcd, scheme='cpk', feature_to_color=None, colorscale=None, **kwargs
                 marker=marker,
                 hovertext=elements
                 )],
-            **kwargs
             )
 
     return fig
@@ -158,7 +160,7 @@ def draw_pcd_from_file(filename: str, render: bool = True, **kwargs):
     Parameters
     ----------
     filename : str
-        Absolute or relative path to the file.
+        Absolute or relative path to a ``.npy`` or structure file.
     render : bool, default=True
         Render the point cloud with :data:`plotly.io.renderers.default`.
     **kwargs
@@ -168,7 +170,11 @@ def draw_pcd_from_file(filename: str, render: bool = True, **kwargs):
     -------
     render : :class:`~plotly.graph_objects.Figure` if ``render=False``, else ``None``.
     """
-    _, pcd = pcd_from_file(filename)
+    if filename.endswith('.npy'):
+        pcd = np.load(filename)
+    else:
+        _, pcd = pcd_from_file(filename)
+
     fig = draw_pcd(pcd, **kwargs)
 
     return fig.show() if render else fig
