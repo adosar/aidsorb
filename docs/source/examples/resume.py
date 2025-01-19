@@ -9,11 +9,11 @@ Coming back after model training
 #
 # .. note::
 #     This example assummes:
+#         * Training was performed with :doc:`AIdsorb CLI <../cli>` or :ref:`AIdsorb +
+#           PyTorch Lightning <aidsorb_with_pytorch_and_lightning>`.
 #         * `PyTorch Lightning checkpoints
 #           <https://lightning.ai/docs/pytorch/stable/common/checkpointing_basic.html#lightningmodule-from-checkpoint>`_
 #           are enabled during training.
-#         * Training was performed with :doc:`AIdsorb CLI <../cli>` or :ref:`AIdsorb +
-#           PyTorch Lightning <aidsorb_with_pytorch_and_lightning>`.
 
 import torch
 import lightning as L
@@ -41,7 +41,7 @@ print(f'Model in evaluation mode: {not litmodel.training}')
 trainer = L.Trainer(...)
 
 # Measure performance on test set.
-trainer.test(litmodel, dm)
+trainer.test(litmodel, datamodule=dm)
 
 # %%
 # Make predictions
