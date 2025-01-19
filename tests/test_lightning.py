@@ -60,7 +60,7 @@ class TestLightning(unittest.TestCase):
                 'config': {'interval': 'step'},
                 }
 
-        self.datamodule = PCDDataModule(
+        self.dm = PCDDataModule(
                 path_to_X='tests/dummy/toy_project/pcd_data',
                 path_to_Y='tests/dummy/toy_dataset.csv',
                 index_col='id',
@@ -80,7 +80,7 @@ class TestLightning(unittest.TestCase):
 
     def test_lightning(self):
         # Check training loop.
-        self.trainer.fit(self.litmodel, self.datamodule)
+        self.trainer.fit(self.litmodel, datamodule=self.dm)
 
         # Check that optimizers are configured correctly.
         self.assertIsInstance(
@@ -93,8 +93,8 @@ class TestLightning(unittest.TestCase):
                 )
 
         # Check validation and test loops.
-        self.trainer.validate(self.litmodel, self.datamodule)
-        self.trainer.test(self.litmodel, self.datamodule)
+        self.trainer.validate(self.litmodel, datamodule=self.dm)
+        self.trainer.test(self.litmodel, datamodule=self.dm)
 
         # Get path to a checkpoint.
         ckpt_dir = f'{self.tempdir.name}/lightning_logs/version_0/checkpoints'
