@@ -14,7 +14,7 @@
 
 2. Activate it::
    
-	$ source path/to/<venvir_name>/bin/activate
+	$ source <venvir_name>/bin/activate
 
 .. tab-set::
 	

@@ -8,7 +8,7 @@ Coming back after model training
 # predictions or do whatever you want with it.
 #
 # .. note::
-#     This example assummes:
+#     This example assumes:
 #         * Training was performed with :doc:`AIdsorb CLI <../cli>` or :ref:`AIdsorb +
 #           PyTorch Lightning <aidsorb_with_pytorch_and_lightning>`.
 #         * `PyTorch Lightning checkpoints
