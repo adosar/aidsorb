@@ -166,8 +166,8 @@ class PCDDataModule(L.LightningDataModule):
                     os.path.join(self._path_to_names, 'validation.json')
                     )
 
-            self.set_train_dataset()
-            self.set_validation_dataset()
+            self._set_train_dataset()
+            self._set_validation_dataset()
 
         if stage in (None, 'validate'):
             # Load the names for validation.
@@ -175,7 +175,7 @@ class PCDDataModule(L.LightningDataModule):
                     os.path.join(self._path_to_names, 'validation.json')
                     )
 
-            self.set_validation_dataset()
+            self._set_validation_dataset()
 
         if stage in (None, 'test'):
             # Load the names for testing.
@@ -183,7 +183,7 @@ class PCDDataModule(L.LightningDataModule):
                     os.path.join(self._path_to_names, 'test.json')
                     )
 
-            self.set_test_dataset()
+            self._set_test_dataset()
 
     @property
     def train_names(self):
@@ -200,7 +200,7 @@ class PCDDataModule(L.LightningDataModule):
         r"""The names of point clouds used for testing."""
         return tuple(self._test_names)
 
-    def set_train_dataset(self):
+    def _set_train_dataset(self):
         r"""Setup the train dataset."""
         self.train_dataset = PCDDataset(
                 pcd_names=self.train_names,
@@ -212,7 +212,7 @@ class PCDDataModule(L.LightningDataModule):
                 transform_y=self.transform_y,
                 )
 
-    def set_validation_dataset(self):
+    def _set_validation_dataset(self):
         r"""Setup the validation dataset."""
         self.validation_dataset = PCDDataset(
                 pcd_names=self.val_names,
@@ -224,7 +224,7 @@ class PCDDataModule(L.LightningDataModule):
                 transform_y=self.transform_y,
                 )
 
-    def set_test_dataset(self):
+    def _set_test_dataset(self):
         r"""Setup the test dataset."""
         self.test_dataset = PCDDataset(
                 pcd_names=self.test_names,
