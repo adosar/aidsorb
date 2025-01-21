@@ -95,7 +95,7 @@ discussions.
 	
 ```bibtex
 @article{Sarikas2024,
-  title = {Gas adsorption meets geometric deep learning: points,  set and match},
+  title = {Gas adsorption meets geometric deep learning: points, set and match},
   volume = {14},
   ISSN = {2045-2322},
   url = {http://dx.doi.org/10.1038/s41598-024-76319-8},
