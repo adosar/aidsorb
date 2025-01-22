@@ -46,11 +46,11 @@ from . modules import PointNetBackbone
 
 class PointNet(torch.nn.Module):
     r"""
-    Vanilla version from the [PointNet]_ paper where :class:`TNet`'s have been
-    removed.
+    Vanilla version from the [PointNet]_ paper where
+    :class:`~aidsorb.modules.TNet`'s have been removed.
 
-    ``PointNet`` takes as input a point cloud and produces one or more outputs.
-    *The type of the task is determined by* ``head``.
+    :class:`PointNet` takes as input a point cloud and produces one or more
+    outputs.  *The type of the task is determined by* ``head``.
 
     Currently implemented heads include:
 
