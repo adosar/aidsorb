@@ -103,6 +103,7 @@ class PCDDataModule(L.LightningDataModule):
     def __init__(
             self,
             path_to_X: str,
+            *,
             path_to_Y: str = None,
             index_col: str = None,
             labels: Sequence = None,

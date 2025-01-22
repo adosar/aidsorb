@@ -374,6 +374,7 @@ class PCDDataset(Dataset):
             self,
             pcd_names,
             path_to_X,
+            *,
             path_to_Y=None,
             index_col=None,
             labels=None,
