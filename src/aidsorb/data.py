@@ -122,7 +122,7 @@ def get_names(filename):
     return names
 
 
-def pad_pcds(pcds, channels_first=True, mode='upsample'):
+def pad_pcds(pcds, channels_first, mode='upsample', return_mask=False):
     r"""
     Pad a sequence of variable size point clouds.
 
@@ -131,15 +131,22 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
     Parameters
     ----------
     pcds : sequence of tensors
+    channels_first : bool
     mode : {'zeropad', 'upsample'}, default='upsample'
-    channels_first : bool, default=True
+    return_mask : bool, default=False
 
     Returns
     -------
-    batch : tensor of shape (B, T, C) or (B, C, T)
-         If ``channels_first=False``, then ``batch`` has shape ``(B, T, C)``,
-         where  ``B == len(pcds)`` is the batch size and ``T`` is the size of
-         the largest point cloud in ``pcds``. Otherwise, ``(B, C, T)``.
+    tensor or tuple of length 2
+        ``batch`` if ``return_mask=False``, else ``(batch, mask)``.
+
+        * ``batch`` tensor of shape ``(B, T, C)`` if ``channels_first=False``,
+          else ``(B, C, T)``.
+        * ``mask`` boolean tensor of shape ``(B, T)`` where ``True`` indicates
+          padding.
+
+        ``B`` is the batch size and ``T`` is the size of the largest point
+        cloud in the sequence.
          
     See Also
     --------
@@ -190,18 +197,38 @@ def pad_pcds(pcds, channels_first=True, mode='upsample'):
              [5, 2],
              [3, 8],
              [8, 9]]])
+
+    >>> # Pad and return padding mask (useful for attention-based architectures).
+    >>> batch, mask = pad_pcds((x1, x2), channels_first=False, return_mask=True)
+    >>> batch
+    tensor([[[1, 2, 3, 4],
+             [1, 2, 3, 4]],
+    <BLANKLINE>
+            [[2, 5, 3, 8],
+             [0, 2, 8, 9]]])
+    >>> mask
+    tensor([[False,  True],
+            [False, False]])
     """
+    pcd_len = torch.tensor([len(p) for p in pcds])
+    max_len = pcd_len.max().item()
+
     if mode == 'zeropad':
-        batch = pad_sequence(pcds, batch_first=True, padding_value=0.0)
-
+        batch = pad_sequence(
+                pcds, batch_first=True,
+                padding_value=0.0, padding_side='right'
+                )
     elif mode == 'upsample':
-        max_len = max(len(i) for i in pcds)
-        new_pcds = [upsample_pcd(p, max_len) if len(p) < max_len else p for p in pcds]
-        batch = torch.stack(new_pcds)
+        padded_pcds = [upsample_pcd(p, max_len) if len(p) < max_len else p for p in pcds]
+        batch = torch.stack(padded_pcds)  # Shape (B, max_len, C).
 
-    # Shape (B, n_points, C).
     if channels_first:
-        batch = batch.transpose(1, 2)  # Shape (B, C, n_points).
+        batch = batch.transpose(1, 2)  # Shape (B, C, max_len).
+
+    # Note: right padding is assumed.
+    if return_mask:
+        mask = torch.arange(max_len)[None, :] >= pcd_len[:, None]
+        return batch, mask
 
     return batch
 
