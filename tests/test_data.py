@@ -82,6 +82,7 @@ class TestPCDDataset(unittest.TestCase):
         self.transform_x = Center()
         self.transform_y = lambda y: y - 1
         self.batch_size = 2
+        self.channels_first = True
 
     def test_labeled_pcddataset(self):
         dataset = PCDDataset(
@@ -115,7 +116,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=Collator(),
+                collate_fn=Collator(channels_first=self.channels_first),
                 num_workers=4,
                 persistent_workers=True,
                 ):
@@ -153,7 +154,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=Collator(),
+                collate_fn=Collator(channels_first=self.channels_first),
                 num_workers=2,
                 ):
             self.assertEqual(len(x), self.batch_size)

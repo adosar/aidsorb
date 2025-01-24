@@ -34,9 +34,14 @@ class TestCLI(unittest.TestCase):
         self.split_ratio = [2, 2, 2]
         self.path_to_logs = f'{self.tempdir.name}/lightning_logs/version_0'
 
+    def run_command(self, command):
+        exit_status = os.system(command)
+        if exit_status != 0:
+            raise RuntimeError(command)
+
     def test_cli(self):
-        os.system(f'aidsorb create {self.dirname} {self.outname}')
-        os.system(f'aidsorb prepare {self.outname} --split_ratio "{self.split_ratio}"')
+        self.run_command(f'aidsorb create {self.dirname} {self.outname}')
+        self.run_command(f'aidsorb prepare {self.outname} --split_ratio "{self.split_ratio}"')
 
         # Check that the files are correctly created.
         self.assertTrue(os.path.isdir(self.outname))
@@ -44,17 +49,19 @@ class TestCLI(unittest.TestCase):
             self.assertTrue(os.path.isfile(f'{self.tempdir.name}/{mode}.json'))
 
         # Check that LightningCLI works.
-        os.system(f'aidsorb-lit fit \
-                --config=tests/dummy/config_example.yaml \
-                --data.path_to_X={self.outname} \
-                --trainer.default_root_dir={self.tempdir.name}'
-                  )
+        self.run_command(
+                f'aidsorb-lit fit'
+                f' --config=tests/dummy/config_example.yaml'
+                f' --data.path_to_X={self.outname}'
+                f' --trainer.default_root_dir={self.tempdir.name}'
+                )
 
         for mode in ['validate', 'test']:
-            os.system(f'aidsorb-lit {mode} \
-                    --config={self.path_to_logs}/config.yaml \
-                    --ckpt_path={self.path_to_logs}/checkpoints/best.ckpt'
-                      )
+            self.run_command(
+                    f'aidsorb-lit {mode}'
+                    f' --config={self.path_to_logs}/config.yaml'
+                    f' --ckpt_path={self.path_to_logs}/checkpoints/best.ckpt'
+                    )
 
     def tearDown(self):
         self.tempdir.cleanup()

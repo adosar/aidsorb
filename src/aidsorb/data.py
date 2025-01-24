@@ -250,17 +250,20 @@ class Collator:
 
     * Output: tuple of length 2
 
-        * ``batch[0] == x`` tensor of shape ``(B, C, T)`` if
-          ``channels_first=True``, else ``(B, T, C)``.
-        * ``batch[1] == y`` tensor of  shape ``(B, n_outputs)``, ``(B,)`` or ``None``.
+        If ``return_mask=False``, then output is ``(x, y)``, else ``((x, mask), y)``.
+
+        * ``x`` tensor of shape ``(B, C, T)`` if ``channels_first=True``, else ``(B, T, C)``.
+        * ``y`` tensor of  shape ``(B, n_outputs)``, ``(B,)`` or ``None``.
+        * ``mask`` boolean tensor of shape ``(B, T)`` where ``True`` indicates padding.
 
      ``B`` is the batch size and ``T`` is the size of the largest point cloud in the
      sequence.
 
     Parameters
     ----------
-    channels_first : bool, default=True
+    channels_first : bool
     mode : {'zeropad', 'upsample'}, default='upsample'
+    return_mask : bool, default=False
 
     See Also
     --------
@@ -271,7 +274,7 @@ class Collator:
     >>> sample1 = (torch.tensor([[1, 4, 5, 2]]), torch.tensor([1., 2.]))
     >>> sample2 = (torch.tensor([[0, 4, 0, 2], [2, 4, 1, 8]]), torch.tensor([7., 3.]))
 
-    >>> collate_fn = Collator()
+    >>> collate_fn = Collator(channels_first=True)
     >>> x, y = collate_fn((sample1, sample2))
     >>> x
     tensor([[[1, 1],
@@ -316,7 +319,7 @@ class Collator:
     >>> # Label is None, i.e. unlabeled data.
     >>> sample1 = (torch.tensor([[1., 0., 1., 0.]]), None)
     >>> sample2 = (torch.tensor([[5., 2., 2., 0.], [9., 0., 0., 1.]]), None)
-    >>> collate_fn = Collator(mode='zeropad')
+    >>> collate_fn = Collator(channels_first=True, mode='zeropad')
     >>> x, y = collate_fn((sample1, sample2))
     >>> x
     tensor([[[1., 0.],
@@ -329,10 +332,28 @@ class Collator:
              [2., 0.],
              [0., 1.]]])
     >>> y
+
+    >>> # Collate and return padding mask.
+    >>> sample1 = (torch.tensor([[4, 2, 1, 4], [2, 0, 0, 1]]), torch.tensor(1))
+    >>> sample2 = (torch.tensor([[1, 2, 3, 1]]), torch.tensor(4))
+    >>> collate_fn = Collator(channels_first=False, mode='zeropad', return_mask=True)
+    >>> (x, mask), y = collate_fn((sample1, sample2))
+    >>> x
+    tensor([[[4, 2, 1, 4],
+             [2, 0, 0, 1]],
+    <BLANKLINE>
+            [[1, 2, 3, 1],
+             [0, 0, 0, 0]]])
+    >>> y
+    tensor([1, 4])
+    >>> mask
+    tensor([[False, False],
+            [False,  True]])
     """
-    def __init__(self, channels_first=True, mode='upsample'):
+    def __init__(self, channels_first, mode='upsample', return_mask=False):
         self.channels_first = channels_first
         self.mode = mode
+        self.return_mask = return_mask
 
     def __call__(self, samples):
         r"""
@@ -344,12 +365,16 @@ class Collator:
 
         Returns
         -------
-        batch : tuple of length 2
-            Batch of the form ``(x, y)`` or ``(x, None)``.
+        tuple of length 2
+            ``(x, y)`` or ``(x, None)``. If ``return_mask=True``, then
+            ``x`` is a tuple ``(batch, mask)``, else ``batch``.
         """
         pcds, labels = list(zip(*samples))
         
-        x = pad_pcds(pcds, channels_first=self.channels_first, mode=self.mode)
+        x = pad_pcds(
+                pcds, channels_first=self.channels_first,
+                mode=self.mode, return_mask=self.return_mask
+                )
         y = torch.stack(labels) if None not in labels else None
 
         return x, y

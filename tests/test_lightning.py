@@ -65,7 +65,7 @@ class TestLightning(unittest.TestCase):
                 path_to_Y='tests/dummy/toy_dataset.csv',
                 index_col='id',
                 labels=['y1'],
-                config_dataloaders={'collate_fn': Collator()},
+                config_dataloaders={'collate_fn': Collator(channels_first=True)},
                 )
 
         self.litmodel = PCDLit(
