@@ -98,8 +98,10 @@ def split_pcd(pcd):
     Returns
     -------
     coords_feats : tuple of length 2
-        * ``coords_and_feats[0] == coords`` tensor of shape (N, 3).
-        * ``coords_and_feats[1] == feats`` tensor of shape (N, C).
+        Coordinates and features of point cloud as ``(coords, feats)``.
+
+        * ``coords`` tensor of shape (N, 3)
+        * ``feats`` tensor of shape (N, C)
 
     Examples
     --------
@@ -346,7 +348,7 @@ class RandomSample:
     r"""
     Sample without replacement a number of points from the point cloud.
 
-    If ``size >= len(pcd)``, then ``pcd`` is returned.
+    If ``size >= len(pcd)``, the original point cloud is returned unchanged.
 
     Parameters
     ----------
