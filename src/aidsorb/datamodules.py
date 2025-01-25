@@ -28,9 +28,10 @@ from . data import get_names, PCDDataset
 
 class PCDDataModule(L.LightningDataModule):
     r"""
-    ``LightningDataModule`` for the :class:`~.PCDDataset`.
+    :class:`~lightning.pytorch.core.LightningDataModule` for the
+    :class:`~.PCDDataset`.
 
-    This datamodule assumes the following directory structure::
+    Given the following directory structure::
 
         project_root
         ├── source      <-- path_to_X
@@ -41,8 +42,8 @@ class PCDDataModule(L.LightningDataModule):
         ├── train.json
         └── validation.json
 
-    and setups the train, validation, and test datasets, all of which are
-    instances of :class:`~.PCDDataset`.
+    train, validation, and test datasets are set up, all of which are instances
+    of :class:`~.PCDDataset`.
 
     .. note::
         For validation and test dataloaders, ``shuffle=False`` and
@@ -70,7 +71,7 @@ class PCDDataModule(L.LightningDataModule):
     labels : sequence, optional
         Column names of the ``.csv`` file containing the properties to be
         predicted.
-    train_size : int, optional
+    train_size : int, default=None
         Number of training samples. If :obj:`None`, all training samples are used.
     train_transform_x : callable, optional
         Transformation to apply to point cloud during training.
@@ -148,7 +149,7 @@ class PCDDataModule(L.LightningDataModule):
 
     def setup(self, stage=None):
         r"""
-        Setup train, validation and test datasets.
+        Set up train, validation and test datasets.
 
         .. tip::
             Datasets are accesible via ``self.{train,validation,test}_dataset``.

@@ -26,7 +26,8 @@ from . _torch_utils import get_optimizers
 
 class PCDLit(L.LightningModule):
     r"""
-    ``LightningModule`` for supervised learning on point clouds.
+    :class:`~lightning.pytorch.core.LightningModule` for supervised learning on
+    point clouds.
 
     .. note::
         * ``metric`` is logged on epoch-level.

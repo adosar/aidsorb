@@ -384,7 +384,7 @@ class Collator:
 
 class PCDDataset(Dataset):
     r"""
-    ``Dataset`` for point clouds.
+    :class:`~torch.utils.data.Dataset` for point clouds.
 
     Indexing the dataset returns ``(x, None)`` if data are unlabeled, i.e.
     ``path_to_Y=None``, else ``(x, y)``, where ``x`` and ``y`` are the results of
