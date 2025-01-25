@@ -54,7 +54,7 @@ class PCDLit(L.LightningModule):
     metric : :class:`~torchmetrics.MetricCollection`
         Metric(s) to be logged and optionally monitored.
     config_optimizer : dict, default=None
-        Dictionary for configuring optimizer. If ``None``, the
+        Dictionary for configuring optimizer. If :obj:`None`, the
         :class:`~torch.optim.Adam` optimizer with default hyperparameters is
         used.
         

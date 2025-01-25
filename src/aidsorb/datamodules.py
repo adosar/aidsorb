@@ -71,7 +71,7 @@ class PCDDataModule(L.LightningDataModule):
         Column names of the ``.csv`` file containing the properties to be
         predicted.
     train_size : int, optional
-        Number of training samples. If ``None``, all training samples are used.
+        Number of training samples. If :obj:`None`, all training samples are used.
     train_transform_x : callable, optional
         Transformation to apply to point cloud during training.
     eval_transform_x : callable, optional

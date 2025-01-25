@@ -50,10 +50,10 @@ def conv1d_block(in_channels, out_channels, config_activation=None, **kwargs):
     Parameters
     ----------
     in_channels : int or None
-        If ``None``, the ``conv_layer`` is lazy initialized.
+        If :obj:`None`, the ``conv_layer`` is lazy initialized.
     out_channels : int
     config_activation : dict, default=None
-        Dictionary for configuring activation function. If ``None``, the
+        Dictionary for configuring activation function. If :obj:`None`, the
         :class:`~torch.nn.modules.activation.ReLU` activation is used.
 
         * ``'name'`` activation's class name :class:`str`
@@ -119,10 +119,10 @@ def dense_block(in_features, out_features, config_activation=None, **kwargs):
     Parameters
     ----------
     in_features : int or None
-        If ``None``, the ``linear_layer`` is lazy initialized.
+        If :obj:`None`, the ``linear_layer`` is lazy initialized.
     out_features : int
     config_activation : dict, default=None
-        Dictionary for configuring activation function. If ``None``, the
+        Dictionary for configuring activation function. If :obj:`None`, the
         :class:`~torch.nn.modules.activation.ReLU` activation is used.
 
         * ``'name'`` activation's class name :class:`str`
@@ -258,7 +258,7 @@ class PointNetBackbone(nn.Module):
     Parameters
     ----------
     local_feats : bool, default=False
-        If ``True``, the returned features are a concatenation of local features
+        If :obj:`True`, the returned features are a concatenation of local features
         and global features. Otherwise, the global features are returned.
     n_global_feats : int, default=1024
         Number of global features.

@@ -26,7 +26,7 @@ def get_activation(config=None):
     Parameters
     ----------
     config : dict, default=None
-        Dictionary for configuring activation function. If ``None``, the
+        Dictionary for configuring activation function. If :obj:`None`, the
         :class:`~torch.nn.modules.activation.ReLU` activation is used.
 
         * ``'name'`` activation's class name :class:`str`
@@ -109,7 +109,7 @@ def get_optimizers(params, config_optim=None, config_lrs=None):
     params : iterable
         Iterable containing the parameters to be optimized.
     config_optim : dict, default=None
-        Dictionary for configuring optimizer. If ``None``, the
+        Dictionary for configuring optimizer. If :obj:`None`, the
         :class:`~torch.optim.Adam` optimizer with default hyperparameters is
         used.
 

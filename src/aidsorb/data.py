@@ -52,7 +52,7 @@ def prepare_data(source: str, split_ratio: Sequence = None, seed: int = 1):
         Absolute or relative path to the directory holding the point clouds.
     split_ratio : sequence, default=None
         Absolute sizes or fractions of splits of the form ``(train, val,
-        test)``. If ``None``, it is set to ``(0.8, 0.1, 0.1)``.
+        test)``. If :obj:`None`, it is set to ``(0.8, 0.1, 0.1)``.
 
     seed : int, default=1
         Controls randomness of the ``rng`` used for splitting.
@@ -128,6 +128,16 @@ def pad_pcds(pcds, channels_first, mode='upsample', return_mask=False):
 
     Each point cloud must have shape ``(N_i, C)``.
 
+    .. rubric:: Shapes
+
+    * ``batch`` tensor of shape ``(B, T, C)`` if ``channels_first=False``,
+      else ``(B, C, T)``.
+    * ``mask`` boolean tensor of shape ``(B, T)`` where :obj:`True` indicates
+      padding.
+
+    ``B`` is the batch size and ``T`` is the size of the largest point
+    cloud in the sequence.
+
     Parameters
     ----------
     pcds : sequence of tensors
@@ -140,14 +150,6 @@ def pad_pcds(pcds, channels_first, mode='upsample', return_mask=False):
     tensor or tuple of length 2
         ``batch`` if ``return_mask=False``, else ``(batch, mask)``.
 
-        * ``batch`` tensor of shape ``(B, T, C)`` if ``channels_first=False``,
-          else ``(B, C, T)``.
-        * ``mask`` boolean tensor of shape ``(B, T)`` where ``True`` indicates
-          padding.
-
-        ``B`` is the batch size and ``T`` is the size of the largest point
-        cloud in the sequence.
-         
     See Also
     --------
     :func:`~.upsample_pcd` : For a description of ``'upsample'`` mode.
@@ -246,15 +248,15 @@ class Collator:
         Each sample is a tuple of ``(pcd, label)``.
 
         * ``pcd`` tensor of shape ``(N_i, C)``.
-        * ``label`` tensor of shape ``(n_outputs,)``, ``()`` or ``None``.
+        * ``label`` tensor of shape ``(n_outputs,)``, ``()`` or :obj:`None`.
 
     * Output: tuple of length 2
 
         If ``return_mask=False``, then output is ``(x, y)``, else ``((x, mask), y)``.
 
         * ``x`` tensor of shape ``(B, C, T)`` if ``channels_first=True``, else ``(B, T, C)``.
-        * ``y`` tensor of  shape ``(B, n_outputs)``, ``(B,)`` or ``None``.
-        * ``mask`` boolean tensor of shape ``(B, T)`` where ``True`` indicates padding.
+        * ``y`` tensor of  shape ``(B, n_outputs)``, ``(B,)`` or :obj:`None`.
+        * ``mask`` boolean tensor of shape ``(B, T)`` where :obj:`True` indicates padding.
 
      ``B`` is the batch size and ``T`` is the size of the largest point cloud in the
      sequence.

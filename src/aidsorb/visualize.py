@@ -95,7 +95,7 @@ def draw_pcd(
 
     * The size of each point is determined by its atomic number ``pcd[i, 3]``.
 
-    * The color of each point is determined by ``feature_to_color``. If ``None``,
+    * The color of each point is determined by ``feature_to_color``. If :obj:`None`,
       the atomic number of each point determines the color. Otherwise, ``pcd[i,
       feature_to_color[0]]`` value determines the color.
 
@@ -168,7 +168,8 @@ def draw_pcd_from_file(filename: str, render: bool = True, **kwargs):
 
     Returns
     -------
-    render : :class:`~plotly.graph_objects.Figure` if ``render=False``, else ``None``.
+    :class:`~plotly.graph_objects.Figure` or :obj:`None`
+        :class:`~plotly.graph_objects.Figure` if ``render=False``, else :obj:`None`.
     """
     if filename.endswith('.npy'):
         pcd = np.load(filename)
