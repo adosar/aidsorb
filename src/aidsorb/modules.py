@@ -15,11 +15,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-:class:`torch.nn.Module`'s for building the architectures
-in :class:`aidsorb.models`.
+:class:`torch.nn.Module`'s for point cloud processing.
 
 .. note::
-    :class:`PointNetBackbone`, :class:`PointNetClsHead` and
+    :class:`PointNet`, :class:`PointNetBackbone`, :class:`PointNetClsHead` and
     :class:`PointNetSegHead` have their initial layers *lazy initialized*, so
     you don't need to specify the input dimensionality.
 
@@ -28,6 +27,17 @@ in :class:`aidsorb.models`.
     if a single ``pcd`` of shape ``(3+C, N)`` is to be passed to
     :class:`PointNetBackbone`, **reshape it to** ``(1, 3+C, N)``. One way to you
     can do it is the following: ``pcd = pcd.unsqueeze(0)``.
+
+.. todo::
+    Add more modules for point cloud processing.
+
+References
+----------
+
+.. [PointNet] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
+              Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
+              Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
+              USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
 """
 
 import torch
@@ -68,7 +78,7 @@ def conv1d_block(in_channels, out_channels, config_activation=None, **kwargs):
     Examples
     --------
     >>> inp, out = 4, 128
-    >>> x = torch.randn(32, 4, 100)  # Shape (B, C_in, N).
+    >>> x = torch.randn(32, 4, 100)  # Shape (B, in_channels, N).
     >>> config_afn = {'name': 'LeakyReLU', 'hparams': {'negative_slope': 0.5}}
 
     >>> # Default activation function (ReLU).
@@ -425,3 +435,82 @@ class PointNetSegHead(nn.Module):
         x = x.transpose(2, 1)  # Shape (B, N, n_outputs).
 
         return x
+
+
+class PointNet(torch.nn.Module):
+    r"""
+    Vanilla version from the [PointNet]_ paper where :class:`TNet`'s have been
+    removed.
+
+    :class:`PointNet` takes as input a point cloud and produces one or more
+    outputs.  *The type of the task is determined by* ``head``.
+
+    Currently implemented heads include:
+
+        1. :class:`.PointNetClsHead`: classification and regression
+        2. :class:`.PointNetSegHead`: segmentation
+
+    The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
+    the batch size, ``C`` is the number of input channels  and ``N`` is the
+    number of points in each point cloud.
+
+    .. tip::
+        You can define a ``custom_head`` head as a :class:`torch.nn.Module` and
+        pass it to ``head``.
+
+        If ``local_features=False``, the input to ``custom_head`` must have the
+        same shape as in :meth:`PointNetClsHead.forward`.
+        Otherwise, the input to ``custom_head`` must have the same shape as in
+        :meth:`PointNetSegHead.forward`.
+    
+    Parameters
+    ----------
+    head : :class:`torch.nn.Module`
+    local_feats : bool, default=False
+    n_global_feats : int, default=1024
+
+    See Also
+    --------
+    :class:`modules.PointNetBackbone` :
+        For a description of ``local_feats`` and ``n_global_feats``.
+
+    Examples
+    --------
+    >>> cls_head = PointNetClsHead(n_outputs=2)
+    >>> seg_head = PointNetSegHead(n_outputs=10)
+    >>> x = torch.randn(32, 4, 300)
+
+    >>> cls_net = PointNet(head=cls_head, n_global_feats=256)
+    >>> cls_net(x).shape
+    torch.Size([32, 2])
+    >>> cls_net.backbone(x)[1].shape  # Critical indices.
+    torch.Size([32, 256])
+
+    >>> seg_net = PointNet(head=seg_head, n_global_feats=512, local_feats=True)
+    >>> seg_net(x).shape
+    torch.Size([32, 300, 10])
+    >>> seg_net.backbone(x)[1].shape  # Critical indices.
+    torch.Size([32, 512])
+    """
+    def __init__(self, head, local_feats=False, n_global_feats=1024):
+        super().__init__()
+        self.backbone = PointNetBackbone(local_feats, n_global_feats)
+        self.head = head
+
+    def forward(self, x):
+        r"""
+        Run the forward pass.
+
+        Parameters
+        ----------
+        x : tensor of shape (B, C, N)
+
+        Returns
+        -------
+        out : tensor
+            Output of ``head``.
+        """
+        feats, _ = self.backbone(x)  # Ignore critical indices.
+        out = self.head(feats)
+
+        return out

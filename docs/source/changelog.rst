@@ -23,12 +23,14 @@ Version 2.0.0
 
 .. versionchanged:: 2.0.0
 
+    * :class:`~.PointNet` moved from :mod:`aidsorb.models` to
+      :mod:`aidsorb.modules`.
     * Rename :class:`Jitter` to :class:`~.RandomJitter`.
     * :func:`~.get_names` now returns :class:`tuple` instead of :class:`list`.
     * Bumped Lightning version to ``>=2.5.0`` (:issue:`29`).
     * :func:`~.upsample_pcd` moved from :mod:`~aidsorb.data` to
-      :mod:`~aidsorb.transforms` and now raises error if target size is not
-      greater than the original.
+      :mod:`~aidsorb.transforms` and *now raises error if target size is not
+      greater than the original*.
     * :func:`~.split_pcd` moved from :mod:`~aidsorb.utils` to
       :mod:`~aidsorb.transforms` and *no longer copies data*.
     * :mod:`~.transforms` use :mod:`torch` instead of :mod:`numpy` (:issue:`32`).
@@ -39,6 +41,7 @@ Version 2.0.0
 
 .. versionremoved:: 2.0.0
 
+    * :mod:`aidsorb.models` to simplify codebase and improve project structure.
     * ``PointLit`` in favor of :mod:`~.PCDLit`.
     * ``Identity`` from :mod:`~.transforms` since it is equivalent to
       :class:`torch.nn.Identity` (and thus redundant).

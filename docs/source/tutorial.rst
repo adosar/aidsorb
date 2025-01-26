@@ -234,7 +234,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
     For PyTorch:
 
     * :class:`aidsorb.data.PCDDataset`
-    * :class:`aidsorb.models`
+    * :class:`aidsorb.modules`
 
     For PyTorch Lightning:
 
@@ -250,7 +250,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
 
             from torch.utils.data import DataLoader
             from aidsorb.data import PCDDataset, Collator, get_names
-            from aidsorb.models import PointNet
+            from aidsorb.modules import PointNet
 
             # Create the datasets.
             train_ds = PCDDataset(pcd_names=get_names('path/to/train.json'), ...)
@@ -273,7 +273,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             import lightning as L
             from aidsorb.data import Collator
             from aidsorb.datamodules import PCDDataModule
-            from aidsorb.models import PointNet
+            from aidsorb.modules import PointNet
             from aidsorb.litmodels import PCDLit
 
             # Instantiate the datamodule.

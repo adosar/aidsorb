@@ -353,7 +353,7 @@ class RandomSample:
     Parameters
     ----------
     size : int
-        Nummber of points to sample.
+        Number of points to sample.
 
     Examples
     --------

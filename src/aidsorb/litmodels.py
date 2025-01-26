@@ -49,7 +49,7 @@ class PCDLit(L.LightningModule):
     Parameters
     ----------
     model : callable
-        Custom :class:`~torch.nn.Module` or one from :mod:`aidsorb.models`.
+        :class:`~torch.nn.Module` for point cloud processing.
     criterion : callable
         Loss function to be optimized during training.
     metric : :class:`~torchmetrics.MetricCollection`
@@ -70,8 +70,7 @@ class PCDLit(L.LightningModule):
 
     Examples
     --------
-    >>> from aidsorb.modules import PointNetClsHead
-    >>> from aidsorb.models import PointNet
+    >>> from aidsorb.modules import PointNetClsHead, PointNet
     >>> import torch
     >>> from torchmetrics import MetricCollection, R2Score, MeanAbsoluteError as MAE
 

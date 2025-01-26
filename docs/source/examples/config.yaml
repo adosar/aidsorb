@@ -41,6 +41,7 @@ model:
         r2: {class_path: torchmetrics.R2Score}
         mae: {class_path: torchmetrics.MeanAbsoluteError}
   model:
+    # You can also pass a custom architecture.
     class_path: aidsorb.models.PointNet
     init_args:
       head:

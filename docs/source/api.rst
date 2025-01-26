@@ -21,5 +21,4 @@
    aidsorb.datamodules
    aidsorb.transforms
    aidsorb.modules
-   aidsorb.models
    aidsorb.litmodels

@@ -42,7 +42,7 @@ model:
         r2: {class_path: torchmetrics.R2Score}
         mae: {class_path: torchmetrics.MeanAbsoluteError}
   model:
-    class_path: aidsorb.models.PointNet
+    class_path: aidsorb.modules.PointNet
     init_args:
       head:
         class_path: aidsorb.modules.PointNetClsHead
