@@ -159,32 +159,26 @@ class PCDDataModule(L.LightningDataModule):
         stage : {None, 'fit', 'validate', 'test'}, optional
         """
         if stage in (None, 'fit'):
-            # Load the names for training and validation.
             self._train_names = get_names(
                     os.path.join(self._path_to_names, 'train.json')
                     )[:self.train_size]  # Set the training set size.
+            self._set_train_dataset()
 
             self._val_names = get_names(
                     os.path.join(self._path_to_names, 'validation.json')
                     )
-
-            self._set_train_dataset()
             self._set_validation_dataset()
 
         if stage in (None, 'validate'):
-            # Load the names for validation.
             self._val_names = get_names(
                     os.path.join(self._path_to_names, 'validation.json')
                     )
-
             self._set_validation_dataset()
 
         if stage in (None, 'test'):
-            # Load the names for testing.
             self._test_names = get_names(
                     os.path.join(self._path_to_names, 'test.json')
                     )
-
             self._set_test_dataset()
 
     @property
@@ -203,7 +197,7 @@ class PCDDataModule(L.LightningDataModule):
         return tuple(self._test_names)
 
     def _set_train_dataset(self):
-        r"""Setup the train dataset."""
+        r"""Set up the train dataset."""
         self.train_dataset = PCDDataset(
                 pcd_names=self.train_names,
                 path_to_X=self.path_to_X,
@@ -215,7 +209,7 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def _set_validation_dataset(self):
-        r"""Setup the validation dataset."""
+        r"""Set up the validation dataset."""
         self.validation_dataset = PCDDataset(
                 pcd_names=self.val_names,
                 path_to_X=self.path_to_X,
@@ -227,7 +221,7 @@ class PCDDataModule(L.LightningDataModule):
                 )
 
     def _set_test_dataset(self):
-        r"""Setup the test dataset."""
+        r"""Set up the test dataset."""
         self.test_dataset = PCDDataset(
                 pcd_names=self.test_names,
                 path_to_X=self.path_to_X,
