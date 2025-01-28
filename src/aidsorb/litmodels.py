@@ -29,6 +29,8 @@ class PCDLit(L.LightningModule):
     :class:`~lightning.pytorch.core.LightningModule` for supervised learning on
     point clouds.
 
+    This module supports regression and classification tasks.
+
     .. note::
         ``{train,validation,test}_step`` methods expect a batch of the form
         ``(x, y)``, where ``x`` is compatible with :meth:`PCDLit.forward` and
