@@ -30,8 +30,11 @@ class PCDLit(L.LightningModule):
     point clouds.
 
     .. note::
-        * ``metric`` is logged on epoch-level.
-        * ``*_step`` methods expect a ``batch`` of the form ``(pcds, labels)``.
+        ``{train,validation,test}_step`` methods expect a batch of the form
+        ``(x, y)``, where ``x`` is compatible with :meth:`PCDLit.forward` and
+        ``y`` is compatible with output of :meth:`PCDLit.forward` as required by
+        ``criterion`` and ``metric``. For :meth:`PCDLit.predict_step`, ``y`` is
+        ignored.
 
     .. tip::
         You can use ``'val_<MetricName>'`` as the quantity to monitor. For
@@ -53,7 +56,8 @@ class PCDLit(L.LightningModule):
     criterion : callable
         Loss function to be optimized during training.
     metric : :class:`~torchmetrics.MetricCollection`
-        Metric(s) to be logged and optionally monitored.
+        Metric(s) to be logged and optionally monitored. Metric(s) are logged on
+        epoch-level.
     config_optimizer : dict, default=None
         Dictionary for configuring optimizer. If :obj:`None`, the
         :class:`~torch.optim.Adam` optimizer with default hyperparameters is
@@ -61,6 +65,7 @@ class PCDLit(L.LightningModule):
         
         * ``'name'`` optimizer's class name :class:`str`
         * ``'hparams'`` optimizer's hyperparameters :class:`dict`
+
     config_scheduler : dict, optional
         Dictionary for configuring learning rate scheduler.
         
@@ -130,7 +135,7 @@ class PCDLit(L.LightningModule):
         r"""
         Compute and return training loss on a single batch from the train set.
 
-        Also, make predictions that will be used on epoch-level operations.
+        Also, make predictions that will be used for epoch-level operations.
 
         .. note::
             Training loss is computed with training mode enabled and thus, may
