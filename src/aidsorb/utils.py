@@ -16,6 +16,9 @@
 
 r"""
 Helper functions for creating molecular point clouds.
+
+.. todo::
+    Add support for optional transform before storing the point cloud.
 """
 
 import os
@@ -43,9 +46,6 @@ def pcd_from_file(filename, features=None):
         :func:`ase.io.read`. Alternatively, you can list them from the command line
         with: ``ase info --formats``.
 
-    .. todo::
-        Add option to drop hydrogen atoms for reducing size of point clouds.
-
     .. _periodic table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
 
     Parameters
@@ -68,7 +68,8 @@ def pcd_from_file(filename, features=None):
     Examples
     --------
     >>> # xyz coordinates + atomic number + electronegativity + radius.
-    >>> name, pcd = pcd_from_file('path/to/file', features=['en_pauling', 'atomic_radius']) # doctest: +SKIP
+    >>> name, pcd = pcd_from_file('path/to/file', features=['en_pauling', 'atomic_radius'])
+    ... # doctest: +SKIP
     """
     name = Path(filename).stem
     structure = read(filename)
