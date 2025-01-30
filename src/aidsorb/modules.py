@@ -267,15 +267,15 @@ class PointNetBackbone(nn.Module):
 
     Parameters
     ----------
+    n_global_feats : int, default=1024
+        Number of global features.
     local_feats : bool, default=False
         If :obj:`True`, the returned features are a concatenation of local features
         and global features. Otherwise, the global features are returned.
-    n_global_feats : int, default=1024
-        Number of global features.
 
     Examples
     --------
-    >>> feat = PointNetBackbone(n_global_feats=2048)
+    >>> feat = PointNetBackbone(2048)
     >>> x = torch.randn((32, 4, 200))
     >>> features, indices = feat(x)
     >>> features.shape
@@ -283,7 +283,7 @@ class PointNetBackbone(nn.Module):
     >>> indices.shape
     torch.Size([32, 2048])
 
-    >>> feat = PointNetBackbone(local_feats=True, n_global_feats=1024)
+    >>> feat = PointNetBackbone(1024, True)
     >>> x = torch.randn((16, 4, 100))
     >>> features, indices = feat(x)
     >>> features.shape
@@ -291,7 +291,7 @@ class PointNetBackbone(nn.Module):
     >>> indices.shape
     torch.Size([16, 1024])
     """
-    def __init__(self, local_feats=False, n_global_feats=1024):
+    def __init__(self, n_global_feats=1024, local_feats=False):
         super().__init__()
 
         self.local_feats = local_feats
@@ -466,8 +466,8 @@ class PointNet(torch.nn.Module):
     Parameters
     ----------
     head : :class:`torch.nn.Module`
-    local_feats : bool, default=False
     n_global_feats : int, default=1024
+    local_feats : bool, default=False
 
     See Also
     --------
@@ -480,7 +480,7 @@ class PointNet(torch.nn.Module):
     >>> seg_head = PointNetSegHead(n_outputs=10)
     >>> x = torch.randn(32, 4, 300)
 
-    >>> cls_net = PointNet(head=cls_head, n_global_feats=256)
+    >>> cls_net = PointNet(cls_head, 256)
     >>> cls_net(x).shape
     torch.Size([32, 2])
     >>> cls_net.backbone(x)[1].shape  # Critical indices.
@@ -492,9 +492,13 @@ class PointNet(torch.nn.Module):
     >>> seg_net.backbone(x)[1].shape  # Critical indices.
     torch.Size([32, 512])
     """
-    def __init__(self, head, local_feats=False, n_global_feats=1024):
+    def __init__(self, head, n_global_feats=1024, local_feats=False):
         super().__init__()
-        self.backbone = PointNetBackbone(local_feats, n_global_feats)
+
+        self.backbone = PointNetBackbone(
+                n_global_feats=n_global_feats,
+                local_feats=local_feats,
+                )
         self.head = head
 
     def forward(self, x):
