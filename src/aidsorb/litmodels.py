@@ -166,7 +166,7 @@ class PCDLit(L.LightningModule):
 
         # Log metric on epoch-level.
         self.val_metric.update(preds=preds, target=y)
-        self.log_dict(self.val_metric, on_step=False, on_epoch=True, prog_bar=True)
+        self.log_dict(self.val_metric, prog_bar=True)
 
     def test_step(self, batch, batch_idx):
         r"""
@@ -178,7 +178,7 @@ class PCDLit(L.LightningModule):
 
         # Log metric on epoch-level.
         self.test_metric.update(preds=preds, target=y)
-        self.log_dict(self.test_metric, on_step=False, on_epoch=True, prog_bar=True)
+        self.log_dict(self.test_metric, prog_bar=True)
 
     def predict_step(self, batch, batch_idx):
         r"""Return predictions on a single batch."""
