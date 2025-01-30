@@ -51,6 +51,9 @@ class PCDLit(L.LightningModule):
             from lightning.pytorch.callbacks import ModelCheckpoint
             checkpoint_callback = ModelCheckpoint(monitor='val_R2Score', mode='max', ...)
 
+
+    .. _logging: https://lightning.ai/docs/pytorch/stable/extensions/logging.html#automatic-logging
+
     Parameters
     ----------
     model : callable
@@ -58,8 +61,9 @@ class PCDLit(L.LightningModule):
     criterion : callable
         Loss function to be optimized during training.
     metric : :class:`~torchmetrics.MetricCollection`
-        Metric(s) to be logged and optionally monitored. Metric(s) are logged on
-        epoch-level.
+        Metric(s) to be logged and optionally monitored. All metric(s) are
+        logged based on Lightning's default hooks. For more information, see
+        `logging`_.
     config_optimizer : dict, default=None
         Dictionary for configuring optimizer. If :obj:`None`, the
         :class:`~torch.optim.Adam` optimizer with default hyperparameters is
@@ -124,7 +128,7 @@ class PCDLit(L.LightningModule):
         # For convenience with load_from_checkpoint.
         self.save_hyperparameters()
 
-        # For epoch-level operations.
+        # For logging metric(s) at different stages.
         self.train_metric = metric.clone(prefix='train_')
         self.val_metric = metric.clone(prefix='val_')
         self.test_metric = metric.clone(prefix='test_')
@@ -135,14 +139,12 @@ class PCDLit(L.LightningModule):
 
     def training_step(self, batch, batch_idx):
         r"""
-        Compute and return training loss on a single batch from the train set.
-
-        Also, make predictions that will be used for epoch-level operations.
+        Return loss on a single batch from the train set and log metric(s).
 
         .. note::
-            Training loss is computed with training mode enabled and thus, may
-            underestimate the true training loss if ``model`` contains
-            modules like ``Dropout`` etc.
+            Training metric(s) is computed with training mode enabled and thus,
+            may underestimate the true training performance if ``model``
+            contains modules like ``Dropout`` etc.
         """
         x, y = batch
         preds = self(x)
@@ -150,16 +152,16 @@ class PCDLit(L.LightningModule):
         # Compute training loss.
         loss = self.criterion(input=preds, target=y)
 
-        # Log metric on epoch-level.
-        self.train_metric.update(preds=preds, target=y)
-        self.log_dict(self.train_metric, on_step=False, on_epoch=True, prog_bar=True)
+        # Log metric on step-level.
+        self.train_metric(preds=preds, target=y)
+        self.log_dict(self.train_metric, prog_bar=True)
 
         return loss
 
     def validation_step(self, batch, batch_idx):
         r"""
-        Make predictions on a single batch from the validation set for epoch-level
-        operations.
+        Make predictions on a single batch from the validation set and log
+        metric(s).
         """
         x, y = batch
         preds = self(x)
@@ -170,8 +172,7 @@ class PCDLit(L.LightningModule):
 
     def test_step(self, batch, batch_idx):
         r"""
-        Make predictions on a single batch from the test set for epoch-level
-        operations.
+        Make predictions on a single batch from the test set and log metric(s).
         """
         x, y = batch
         preds = self(x)
