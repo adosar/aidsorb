@@ -63,10 +63,32 @@ class TestPCDDataModule(unittest.TestCase):
                 config_dataloaders=self.config_dataloaders,
                 )
 
-        # Setup the datamodule.
+    def test_setup_all(self):
         self.dm.setup()
+        for mode in ['train', 'validation', 'test']:
+            self.assertTrue(hasattr(self.dm, f'{mode}_dataset'))
+
+    def test_setup_fit(self):
+        self.dm.setup('fit')
+        for mode in ['train', 'validation']:
+            self.assertTrue(hasattr(self.dm, f'{mode}_dataset'))
+        self.assertFalse(hasattr(self.dm, 'test_dataset'))
+
+    def test_setup_val(self):
+        self.dm.setup('validate')
+        self.assertTrue(hasattr(self.dm, 'validation_dataset'))
+        for mode in ['train', 'test']:
+            self.assertFalse(hasattr(self.dm, f'{mode}_dataset'))
+
+    def test_setup_test(self):
+        self.dm.setup('test')
+        self.assertTrue(hasattr(self.dm, 'test_dataset'))
+        for mode in ['train', 'validation']:
+            self.assertFalse(hasattr(self.dm, f'{mode}_dataset'))
 
     def test_datasets(self):
+        self.dm.setup()
+
         # Check that the datasets have the correct size.
         val_names = get_names('tests/dummy/toy_project/validation.json')
         test_names = get_names('tests/dummy/toy_project/test.json')
@@ -97,6 +119,8 @@ class TestPCDDataModule(unittest.TestCase):
             self.assertIs(ds.transform_y, self.trans_y)
 
     def test_dataloaders(self):
+        self.dm.setup()
+
         dataloaders = [
                 self.dm.train_dataloader(),
                 self.dm.val_dataloader(),
