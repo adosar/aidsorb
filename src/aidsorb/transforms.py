@@ -72,7 +72,7 @@ def upsample_pcd(pcd, size):
     >>> pcd = torch.randn(10, 4)
     >>> new_pcd = upsample_pcd(pcd, 5)
     Traceback (most recent call last):
-        ..
+        ...
     ValueError: target size (5) must be greater than the original size (10)
     """
     if size <= len(pcd):
