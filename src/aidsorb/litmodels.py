@@ -32,11 +32,13 @@ class PCDLit(L.LightningModule):
     This module supports regression and classification tasks.
 
     .. note::
-        ``{train,validation,test}_step`` methods expect a batch of the form
-        ``(x, y)``, where ``x`` is compatible with :meth:`PCDLit.forward` and
-        ``y`` is compatible with output of :meth:`PCDLit.forward` as required by
-        ``criterion`` and ``metric``. For :meth:`PCDLit.predict_step`, ``y`` is
-        ignored.
+        * Parametes for which ``requires_grad=False`` are excluded from
+          optimization.
+        * ``{train,validation,test}_step`` methods expect a batch of the form
+          ``(x, y)``, where ``x`` is compatible with :meth:`PCDLit.forward` and
+          ``y`` is compatible with output of :meth:`PCDLit.forward` as required by
+          ``criterion`` and ``metric``. For :meth:`PCDLit.predict_step`, ``y`` is
+          ignored.
 
     .. tip::
         You can use ``'val_<MetricName>'`` as the quantity to monitor. For
@@ -196,9 +198,35 @@ class PCDLit(L.LightningModule):
         optimizers : :class:`~torch.optim.Optimizer` or dict
             Single optimizer if ``scheduler=None``, else dictionary with keys:
             ``'optimizer'`` and ``'lr_scheduler'``.
+
+        Examples
+        --------
+        >>> import torch
+        >>> from torchmetrics import MetricCollection, R2Score
+        >>> criterion = torch.nn.MSELoss()
+        >>> metric = MetricCollection(R2Score())
+
+        >>> model = torch.nn.Linear(2, 2)
+        >>> litmodel = PCDLit(model, criterion, metric)
+        >>> litmodel.configure_optimizers()
+        ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+        Adam (
+            ...
+        )
+
+        >>> model = torch.nn.Linear(4, 4)
+        >>> _ = model.requires_grad_(False)
+        >>> litmodel = PCDLit(model, criterion, metric)
+        >>> litmodel.configure_optimizers()
+        Traceback (most recent call last):
+            ...
+        ValueError: optimizer got an empty parameter list
         """
+        # Extract trainable parameters (i.e. requires_grad=True).
+        params = filter(lambda p: p.requires_grad, self.model.parameters())
+
         return get_optimizers(
-               params=self.model.parameters(),
-               config_optim=self.config_optimizer,
-               config_lrs=self.config_scheduler,
-               )
+                params=params,
+                config_optim=self.config_optimizer,
+                config_lrs=self.config_scheduler,
+                )
