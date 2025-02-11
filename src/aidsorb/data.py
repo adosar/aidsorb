@@ -211,6 +211,15 @@ def pad_pcds(pcds, channels_first, mode='upsample', return_mask=False):
     >>> mask
     tensor([[False,  True],
             [False, False]])
+
+    >>> # Pad a single point cloud.
+    >>> pad_pcds([x1], channels_first=False, mode='zeropad')
+    tensor([[[1, 2, 3, 4]]])
+    >>> pad_pcds([x1], channels_first=True, mode='upsample')
+    tensor([[[1],
+             [2],
+             [3],
+             [4]]])
     """
     pcd_len = torch.tensor([len(p) for p in pcds])
     max_len = pcd_len.max().item()
@@ -351,6 +360,25 @@ class Collator:
     >>> mask
     tensor([[False, False],
             [False,  True]])
+
+    >>> # Batch a single unlabeled sample.
+    >>> sample = (torch.tensor([[2, 3, 4]]), None)
+    >>> collate_fn = Collator(channels_first=False)
+    >>> x, y = collate_fn([sample])
+    >>> x
+    tensor([[[2, 3, 4]]])
+    >>> y
+
+    >>> # Batch a single labeled sample.
+    >>> sample = (torch.tensor([[1, 1, 2]]), torch.tensor(10))
+    >>> collate_fn = Collator(channels_first=True, mode='zeropad')
+    >>> x, y = collate_fn([sample])
+    >>> x
+    tensor([[[1],
+             [1],
+             [2]]])
+    >>> y
+    tensor([10])
     """
     def __init__(self, channels_first, mode='upsample', return_mask=False):
         self.channels_first = channels_first
