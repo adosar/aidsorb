@@ -32,6 +32,10 @@ from aidsorb.litmodels import PCDLit
 from aidsorb.datamodules import PCDDataModule
 
 
+def to_float(y):
+    return y.float()
+
+
 class DummyModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -65,6 +69,7 @@ class TestLightning(unittest.TestCase):
                 path_to_Y='tests/dummy/toy_dataset.csv',
                 index_col='id',
                 labels=['y1'],
+                transform_y=to_float,
                 config_dataloaders={'collate_fn': Collator(channels_first=True)},
                 )
 

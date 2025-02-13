@@ -400,7 +400,7 @@ class Collator:
             ``x`` is a tuple ``(batch, mask)``, else ``batch``.
         """
         pcds, labels = list(zip(*samples))
-        
+
         x = pad_pcds(
                 pcds, channels_first=self.channels_first,
                 mode=self.mode, return_mask=self.return_mask
@@ -419,11 +419,11 @@ class PCDDataset(Dataset):
     ``transform_x`` and ``transform_y``, respectively.
 
     .. note::
-        * ``y`` has shape ``(len(labels),)`` if ``transform_y=None``.
         * All data (i.e. point cloud and its label) are converted to
-          :class:`~.torch.Tensor`'s of ``dtype=torch.float`` before passed to
-          transforms. As such, ``transform_x`` and ``transform_y`` expect
-          :class:`~.torch.Tensor` as input.
+          :class:`~.torch.Tensor` before passed to transforms. As such,
+          ``transform_x`` and ``transform_y`` expect :class:`~.torch.Tensor` as
+          input.
+        * ``y`` has shape ``(len(labels),)`` if ``transform_y=None``.
 
     .. warning::
         Comma ``,`` is assumed as the field separator in ``.csv`` file.
@@ -499,10 +499,9 @@ class PCDDataset(Dataset):
             pcd = self.transform_x(pcd)
 
         if self.Y is not None:
-            label = torch.tensor(
-                    self.Y.loc[pcd_name].to_numpy(),
-                    dtype=torch.float,
-                    )
+            y_arr = self.Y.loc[pcd_name].to_numpy()
+            dtype = torch.float if np.issubdtype(y_arr.dtype, np.floating) else None
+            label = torch.tensor(y_arr, dtype=dtype)
 
             if self.transform_y is not None:
                 label = self.transform_y(label)

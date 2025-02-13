@@ -78,7 +78,7 @@ class TestPCDDataset(unittest.TestCase):
         self.pcd_names = [name.removesuffix('.npy') for name in os.listdir(self.path_to_X)]
         self.path_to_Y = 'tests/dummy/toy_dataset.csv'
         self.index_col = 'id'
-        self.labels = ['y1', 'y2']
+        self.labels = ['y1', 'y3']
         self.transform_x = Center()
         self.transform_y = lambda y: y - 1
         self.batch_size = 2
@@ -124,7 +124,7 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(len(x), self.batch_size)
             self.assertEqual(x.dtype, torch.float)
             self.assertEqual(y.shape, (self.batch_size, len(self.labels)))
-            self.assertEqual(y.dtype, torch.float)
+            self.assertEqual(y.dtype, torch.int64)
 
     def test_unlabeled_pcddataset(self):
         dataset = PCDDataset(
