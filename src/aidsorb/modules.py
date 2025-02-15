@@ -248,9 +248,7 @@ class TNet(nn.Module):
         identity = torch.eye(self.embed_dim, device=x.device, requires_grad=x.requires_grad).repeat(bs, 1, 1)
 
         # Output has shape (B, self.embed_dim, self.embed_dim).
-        x = x.view(-1, self.embed_dim, self.embed_dim) + identity
-
-        return x
+        return x.view(-1, self.embed_dim, self.embed_dim) + identity
 
 
 class PointNetBackbone(nn.Module):
@@ -396,9 +394,7 @@ class PointNetClsHead(nn.Module):
         -------
         out : tensor of shape (B, n_outputs)
         """
-        x = self.mlp(x)
-
-        return x
+        return self.mlp(x)
 
 
 class PointNetSegHead(nn.Module):
@@ -441,10 +437,9 @@ class PointNetSegHead(nn.Module):
         -------
         out : tensor of shape (B, N, n_outputs)
         """
-        x = self.shared_mlp(x)  # Shape (B, n_outputs, N).
-        x = x.transpose(2, 1)  # Shape (B, N, n_outputs).
+        out = self.shared_mlp(x)  # Shape (B, n_outputs, N).
 
-        return x
+        return out.transpose(2, 1)  # Shape (B, N, n_outputs).
 
 
 class PointNet(torch.nn.Module):
