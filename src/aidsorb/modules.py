@@ -18,7 +18,7 @@ r"""
 :class:`torch.nn.Module`'s for point cloud processing.
 
 .. note::
-    :class:`PointNet`, :class:`PointNetBackbone`, :class:`PointNetClsHead` and
+    :class:`PointNetBackbone`, :class:`PointNetClsHead` and
     :class:`PointNetSegHead` have their initial layers *lazy initialized*, so
     you don't need to specify the input dimensionality.
 
@@ -255,11 +255,11 @@ class TNet(nn.Module):
 
 class PointNetBackbone(nn.Module):
     r"""
-    Backbone of the :class:`PointNet` model.
+    Backbone of the vanilla version from the [PointNet]_ paper, where
+    :class:`TNet`'s have been removed.
 
-    This block is responsible for obtaining the *local and global features*,
-    which can then be passed to a task head for predictions. This block also
-    returns the *critical indices*.
+    This module extracts features which can then be passed to a task head for
+    predictions. This module also returns the *critical indices*.
 
     The input must be *batched*, i.e. have shape of ``(B, C, N)`` where ``B`` is
     the batch size, ``C`` is the number of input channels  and ``N`` is the
@@ -276,20 +276,25 @@ class PointNetBackbone(nn.Module):
     Examples
     --------
     >>> feat = PointNetBackbone(2048)
-    >>> x = torch.randn((32, 4, 200))
-    >>> features, indices = feat(x)
+    >>> x = torch.randn(32, 4, 200)
+    >>> features, indices = feat(x, return_indices=True)
     >>> features.shape
     torch.Size([32, 2048])
     >>> indices.shape
     torch.Size([32, 2048])
 
     >>> feat = PointNetBackbone(1024, True)
-    >>> x = torch.randn((16, 4, 100))
-    >>> features, indices = feat(x)
+    >>> x = torch.randn(16, 4, 100)
+    >>> features, indices = feat(x, return_indices=True)
     >>> features.shape
     torch.Size([16, 1088, 100])
     >>> indices.shape
     torch.Size([16, 1024])
+
+    >>> feat =  PointNetBackbone(512)
+    >>> x = torch.randn(8, 3, 50)
+    >>> feat(x).shape  # Only features, no critical indices.
+    torch.Size([8, 512])
     """
     def __init__(self, n_global_feats=1024, local_feats=False):
         super().__init__()
@@ -309,20 +314,23 @@ class PointNetBackbone(nn.Module):
                 conv1d_block(128, n_global_feats, kernel_size=1, bias=False),
                 )
 
-    def forward(self, x):
+    def forward(self, x, return_indices=False):
         r"""
-        Return the *features* and *critical indices*.
+        Return the *features* and optionally *critical indices*.
 
         The type of the features is determined by ``local_feats``.
 
         Parameters
         ----------
         x : tensor of shape (B, C, N)
+        return_indices : bool, default=False
+            Whether to return critical indices.
 
         Returns
         -------
-        out : tuple of length 2
-            Output in the form ``(features, critical_indices)``.
+        out : tensor or tuple of length 2
+            If ``return_indices=False`` the output are the features, otherwise
+            tuple of the form ``(features, critical_indices)``.
         """
         n_points = x.shape[2]
 
@@ -332,17 +340,19 @@ class PointNetBackbone(nn.Module):
 
         # Shape (B, n_global_feats).
         global_feats, critical_indices = torch.max(x, 2, keepdim=False)
+        out = global_feats
 
         if self.local_feats:
             # Shape (B, n_global_feats + 64, N)
-            feats = torch.cat(
-            (point_feats, global_feats.unsqueeze(-1).repeat(1, 1, n_points)),
-            dim=1
-            )
+            out = torch.cat((
+                point_feats,
+                global_feats.unsqueeze(-1).repeat(1, 1, n_points)
+                ), dim=1)
 
-            return feats, critical_indices
+        if return_indices:
+            return out, critical_indices
 
-        return global_feats, critical_indices
+        return out
 
 
 class PointNetClsHead(nn.Module):
@@ -483,13 +493,13 @@ class PointNet(torch.nn.Module):
     >>> cls_net = PointNet(cls_head, 256)
     >>> cls_net(x).shape
     torch.Size([32, 2])
-    >>> cls_net.backbone(x)[1].shape  # Critical indices.
+    >>> cls_net.backbone(x).shape  # Only features.
     torch.Size([32, 256])
 
     >>> seg_net = PointNet(head=seg_head, n_global_feats=512, local_feats=True)
     >>> seg_net(x).shape
     torch.Size([32, 300, 10])
-    >>> seg_net.backbone(x)[1].shape  # Critical indices.
+    >>> seg_net.backbone(x, True)[1].shape  # Features and critical indices.
     torch.Size([32, 512])
     """
     def __init__(self, head, n_global_feats=1024, local_feats=False):
@@ -514,7 +524,4 @@ class PointNet(torch.nn.Module):
         out : tensor
             Output of ``head``.
         """
-        feats, _ = self.backbone(x)  # Ignore critical indices.
-        out = self.head(feats)
-
-        return out
+        return self.head(self.backbone(x))
