@@ -94,7 +94,6 @@ def draw_pcd(
     Visualize molecular point cloud with Plotly.
 
     * The size of each point is determined by its atomic number ``pcd[i, 3]``.
-
     * The color of each point is determined by ``feature_to_color``. If :obj:`None`,
       the atomic number of each point determines the color. Otherwise, ``pcd[i,
       feature_to_color[0]]`` value determines the color.
@@ -107,15 +106,15 @@ def draw_pcd(
     scheme : {'jmol', 'cpk'}, default='jmol'
         Takes effect only if ``feature_to_color=None``.
     feature_to_color : tuple of length 2, optional
-        * ``feature_to_color[0] == idx``, the index of the feature to be colored.
-        * ``feature_to_color[1] == label``, the name of the feature for the colorbar.
+        Tuple of the form ``(index, label)``, where ``index`` is index of the
+        feature to be colored and ``label`` is the text label for the colorbar.
     colorscale : str, optional
         No effect if ``feature_to_color=None``. For available options, see
         `colorscale`_.
 
     Returns
     -------
-    fig : :class:`~plotly.graph_objects.Figure`
+    plotly.graph_objects.Figure
 
     Examples
     --------
@@ -162,14 +161,14 @@ def draw_pcd_from_file(filename: str, render: bool = True, **kwargs):
     filename : str
         Absolute or relative path to a ``.npy`` or structure file.
     render : bool, default=True
-        Render the point cloud with :data:`plotly.io.renderers.default`.
+        Whether to render the point cloud with
+        :data:`plotly.io.renderers.default` or return the figure object.
     **kwargs
         Valid keyword arguments for :func:`draw_pcd`.
 
     Returns
     -------
-    :class:`~plotly.graph_objects.Figure` or :obj:`None`
-        :class:`~plotly.graph_objects.Figure` if ``render=False``, else :obj:`None`.
+    plotly.graph_objects.Figure or None
     """
     if filename.endswith('.npy'):
         pcd = np.load(filename)

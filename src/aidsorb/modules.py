@@ -73,7 +73,7 @@ def conv1d_block(in_channels, out_channels, config_activation=None, **kwargs):
 
     Returns
     -------
-    block : :class:`~torch.nn.Sequential`
+    block : torch.nn.Sequential
 
     Examples
     --------
@@ -142,7 +142,7 @@ def dense_block(in_features, out_features, config_activation=None, **kwargs):
 
     Returns
     -------
-    block : :class:`~torch.nn.Sequential`
+    block : torch.nn.Sequential
 
     Examples
     --------
@@ -475,7 +475,7 @@ class PointNet(torch.nn.Module):
     
     Parameters
     ----------
-    head : :class:`torch.nn.Module`
+    head : torch.nn.Module
     n_global_feats : int, default=1024
     local_feats : bool, default=False
 
