@@ -19,6 +19,7 @@ r"""
 """
 
 from collections.abc import Callable
+from torch.nn import Module
 from torchmetrics import MetricCollection
 import lightning as L
 from . _torch_utils import get_optimizers
@@ -58,11 +59,11 @@ class PCDLit(L.LightningModule):
 
     Parameters
     ----------
-    model : callable
-        :class:`~torch.nn.Module` for point cloud processing.
+    model : torch.nn.Module
+        Architecture for point cloud processing.
     criterion : callable
         Loss function to be optimized during training.
-    metric : :class:`~torchmetrics.MetricCollection`
+    metric : torchmetrics.MetricCollection
         Metric(s) to be logged and optionally monitored. All metric(s) are
         logged based on Lightning's default hooks. For more information, see
         `logging`_.
@@ -83,8 +84,8 @@ class PCDLit(L.LightningModule):
 
     Examples
     --------
-    >>> from aidsorb.modules import PointNetClsHead, PointNet
     >>> import torch
+    >>> from aidsorb.modules import PointNetClsHead, PointNet
     >>> from torchmetrics import MetricCollection, R2Score, MeanAbsoluteError as MAE
 
     >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
@@ -112,7 +113,7 @@ class PCDLit(L.LightningModule):
     """
     def __init__(
             self,
-            model: Callable,
+            model: Module,
             criterion: Callable,
             metric: MetricCollection,
             config_optimizer: dict=None,
