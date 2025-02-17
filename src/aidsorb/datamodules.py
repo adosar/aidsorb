@@ -145,8 +145,6 @@ class PCDDataModule(L.LightningDataModule):
         # For convenience with load_from_checkpoint.
         self.save_hyperparameters()
 
-        self._path_to_names = Path(self.path_to_X).parent
-
     def setup(self, stage=None):
         r"""
         Set up train, validation and test datasets.
@@ -159,78 +157,33 @@ class PCDDataModule(L.LightningDataModule):
         stage : {None, 'fit', 'validate', 'test'}, optional
         """
         if stage in (None, 'fit'):
-            self._train_names = get_names(
-                    os.path.join(self._path_to_names, 'train.json')
-                    )[:self.train_size]  # Set the training set size.
-            self._set_train_dataset()
-
-            self._val_names = get_names(
-                    os.path.join(self._path_to_names, 'validation.json')
-                    )
-            self._set_validation_dataset()
-
+            self._setup_dataset('train')
+            self._setup_dataset('validation')
         if stage in (None, 'validate'):
-            self._val_names = get_names(
-                    os.path.join(self._path_to_names, 'validation.json')
-                    )
-            self._set_validation_dataset()
-
+            self._setup_dataset('validation')
         if stage in (None, 'test'):
-            self._test_names = get_names(
-                    os.path.join(self._path_to_names, 'test.json')
-                    )
-            self._set_test_dataset()
+            self._setup_dataset('test')
 
-    @property
-    def train_names(self):
-        r"""The names of point clouds used for training."""
-        return tuple(self._train_names)
+    def _setup_dataset(self, mode):
+        path_to_names = Path(self.path_to_X).parent
+        pcd_names = get_names(os.path.join(path_to_names, f'{mode}.json'))
 
-    @property
-    def val_names(self):
-        r"""The names of point clouds used for validation."""
-        return tuple(self._val_names)
+        if mode == 'train':
+            transform_x = self.train_transform_x
+            pcd_names = pcd_names[:self.train_size]  # Set the training set size.
+        else:
+            transform_x = self.eval_transform_x
 
-    @property
-    def test_names(self):
-        r"""The names of point clouds used for testing."""
-        return tuple(self._test_names)
-
-    def _set_train_dataset(self):
-        r"""Set up the train dataset."""
-        self.train_dataset = PCDDataset(
-                pcd_names=self.train_names,
+        dataset = PCDDataset(
+                pcd_names=pcd_names,
                 path_to_X=self.path_to_X,
                 path_to_Y=self.path_to_Y,
                 index_col=self.index_col,
                 labels=self.labels,
-                transform_x=self.train_transform_x,
+                transform_x=transform_x,
                 transform_y=self.transform_y,
                 )
-
-    def _set_validation_dataset(self):
-        r"""Set up the validation dataset."""
-        self.validation_dataset = PCDDataset(
-                pcd_names=self.val_names,
-                path_to_X=self.path_to_X,
-                path_to_Y=self.path_to_Y,
-                index_col=self.index_col,
-                labels=self.labels,
-                transform_x=self.eval_transform_x,
-                transform_y=self.transform_y,
-                )
-
-    def _set_test_dataset(self):
-        r"""Set up the test dataset."""
-        self.test_dataset = PCDDataset(
-                pcd_names=self.test_names,
-                path_to_X=self.path_to_X,
-                path_to_Y=self.path_to_Y,
-                index_col=self.index_col,
-                labels=self.labels,
-                transform_x=self.eval_transform_x,
-                transform_y=self.transform_y,
-                )
+        setattr(self, f'{mode}_dataset', dataset)
 
     def train_dataloader(self):
         r"""
@@ -243,6 +196,7 @@ class PCDDataModule(L.LightningDataModule):
         -------
             :class:`~torch.utils.data.DataLoader`
         """
+        # pylint: disable=no-member
         return DataLoader(
                 dataset=self.train_dataset,
                 batch_size=self.train_batch_size,
@@ -262,6 +216,7 @@ class PCDDataModule(L.LightningDataModule):
         -------
             :class:`~torch.utils.data.DataLoader`
         """
+        # pylint: disable=no-member
         return DataLoader(
                 dataset=self.validation_dataset,
                 batch_size=self.eval_batch_size,
@@ -281,6 +236,7 @@ class PCDDataModule(L.LightningDataModule):
         -------
             :class:`~torch.utils.data.DataLoader`
         """
+        # pylint: disable=no-member
         return DataLoader(
                 dataset=self.test_dataset,
                 batch_size=self.eval_batch_size,
