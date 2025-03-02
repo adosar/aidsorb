@@ -117,9 +117,7 @@ def get_names(filename):
     names : tuple
     """
     with open(filename, 'r') as fhand:
-        names = tuple(json.load(fhand))
-
-    return names
+        return tuple(json.load(fhand))
 
 
 def pad_pcds(pcds, channels_first, mode='upsample', return_mask=False):
