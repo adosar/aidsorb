@@ -119,6 +119,7 @@ class PCDDataModule(L.LightningDataModule):
             config_dataloaders=None,
             ):
         super().__init__()
+        self.save_hyperparameters()  # For argument-less load_from_checkpoint.
         
         self.path_to_X = path_to_X
         self.path_to_Y = path_to_Y
@@ -137,13 +138,10 @@ class PCDDataModule(L.LightningDataModule):
         self.train_batch_size = train_batch_size
         self.eval_batch_size = eval_batch_size
 
-        # Options passed to all dataloaders.
+        # Configuration for all dataloaders.
         self.config_dataloaders = {}
         if config_dataloaders is not None:
             self.config_dataloaders = config_dataloaders
-
-        # For convenience with load_from_checkpoint.
-        self.save_hyperparameters()
 
     def setup(self, stage=None):
         r"""

@@ -120,6 +120,7 @@ class PCDLit(L.LightningModule):
             config_scheduler: dict=None,
             ):
         super().__init__()
+        self.save_hyperparameters()  # For argument-less load_from_checkpoint.
 
         self.model = model
         self.criterion = criterion
@@ -127,9 +128,6 @@ class PCDLit(L.LightningModule):
 
         self.config_optimizer = config_optimizer
         self.config_scheduler = config_scheduler
-
-        # For convenience with load_from_checkpoint.
-        self.save_hyperparameters()
 
         # For logging metric(s) at different stages.
         self.train_metric = metric.clone(prefix='train_')
