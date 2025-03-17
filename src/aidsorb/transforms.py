@@ -318,17 +318,16 @@ class RandomErase:
     >>> erase = RandomErase(n_points=100)
     >>> erase(pcd)
     Traceback (most recent call last):
-        ..
-    ValueError: resulting point cloud has no points
+        ...
+    RuntimeError: resulting point cloud has no points
     """
     def __init__(self, n_points):
+        if n_points < 0:
+            raise ValueError("'n_points' can't be negative")
         self.n_points = n_points
 
     def __call__(self, pcd):
         check_shape(pcd)
-
-        if self.n_points < 0:
-            raise ValueError("'n_points' can't be negative")
 
         if 0 < self.n_points < 1:
             keep_size = len(pcd) - int(len(pcd) * self.n_points)
@@ -336,7 +335,7 @@ class RandomErase:
             keep_size = len(pcd) - self.n_points
 
         if keep_size < 1:
-            raise ValueError('resulting point cloud has no points')
+            raise RuntimeError('resulting point cloud has no points')
 
         # Indices of points to keep.
         indices = torch.randperm(len(pcd))[:keep_size]
@@ -369,13 +368,12 @@ class RandomSample:
     True
     """
     def __init__(self, size):
+        if size < 0:
+            raise ValueError("'size' can't be negative")
         self.size = size
 
     def __call__(self, pcd):
         check_shape(pcd)
-
-        if self.size < 0:
-            raise ValueError("'size' can't be negative")
 
         if self.size >= len(pcd):
             return pcd
