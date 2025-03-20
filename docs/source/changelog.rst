@@ -25,7 +25,8 @@ Version 2.0.0
 .. versionchanged:: 2.0.0
 
     * :class:`.PointNet` moved from :mod:`!models` to :mod:`.modules`.
-    * Rename :class:`Jitter` to :class:`.RandomJitter`.
+    * Rename :class:`Jitter` to :class:`.RandomJitter` and *add option for
+      jittering local/global point cloud patches*.
     * :func:`.get_names` now returns :class:`tuple` instead of :class:`list`.
     * Bumped Lightning version to ``>=2.5.0`` (:issue:`29`).
     * :func:`.upsample_pcd` moved from :mod:`.data` to

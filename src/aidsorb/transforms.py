@@ -37,6 +37,7 @@ Helper functions and classes for transforming point clouds.
 import torch
 from roma import random_rotmat
 from . _internal import check_shape
+from . _transforms_utils import points_not_affected, local_patch_indices
 
 
 def upsample_pcd(pcd, size):
@@ -259,33 +260,74 @@ class RandomJitter:
 
     Parameters
     ----------
-    std: float
+    std : float
         Standard deviation of the normal noise.
+    n_points : int or float, optional
+        Number or fraction of points to be jittered. No effect if
+        ``local=None``. Otherwise, it must be specified.
+    local : bool or None, default=None
+        Whether to jitter a local or global patch of ``n_points``. If
+        :obj:`None` all points are jittered.
 
     Examples
     --------
+    >>> # Jitter all points.
     >>> pcd = torch.randn(100, 5)
-    >>> jitter = RandomJitter(0.01)
+    >>> jitter = RandomJitter(0.1)
     >>> new_pcd = jitter(pcd)
     >>> new_pcd.shape
     torch.Size([100, 5])
 
     >>> coords, feats = split_pcd(pcd)
     >>> new_coords, new_feats = split_pcd(new_pcd)
-
     >>> torch.equal(new_coords, coords)  # Coordinates are affected.
     False
     >>> torch.equal(new_feats, feats)  # Features are not affected.
     True
+
+    >>> # Jitter a subset of points.
+    >>> pcd = torch.randn(30, 4)
+    >>> jitter =  RandomJitter(0.5, n_points=0.3, local=True)
+    >>> new_pcd = jitter(pcd)
+    >>> new_pcd.shape
+    torch.Size([30, 4])
+
+    >>> coords, feats = split_pcd(pcd)
+    >>> new_coords, new_feats = split_pcd(new_pcd)
+    >>> torch.equal(new_coords, coords)  # Coordinates are affected.
+    False
+    >>> torch.equal(new_feats, feats)  # Features are not affected.
+    True
+
+    >>> (new_pcd == pcd).all(1).sum()
+    tensor(21)
     """
-    def __init__(self, std):
+    def __init__(self, std, n_points=None, local=None):
         self.std = std
+        self.n_points = n_points
+        self.local = local
 
     def __call__(self, pcd):
         check_shape(pcd)
 
         noise = torch.normal(mean=0, std=self.std, size=pcd.shape)
         noise[:, 3:] = 0  # Jitter only the coordinates.
+
+        if self.local is None:
+            pass
+        else:
+            if self.n_points is None:
+                raise ValueError("expected 'n_points' to be specified but received None")
+
+            if self.local:
+                mask = torch.logical_not(
+                        local_patch_indices(pcd, self.n_points)
+                        )
+            else:
+                mask_size = points_not_affected(pcd, self.n_points)
+                mask = torch.randperm(len(pcd))[:mask_size]
+
+            noise[mask] = 0
 
         return pcd + noise
 
@@ -329,15 +371,8 @@ class RandomErase:
     def __call__(self, pcd):
         check_shape(pcd)
 
-        if 0 < self.n_points < 1:
-            keep_size = len(pcd) - int(len(pcd) * self.n_points)
-        else:
-            keep_size = len(pcd) - self.n_points
-
-        if keep_size < 1:
-            raise RuntimeError('resulting point cloud has no points')
-
         # Indices of points to keep.
+        keep_size = points_not_affected(pcd, self.n_points)
         indices = torch.randperm(len(pcd))[:keep_size]
 
         return pcd[indices]
