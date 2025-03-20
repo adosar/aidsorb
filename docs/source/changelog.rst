@@ -10,7 +10,8 @@ Version 2.0.0
     * Support for visualizing ``.npy`` file with :func:`.draw_pcd_from_file` and
       ``aidsorb visualize``.
     * :class:`.RandomSample` and :class:`.RandomFlip` transformations.
-    * Support for erasing a fraction of points in :class:`.RandomErase`.
+    * Support for erasing a fraction of points and local patches in
+      :class:`.RandomErase`.
     * Support for configuring activation function in :func:`.conv1d_block` and
       :func:`.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for

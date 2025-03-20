@@ -342,6 +342,8 @@ class RandomErase:
         Number or fraction of points to be erased. If :class:`float`, it shoud
         be in the interval ``(0, 1)``. In this case, ``int(len(pcd) *
         n_points)`` points are erased.
+    local : bool, default=False
+        Whether to erase a local or global patch of ``n_points``.
 
     Examples
     --------
@@ -350,11 +352,17 @@ class RandomErase:
     >>> erase(pcd).shape
     torch.Size([90, 5])
 
-    >>> # Erase a fraction of points.
+    >>> # Erase a global patch.
     >>> pcd = torch.randn(100, 5)
     >>> erase = RandomErase(n_points=0.4)
     >>> erase(pcd).shape
     torch.Size([60, 5])
+
+    >>> # Erase a local patch.
+    >>> pcd = torch.randn(50, 4)
+    >>> erase = RandomErase(n_points=0.7, local=True)
+    >>> erase(pcd).shape
+    torch.Size([15, 4])
 
     >>> pcd = torch.randn(100, 5)
     >>> erase = RandomErase(n_points=100)
@@ -362,18 +370,32 @@ class RandomErase:
     Traceback (most recent call last):
         ...
     RuntimeError: resulting point cloud has no points
+
+    >>> pcd = torch.randn(100, 5)
+    >>> erase = RandomErase(n_points=150, local=True)
+    >>> erase(pcd)
+    Traceback (most recent call last):
+        ...
+    RuntimeError: resulting point cloud has no points
     """
-    def __init__(self, n_points):
+    def __init__(self, n_points, local=False):
         if n_points < 0:
             raise ValueError("'n_points' can't be negative")
         self.n_points = n_points
+        self.local = local
 
     def __call__(self, pcd):
         check_shape(pcd)
 
-        # Indices of points to keep.
-        keep_size = points_not_affected(pcd, self.n_points)
-        indices = torch.randperm(len(pcd))[:keep_size]
+        if self.local:
+            # Erase a local patch.
+            indices = torch.logical_not(
+                    local_patch_indices(pcd, self.n_points)
+                    )
+        else:
+            # Erase a global patch.
+            keep_size = points_not_affected(pcd, self.n_points)
+            indices = torch.randperm(len(pcd))[:keep_size]
 
         return pcd[indices]
 
