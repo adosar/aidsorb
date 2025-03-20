@@ -37,7 +37,8 @@ def check_shape(obj):
     """
     if not ((obj.ndim == 2) and (obj.shape[1] >= 3)):
         raise ValueError(
-                f'expecting shape (N, 3+C) but got shape {tuple(obj.shape)}'
+                'expecting shape (N, 3+C) '
+                f'but received shape {tuple(obj.shape)}'
                 )
 
 
@@ -57,7 +58,7 @@ def check_shape_vis(array):
     if not ((array.ndim == 2) and (array.shape[1] >= 4)):
         raise ValueError(
                 'expecting array of shape (N, 4+C) '
-                f'but got array of shape {array.shape}'
+                f'but received array of shape {array.shape}'
                 )
 
 

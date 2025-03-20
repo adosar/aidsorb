@@ -156,14 +156,14 @@ def transform_pcd(pcd, tfm):
     >>> transform_pcd(pcd, tfm)
     Traceback (most recent call last):
         ...
-    ValueError: expecting shape (N, 3+C) but got shape (424, 2)
+    ValueError: expecting shape (N, 3+C) but received shape (424, 2)
     """
     check_shape(pcd)
 
     if not tfm.shape == (3, 3):
         raise ValueError(
                 'expecting array of shape (3, 3) '
-                f'but got array of shape {tfm.shape}'
+                f'but received array of shape {tfm.shape}'
                 )
 
     coords, feats = split_pcd(pcd)
@@ -196,7 +196,7 @@ def center_pcd(pcd):
     >>> new_pcd = center_pcd(pcd)
     Traceback (most recent call last):
         ...
-    ValueError: expecting shape (N, 3+C) but got shape (5, 2)
+    ValueError: expecting shape (N, 3+C) but received shape (5, 2)
     """
     check_shape(pcd)
 
