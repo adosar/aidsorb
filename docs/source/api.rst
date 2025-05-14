@@ -15,10 +15,10 @@
    :template: module.rst
    :toctree: _autosummary
 
-   aidsorb.utils
-   aidsorb.visualize
-   aidsorb.data
-   aidsorb.datamodules
-   aidsorb.transforms
-   aidsorb.modules
-   aidsorb.litmodels
+   utils
+   visualize
+   data
+   datamodules
+   transforms
+   modules
+   litmodels

@@ -52,7 +52,7 @@ aidsorb-lit = "aidsorb._cli:lightning_cli"
 
 [project.optional-dependencies]
 docs = [
-    "sphinx==7.3.7",
+    "sphinx>=8.2.3",
     "sphinx-rtd-theme==3.0.2",
     "sphinx-copybutton==0.5.2",
     "sphinx-design==0.6.0",
