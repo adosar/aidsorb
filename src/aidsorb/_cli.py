@@ -34,12 +34,12 @@ def aidsorb_cli():
     r"""
     CLI for creating, preparing and visualizing molecular point clouds.
     """
-    from jsonargparse import CLI
+    from jsonargparse import auto_cli
     from . visualize import draw_pcd_from_file
     from . utils import pcd_from_dir
     from . data import prepare_data
 
-    CLI({
+    auto_cli({
         'visualize': draw_pcd_from_file,
         'create': pcd_from_dir,
         'prepare': prepare_data,
