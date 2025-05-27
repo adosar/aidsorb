@@ -236,7 +236,7 @@ def pad_pcds(pcds, *, channels_first, mode='upsample', return_mask=False):
 
     # Note: right padding is assumed.
     if return_mask:
-        mask = torch.arange(max_len)[None, :] >= pcd_len[:, None]
+        mask = torch.arange(max_len)[None] >= pcd_len[:, None]
         return batch, mask
 
     return batch
