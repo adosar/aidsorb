@@ -41,19 +41,12 @@ def pcd_from_file(filename, features=None):
     **additional** ``features``. If ``features=None``, then the only features
     are the atomic numbers.
 
-    .. tip::
-        To get a list of the supported chemical file formats see
-        :func:`ase.io.read`. Alternatively, you can list them from the command line
-        with: ``ase info --formats``.
-
-    .. _periodic table: https://mendeleev.readthedocs.io/en/stable/data.html#data--page-root
-
     Parameters
     ----------
     filename : str
         Absolute or relative path to the file.
     features : list of str, optional
-        All ``float`` properties from `periodic table`_ are supported.
+        See :func:`pcd_from_dir`.
 
     Returns
     -------
@@ -67,7 +60,7 @@ def pcd_from_file(filename, features=None):
 
     Examples
     --------
-    >>> # xyz coordinates + atomic number + electronegativity + radius.
+    >>> # xyz coordinates + atomic number + electronegativity + radius
     >>> name, pcd = pcd_from_file('path/to/file', features=['en_pauling', 'atomic_radius'])
     ... # doctest: +SKIP
     """
@@ -99,8 +92,8 @@ def pcd_from_files(filenames, outname, features=None):
         used.
     outname : str
         Directory name where the data will be stored.
-    features: list, optional
-        See :func:`pcd_from_file`.
+    features: list of str, optional
+        See :func:`pcd_from_dir`.
 
     Notes
     -----
@@ -128,11 +121,16 @@ def pcd_from_files(filenames, outname, features=None):
             print(e)
 
 
-def pcd_from_dir(dirname: str, outname: str, features: list = None):
+def pcd_from_dir(dirname: str, outname: str, features: list[str] = None):
     r"""
     Create molecular point clouds from a directory and store them.
 
     Point clouds are stored under ``outname`` as ``.npy`` files.
+
+    .. tip::
+        To get a list of the supported chemical file formats see
+        :func:`ase.io.read`. Alternatively, you can list them from the command line
+        with: ``ase info --formats``.
 
     Parameters
     ----------
@@ -140,8 +138,9 @@ def pcd_from_dir(dirname: str, outname: str, features: list = None):
         Absolute or relative path to the directory.
     outname : str
         Directory name where the data will be stored.
-    features: list, optional
-        See :func:`pcd_from_file`.
+    features: list of str, optional
+        Elemental properties from `periodic table
+        <https://mendeleev.readthedocs.io/en/stable/data.html#elements>`_.
 
     Notes
     -----
@@ -149,10 +148,10 @@ def pcd_from_dir(dirname: str, outname: str, features: list = None):
 
     Examples
     --------
-    >>> # Create and store the point clouds.
     >>> dirname = 'path/to/structures'
     >>> outname = 'path/to/pcd_data'
-    >>> pcd_from_dir(dirname, outname)  # doctest: +SKIP
+    >>> # xyz coordinates + atomic number + electronegativity
+    >>> pcd_from_dir(dirname, outname, features=['en_pauling'])  # doctest: +SKIP
     """
     fnames = [os.path.join(dirname, f) for f in os.listdir(dirname)]
 
