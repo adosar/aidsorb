@@ -109,7 +109,7 @@ def pcd_from_files(filenames, outname, features=None):
     """
     # Create the directory if it doesn't exist.
     os.mkdir(outname)
-    print(f'\033[1mSuccessfully created directory: {outname}\033[0m')
+    print(f'Created directory: \033[0;34m{outname}\033[0m')
 
     # Create point clouds and store them.
     for f in tqdm(filenames, desc='\033[32;1mCreating point clouds\033[0m'):
