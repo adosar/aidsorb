@@ -40,6 +40,8 @@ class PCDLit(L.LightningModule):
           ``y`` is compatible with output of :meth:`PCDLit.forward` as required by
           ``criterion`` and ``metric``. For :meth:`PCDLit.predict_step`, ``y`` is
           ignored.
+        * Dictionaries passed as arguments are not copied. To avoid side
+          effects, consider passing a copy.
 
     .. tip::
         You can use ``'val_<MetricName>'`` as the quantity to monitor. For

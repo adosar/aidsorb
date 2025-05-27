@@ -95,6 +95,10 @@ class PCDDataModule(L.LightningDataModule):
                 'num_workers': 2,
                 }
 
+        .. note::
+            The dictionary is not copied. To avoid side effects, consider
+            passing a copy.
+
     See Also
     --------
     :class:`~torch.utils.data.DataLoader` :
