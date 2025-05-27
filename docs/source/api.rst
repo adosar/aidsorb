@@ -1,7 +1,7 @@
 .. _api:
 
-:octicon:`book` API Documentation
-=================================
+:octicon:`book` API Reference
+=============================
 
 .. automodule:: aidsorb
    :members:
