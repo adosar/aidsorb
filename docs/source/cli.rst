@@ -14,11 +14,11 @@ There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
         +------------+--------------------------------------------------------------+
         | Subcommand | Short description                                            |
         +============+==============================================================+
-        | create     | Create point clouds from a directory containing structures.  |
+        | create     | Create molecular point clouds from a directory of structures.|
         +------------+--------------------------------------------------------------+
         | prepare    | Split point clouds into train, validation and test sets.     |
         +------------+--------------------------------------------------------------+
-        | visualize  | Visualize point cloud of a structure.                        |
+        | visualize  | Visualize a molecular point cloud.                           |
         +------------+--------------------------------------------------------------+
 
         For more information::
