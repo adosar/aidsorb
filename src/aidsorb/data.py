@@ -82,7 +82,7 @@ def prepare_data(source: str, split_ratio: Sequence = None, seed: int = 1):
     """
     rng = torch.Generator().manual_seed(seed)
     path = Path(source).parent
-    pcd_names = [name.removesuffix('.npy') for name in os.listdir(source)]
+    pcd_names = [name.removesuffix('.npy') for name in sorted(os.listdir(source))]
 
     # Set default split ratio.
     if split_ratio is None:
@@ -98,7 +98,7 @@ def prepare_data(source: str, split_ratio: Sequence = None, seed: int = 1):
         with open(filename, 'w') as fhand:
             json.dump(names, fhand, indent=4)
 
-        print(f'\033[1mSuccessfully created file: {filename}')
+        print(f'Created file: \033[0;34m{filename}\033[0m')
 
     print('\033[32;1mData preparation completed!\033[0m')
 
