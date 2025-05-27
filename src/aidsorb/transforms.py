@@ -18,18 +18,22 @@ r"""
 Helper functions and classes for transforming point clouds.
 
 .. note::
-    ``pcd`` must be a :class:`~torch.Tensor` of shape ``(N, 3+C)``.
+    * ``pcd`` must be a :class:`~torch.Tensor` of shape ``(N, 3+C)``.
+    * All transforms are implemented using :mod:`torch`. Any randomness is handled
+      through PyTorch's RNG, so reproducibility can be controlled with
+      :func:`torch.manual_seed`.
 
 .. warning::
-    Transformations avoid in-place modifications. However, **the output
-    tensor(s) might be view(s) of the input tensor**. If it is necessary to
-    preserve the original data, it is recommended to copy them before applying
-    the transformation.
+    Transforms avoid in-place modifications. However, **the output tensor(s)
+    might be view(s) of the input tensor**. If it is necessary to preserve the
+    original data, it is recommended to copy them before applying the
+    transform.
 
 .. tip::
     For implementing your own transforms, have a look at the transforms
     `tutorial`_. For more flexibility, consider implementing them as callable
-    instances of classes.
+    instances of classes. **If your transforms use some source of randomness, it
+    is recommended to control it with** :mod:`torch`.
 
     .. _tutorial: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
 """
