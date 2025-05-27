@@ -120,7 +120,7 @@ def get_names(filename):
         return tuple(json.load(fhand))
 
 
-def pad_pcds(pcds, channels_first, mode='upsample', return_mask=False):
+def pad_pcds(pcds, *, channels_first, mode='upsample', return_mask=False):
     r"""
     Pad a sequence of variable size point clouds.
 
@@ -378,7 +378,7 @@ class Collator:
     >>> y
     tensor([10])
     """
-    def __init__(self, channels_first, mode='upsample', return_mask=False):
+    def __init__(self, *, channels_first, mode='upsample', return_mask=False):
         self.channels_first = channels_first
         self.mode = mode
         self.return_mask = return_mask

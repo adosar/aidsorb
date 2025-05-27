@@ -25,6 +25,8 @@ Version 2.0.0
 
 .. versionchanged:: 2.0.0
 
+    * :class:`.Collator` and :func:`.pad_pcds` now accept keyword-only
+      arguments.
     * :class:`.PointNet` moved from :mod:`!models` to :mod:`.modules`.
     * :func:`.get_names` now returns :class:`tuple` instead of :class:`list`.
     * Bumped Lightning version to ``>=2.5.0`` (:issue:`29`).
