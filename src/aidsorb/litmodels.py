@@ -186,9 +186,7 @@ class PCDLit(L.LightningModule):
 
     def predict_step(self, batch, batch_idx):
         r"""Return predictions on a single batch."""
-        x, _ = batch
-
-        return self(x)
+        return self(batch[0])
 
     def configure_optimizers(self):
         r"""

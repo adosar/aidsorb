@@ -97,9 +97,10 @@ class TestLightning(unittest.TestCase):
                 torch.optim.lr_scheduler.ConstantLR,
                 )
 
-        # Check validation and test loops.
+        # Check validation, test and predict loops.
         self.trainer.validate(self.litmodel, datamodule=self.dm)
         self.trainer.test(self.litmodel, datamodule=self.dm)
+        self.trainer.predict(self.litmodel, dataloaders=self.dm.train_dataloader())
 
         # Get path to a checkpoint.
         ckpt_dir = f'{self.tempdir.name}/lightning_logs/version_0/checkpoints'
