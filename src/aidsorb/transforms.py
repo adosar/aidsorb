@@ -271,7 +271,7 @@ class RandomJitter:
         ``local=None``. Otherwise, it must be specified.
     local : bool or None, default=None
         Whether to jitter a local or global patch of ``n_points``. If
-        :obj:`None` all points are jittered.
+        :obj:`None`, all points are jittered.
 
     Examples
     --------
