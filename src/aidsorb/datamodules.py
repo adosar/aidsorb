@@ -21,9 +21,11 @@ r"""
 import os
 from collections.abc import Callable, Sequence
 from pathlib import Path
+
 import lightning as L
 from torch.utils.data import DataLoader
-from . data import get_names, PCDDataset
+
+from .data import PCDDataset, get_names
 
 
 class PCDDataModule(L.LightningDataModule):

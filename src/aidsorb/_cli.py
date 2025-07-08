@@ -24,8 +24,9 @@ def lightning_cli():
     CLI for the deep learning part.
     """
     from lightning.pytorch.cli import LightningCLI
-    from . datamodules import PCDDataModule
-    from . litmodels import PCDLit
+
+    from .datamodules import PCDDataModule
+    from .litmodels import PCDLit
 
     LightningCLI(PCDLit, PCDDataModule)
 
@@ -35,9 +36,10 @@ def aidsorb_cli():
     CLI for creating, preparing and visualizing molecular point clouds.
     """
     from jsonargparse import auto_cli
-    from . visualize import draw_pcd_from_file
-    from . utils import pcd_from_dir
-    from . data import prepare_data
+
+    from .data import prepare_data
+    from .utils import pcd_from_dir
+    from .visualize import draw_pcd_from_file
 
     auto_cli({
         'visualize': draw_pcd_from_file,

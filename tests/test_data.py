@@ -21,19 +21,21 @@ Run from: project's root directory
 Command: python -m unittest tests.test_data
 """
 
-import os
 import doctest
-import unittest
+import os
 import tempfile
+import unittest
 from itertools import combinations
+
 import numpy as np
-import torch
 import pandas as pd
+import torch
 from torch.utils.data import DataLoader
+
 from aidsorb import data
-from aidsorb.utils import pcd_from_dir
+from aidsorb.data import Collator, PCDDataset, get_names, prepare_data
 from aidsorb.transforms import Center
-from aidsorb.data import get_names, prepare_data, PCDDataset, Collator
+from aidsorb.utils import pcd_from_dir
 
 
 class TestPrepareData(unittest.TestCase):

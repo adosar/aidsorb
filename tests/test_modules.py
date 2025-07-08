@@ -22,6 +22,7 @@ Command: python -m unittest tests.test_modules
 """
 
 import doctest
+
 from aidsorb import modules
 
 

@@ -21,14 +21,16 @@ Run from: project's root directory
 Command: python -m unittest tests.test_utils
 """
 
-import os
-from pathlib import Path
 import doctest
-import unittest
+import os
 import tempfile
+import unittest
+from pathlib import Path
+
 import numpy as np
+
 from aidsorb import utils
-from aidsorb.utils import pcd_from_file, pcd_from_files, pcd_from_dir
+from aidsorb.utils import pcd_from_dir, pcd_from_file, pcd_from_files
 
 
 class TestPCDFromFile(unittest.TestCase):

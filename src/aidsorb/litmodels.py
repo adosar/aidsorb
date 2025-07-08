@@ -19,10 +19,12 @@ r"""
 """
 
 from collections.abc import Callable
+
+import lightning as L
 from torch.nn import Module
 from torchmetrics import MetricCollection
-import lightning as L
-from . _torch_utils import get_optimizers
+
+from ._torch_utils import get_optimizers
 
 
 class PCDLit(L.LightningModule):

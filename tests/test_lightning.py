@@ -24,12 +24,15 @@ Command: python -m unittest tests.test_lightning
 import os
 import tempfile
 import unittest
-import torch
+
 import lightning as L
-from torchmetrics import MetricCollection, MeanAbsoluteError as MAE
+import torch
+from torchmetrics import MeanAbsoluteError as MAE
+from torchmetrics import MetricCollection
+
 from aidsorb.data import Collator
-from aidsorb.litmodels import PCDLit
 from aidsorb.datamodules import PCDDataModule
+from aidsorb.litmodels import PCDLit
 
 
 def to_float(y):

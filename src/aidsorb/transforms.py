@@ -40,8 +40,9 @@ Helper functions and classes for transforming point clouds.
 
 import torch
 from roma import random_rotmat
-from . _internal import check_shape
-from . _transforms_utils import points_not_affected, local_patch_indices
+
+from ._internal import check_shape
+from ._transforms_utils import local_patch_indices, points_not_affected
 
 
 def upsample_pcd(pcd, size):

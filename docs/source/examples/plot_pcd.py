@@ -3,6 +3,7 @@ Create and visualize a molecular point cloud
 ============================================
 """
 from plotly.io import show
+
 from aidsorb.utils import pcd_from_file
 from aidsorb.visualize import draw_pcd
 

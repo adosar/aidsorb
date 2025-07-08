@@ -38,8 +38,9 @@ Helper functions for visualizing molecular point clouds.
 
 import numpy as np
 import plotly.graph_objects as go
-from . _internal import check_shape_vis, ptable
-from . utils import pcd_from_file
+
+from ._internal import check_shape_vis, ptable
+from .utils import pcd_from_file
 
 
 def get_atom_colors(atomic_numbers, scheme='cpk'):

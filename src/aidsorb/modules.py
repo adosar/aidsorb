@@ -42,7 +42,8 @@ References
 
 import torch
 from torch import nn
-from . _torch_utils import get_activation
+
+from ._torch_utils import get_activation
 
 
 def conv1d_block(in_channels, out_channels, config_activation=None, **kwargs):

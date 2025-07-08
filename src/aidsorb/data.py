@@ -19,16 +19,18 @@ Helper functions and classes for creating datasets and handling point clouds of
 variable sizes.
 """
 
-import os
 import json
-from pathlib import Path
+import os
 from collections.abc import Sequence
+from pathlib import Path
+
 import numpy as np
 import torch
-from torch.utils.data import random_split, Dataset
 from torch.nn.utils.rnn import pad_sequence
-from . _internal import pd
-from . transforms import upsample_pcd
+from torch.utils.data import Dataset, random_split
+
+from ._internal import pd
+from .transforms import upsample_pcd
 
 
 def prepare_data(source: str, split_ratio: Sequence = None, seed: int = 1):

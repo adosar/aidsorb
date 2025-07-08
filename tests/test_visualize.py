@@ -23,6 +23,7 @@ Command: python -m unittest tests.test_visualize
 
 import doctest
 import unittest
+
 from aidsorb import visualize
 
 

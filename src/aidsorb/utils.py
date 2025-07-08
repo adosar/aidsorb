@@ -22,12 +22,15 @@ Helper functions for creating molecular point clouds.
 """
 
 import os
-from pathlib import Path
 import warnings
+from pathlib import Path
+
 import numpy as np
-from tqdm import tqdm
 from ase.io import read
-from . _internal import ptable
+from tqdm import tqdm
+
+from ._internal import ptable
+
 warnings.filterwarnings('ignore')
 
 

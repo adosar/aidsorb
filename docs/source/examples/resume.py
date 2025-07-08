@@ -15,10 +15,11 @@ Coming back after model training
 #           <https://lightning.ai/docs/pytorch/stable/common/checkpointing_basic.html#lightningmodule-from-checkpoint>`_
 #           are enabled during training.
 
-import torch
 import lightning as L
-from aidsorb.litmodels import PCDLit
+import torch
+
 from aidsorb.datamodules import PCDDataModule
+from aidsorb.litmodels import PCDLit
 
 # Restore lightning modules from checkpoint.
 ckpt_path = 'path/to/checkpoint.ckpt'
