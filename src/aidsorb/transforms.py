@@ -39,13 +39,14 @@ Helper functions and classes for transforming point clouds.
 """
 
 import torch
+from torch import Tensor
 from roma import random_rotmat
 
 from ._internal import check_shape
 from ._transforms_utils import local_patch_indices, points_not_affected
 
 
-def upsample_pcd(pcd, size):
+def upsample_pcd(pcd: Tensor, size: int) -> Tensor:
     r"""
     Upsample ``pcd`` to a new ``size`` by sampling with replacement from ``pcd``.
 
@@ -93,7 +94,7 @@ def upsample_pcd(pcd, size):
     return torch.cat((pcd, new_points))
 
 
-def split_pcd(pcd):
+def split_pcd(pcd: Tensor) -> tuple[Tensor, Tensor]:
     r"""
     Split a point cloud to coordinates and features.
 
@@ -130,7 +131,7 @@ def split_pcd(pcd):
     return pcd[:, :3], pcd[:, 3:]
 
 
-def transform_pcd(pcd, tfm):
+def transform_pcd(pcd: Tensor, tfm: Tensor) -> Tensor:
     r"""
     Transform the coordinates of a point cloud.
 
@@ -177,7 +178,7 @@ def transform_pcd(pcd, tfm):
     return torch.hstack((new_coords, feats))
 
 
-def center_pcd(pcd):
+def center_pcd(pcd: Tensor) -> Tensor:
     r"""
     Center the coordinates of a point cloud by subtracting their centroid.
 
@@ -228,7 +229,7 @@ class Center:
     tensor([[0., 0., 0., 3.],
             [0., 0., 0., 3.]])
     """
-    def __call__(self, pcd):
+    def __call__(self, pcd: Tensor) -> Tensor:
         return center_pcd(pcd)  # Checks also for shape.
 
 
@@ -252,7 +253,7 @@ class RandomRotation:
     >>> torch.equal(new_feats, feats)  # Features are not affected.
     True
     """
-    def __call__(self, pcd):
+    def __call__(self, pcd: Tensor) -> Tensor:
         check_shape(pcd)
         rr = random_rotmat()
 
@@ -307,12 +308,18 @@ class RandomJitter:
     >>> (new_pcd == pcd).all(1).sum()
     tensor(21)
     """
-    def __init__(self, std, n_points=None, local=None):
+    def __init__(
+            self,
+            std: float,
+            n_points: int | float | None = None,
+            local: bool | None = None
+            ) -> None:
+
         self.std = std
         self.n_points = n_points
         self.local = local
 
-    def __call__(self, pcd):
+    def __call__(self, pcd: Tensor) -> Tensor:
         check_shape(pcd)
 
         noise = torch.normal(mean=0, std=self.std, size=pcd.shape)
@@ -383,13 +390,13 @@ class RandomErase:
         ...
     RuntimeError: resulting point cloud has no points
     """
-    def __init__(self, n_points, local=False):
+    def __init__(self, n_points: int | float, local: bool = False) -> None:
         if n_points < 0:
             raise ValueError("'n_points' can't be negative")
         self.n_points = n_points
         self.local = local
 
-    def __call__(self, pcd):
+    def __call__(self, pcd: Tensor) -> Tensor:
         check_shape(pcd)
 
         if self.local:
@@ -429,12 +436,12 @@ class RandomSample:
     >>> torch.equal(pcd, sample(pcd))
     True
     """
-    def __init__(self, size):
+    def __init__(self, size: int) -> None:
         if size < 0:
             raise ValueError("'size' can't be negative")
         self.size = size
 
-    def __call__(self, pcd):
+    def __call__(self, pcd: Tensor) -> Tensor:
         check_shape(pcd)
 
         if self.size >= len(pcd):
@@ -474,7 +481,7 @@ class RandomFlip:
     >>> (pcd == -new_pcd).all(0).sum()
     tensor(1)
     """
-    def __call__(self, pcd):
+    def __call__(self, pcd: Tensor) -> Tensor:
         check_shape(pcd)
         new_pcd = pcd.clone()  # Copy to avoid modifying original tensor.
 
