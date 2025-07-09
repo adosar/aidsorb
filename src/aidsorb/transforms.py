@@ -264,16 +264,18 @@ class RandomJitter:
     r"""
     Jitter the coordinates of a point cloud by adding zero-mean normal noise.
 
+    * If both ``n_points`` and ``local`` are :obj:`None`, then all points are
+      jittered.
+    * If ``local!=None``, then ``n_points`` must be specified.
+
     Parameters
     ----------
     std : float
         Standard deviation of the normal noise.
-    n_points : int or float, optional
-        Number or fraction of points to be jittered. No effect if
-        ``local=None``. Otherwise, it must be specified.
+    n_points : int or float or None, default=None
+        Number or fraction of points to be jittered.
     local : bool or None, default=None
-        Whether to jitter a local or global patch of ``n_points``. If
-        :obj:`None`, all points are jittered.
+        Whether to jitter a local or global patch of ``n_points``.
 
     Examples
     --------
