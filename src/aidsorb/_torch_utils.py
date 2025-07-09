@@ -16,10 +16,15 @@
 
 r"""Helper module for simplifying PyTorch related components."""
 
+from collections.abc import Iterable
+
 import torch
+from torch.nn import Module
+from torch.optim import Optimizer
+from torch.optim.lr_scheduler import LRScheduler
 
 
-def get_activation(config=None):
+def get_activation(config: dict[str, str | dict] | None = None) -> Module:
     r"""
     Return an instance of activation function.
 
@@ -54,7 +59,7 @@ def get_activation(config=None):
     return activation
 
 
-def get_optim_cls(name):
+def get_optim_cls(name: str) -> type[Optimizer]:
     r"""
     Return optimizer class from name.
 
@@ -76,7 +81,7 @@ def get_optim_cls(name):
     return getattr(torch.optim, name)
 
 
-def get_lrs_cls(name):
+def get_lrs_cls(name: str) -> type[LRScheduler]:
     r"""
     Return scheduler class from name.
 
@@ -98,7 +103,11 @@ def get_lrs_cls(name):
     return getattr(torch.optim.lr_scheduler, name)
 
 
-def get_optimizers(params, config_optim=None, config_lrs=None):
+def get_optimizers(
+        params: Iterable,
+        config_optim: dict[str, str | dict] | None = None,
+        config_lrs: dict[str, str | dict] | None = None,
+        ):
     r"""
     Construct optimizer and optionally scheduler.
 
