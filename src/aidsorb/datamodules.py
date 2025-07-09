@@ -31,8 +31,7 @@ from .data import PCDDataset, get_names
 
 class PCDDataModule(L.LightningDataModule):
     r"""
-    :class:`~lightning.pytorch.core.LightningDataModule` for the
-    :class:`~.PCDDataset`.
+    LightningDataModule for supervised/unsupervised learning on point clouds.
 
     Given the following directory structure::
 
@@ -49,11 +48,11 @@ class PCDDataModule(L.LightningDataModule):
     of :class:`~.PCDDataset`.
 
     .. note::
-        For validation and test dataloaders, ``shuffle=False`` and
-        ``drop_last=False``.
+        Comma ``,`` is assumed as the field separator in ``.csv`` file.
 
     .. warning::
-        * Comma ``,`` is assumed as the field separator in ``.csv`` file.
+        * For validation and test dataloaders, ``shuffle=False`` and
+          ``drop_last=False``.
         * If ``train_size`` is specified, the first ``train_size`` point clouds
           from ``train.json`` will be used. **If the data were not split with**
           :func:`~aidsorb.data.prepare_data`, **ensure that names in**

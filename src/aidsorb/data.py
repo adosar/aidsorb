@@ -445,9 +445,7 @@ class PCDDataset(Dataset):
           ``transform_x`` and ``transform_y`` expect :class:`~.torch.Tensor` as
           input.
         * ``y`` has shape ``(len(labels),)`` if ``transform_y=None``.
-
-    .. warning::
-        Comma ``,`` is assumed as the field separator in ``.csv`` file.
+        * Comma ``,`` is assumed as the field separator in ``.csv`` file.
 
     Parameters
     ----------
