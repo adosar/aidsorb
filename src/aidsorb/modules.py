@@ -40,13 +40,22 @@ References
               USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
 """
 
+from typing import Any
+
 import torch
+from torch import Tensor
 from torch import nn
+from torch.nn import Module, Sequential
 
 from ._torch_utils import get_activation
 
 
-def conv1d_block(in_channels, out_channels, config_activation=None, **kwargs):
+def conv1d_block(
+        in_channels: int,
+        out_channels: int,
+        config_activation: dict[str, str | dict] | None = None,
+        **kwargs
+        ) -> Sequential:
     r"""
     Return a 1D convolutional block.
 
@@ -115,7 +124,12 @@ def conv1d_block(in_channels, out_channels, config_activation=None, **kwargs):
     return block
 
 
-def dense_block(in_features, out_features, config_activation=None, **kwargs):
+def dense_block(
+        in_features: int,
+        out_features: int,
+        config_activation: dict[str, str | dict] | None = None,
+        **kwargs
+        ) -> Sequential:
     r"""
     Return a dense block.
 
@@ -208,7 +222,7 @@ class TNet(nn.Module):
     >>> tnet(x).shape
     torch.Size([128, 64, 64])
     """
-    def __init__(self, embed_dim):
+    def __init__(self, embed_dim: int) -> None:
         super().__init__()
 
         self.embed_dim = embed_dim
@@ -225,7 +239,7 @@ class TNet(nn.Module):
                 nn.Linear(256, embed_dim * embed_dim),
                 )
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Tensor:
         r"""
         Return the regressed matrices.
 
@@ -295,7 +309,11 @@ class PointNetBackbone(nn.Module):
     >>> feat(x).shape  # Only features, no critical indices.
     torch.Size([8, 512])
     """
-    def __init__(self, n_global_feats=1024, local_feats=False):
+    def __init__(
+            self,
+            n_global_feats: int = 1024,
+            local_feats: bool = False
+            ) -> None:
         super().__init__()
 
         self.local_feats = local_feats
@@ -313,7 +331,11 @@ class PointNetBackbone(nn.Module):
                 conv1d_block(128, n_global_feats, kernel_size=1, bias=False),
                 )
 
-    def forward(self, x, return_indices=False):
+    def forward(
+            self,
+            x: Tensor,
+            return_indices: bool = False
+            ) -> Tensor | tuple[Tensor, Tensor]:
         r"""
         Return the *features* and optionally *critical indices*.
 
@@ -373,7 +395,7 @@ class PointNetClsHead(nn.Module):
     >>> head(x).shape
     torch.Size([64, 4])
     """
-    def __init__(self, n_outputs=1, dropout_rate=0):
+    def __init__(self, n_outputs: int = 1, dropout_rate: float = 0) -> None:
         super().__init__()
 
         self.mlp = nn.Sequential(
@@ -383,7 +405,7 @@ class PointNetClsHead(nn.Module):
                 nn.Linear(256, n_outputs),
                 )
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Tensor:
         r"""
         Run the forward pass.
 
@@ -416,7 +438,7 @@ class PointNetSegHead(nn.Module):
     >>> head(x).shape
     torch.Size([32, 400, 2])
     """
-    def __init__(self, n_outputs=1):
+    def __init__(self, n_outputs: int = 1) -> None:
         super().__init__()
 
         self.shared_mlp = nn.Sequential(
@@ -426,7 +448,7 @@ class PointNetSegHead(nn.Module):
                 nn.Conv1d(128, n_outputs, kernel_size=1),
                 )
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Tensor:
         r"""
         Run the forward pass.
 
@@ -498,7 +520,12 @@ class PointNet(torch.nn.Module):
     >>> seg_net.backbone(x, True)[1].shape  # Features and critical indices.
     torch.Size([32, 512])
     """
-    def __init__(self, head, n_global_feats=1024, local_feats=False):
+    def __init__(
+            self,
+            head: Module,
+            n_global_feats: int = 1024,
+            local_feats: bool = False
+            ) -> None:
         super().__init__()
 
         self.backbone = PointNetBackbone(
@@ -507,7 +534,7 @@ class PointNet(torch.nn.Module):
                 )
         self.head = head
 
-    def forward(self, x):
+    def forward(self, x: Tensor) -> Any:
         r"""
         Run the forward pass.
 
