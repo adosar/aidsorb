@@ -24,8 +24,10 @@ Helper functions for creating molecular point clouds.
 import os
 import warnings
 from pathlib import Path
+from collections.abc import Iterable
 
 import numpy as np
+from numpy.typing import NDArray
 from ase.io import read
 from tqdm import tqdm
 
@@ -34,7 +36,10 @@ from ._internal import ptable
 warnings.filterwarnings('ignore')
 
 
-def pcd_from_file(filename, features=None):
+def pcd_from_file(
+        filename: str,
+        features: list[str] | None = None
+        ) -> tuple[str, NDArray[np.float32]]:
     r"""
     Create molecular point cloud from a file.
 
@@ -82,7 +87,11 @@ def pcd_from_file(filename, features=None):
     return name, pcd
 
 
-def pcd_from_files(filenames, outname, features=None):
+def pcd_from_files(
+        filenames: Iterable[str],
+        outname: str,
+        features: list[str] | None = None
+        ) -> None:
     r"""
     Create molecular point clouds from a list of files and store them.
 
@@ -124,7 +133,11 @@ def pcd_from_files(filenames, outname, features=None):
             print(e)
 
 
-def pcd_from_dir(dirname: str, outname: str, features: list[str] = None):
+def pcd_from_dir(
+        dirname: str,
+        outname: str,
+        features: list[str] | None = None
+        ) -> None:
     r"""
     Create molecular point clouds from a directory and store them.
 
