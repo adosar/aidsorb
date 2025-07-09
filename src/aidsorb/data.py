@@ -21,11 +21,12 @@ variable sizes.
 
 import json
 import os
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 import numpy as np
 import torch
+from torch import Tensor
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import Dataset, random_split
 
@@ -33,7 +34,11 @@ from ._internal import pd
 from .transforms import upsample_pcd
 
 
-def prepare_data(source: str, split_ratio: Sequence = None, seed: int = 1):
+def prepare_data(
+        source: str,
+        split_ratio: Sequence | None = None,
+        seed: int = 1,
+        ) -> None:
     r"""
     Split point clouds into train, validation and test sets.
 
@@ -105,7 +110,7 @@ def prepare_data(source: str, split_ratio: Sequence = None, seed: int = 1):
     print('\033[32;1mData preparation completed!\033[0m')
 
 
-def get_names(filename):
+def get_names(filename: str) -> tuple:
     r"""
     Return point cloud names stored in a ``.json`` file.
 
@@ -122,7 +127,13 @@ def get_names(filename):
         return tuple(json.load(fhand))
 
 
-def pad_pcds(pcds, *, channels_first, mode='upsample', return_mask=False):
+def pad_pcds(
+        pcds: Sequence[Tensor],
+        *,
+        channels_first: bool,
+        mode: str = 'upsample',
+        return_mask: bool = False,
+        ) -> Tensor | tuple:
     r"""
     Pad a sequence of variable size point clouds.
 
@@ -380,12 +391,22 @@ class Collator:
     >>> y
     tensor([10])
     """
-    def __init__(self, *, channels_first, mode='upsample', return_mask=False):
+    def __init__(
+            self,
+            *,
+            channels_first: bool,
+            mode: str = 'upsample',
+            return_mask: bool = False,
+            ) -> None:
+
         self.channels_first = channels_first
         self.mode = mode
         self.return_mask = return_mask
 
-    def __call__(self, samples):
+    def __call__(
+            self,
+            samples: Sequence[tuple[Tensor, Tensor | None]],
+            ) -> tuple[Tensor, Tensor | None]:
         r"""
         Parameters
         ----------
@@ -440,8 +461,8 @@ class PCDDataset(Dataset):
     index_col : str, optional
         Column name of the ``.csv`` file to be used for indexing. This column
         must include ``pcd_names``. No effect if ``path_to_Y=None``.
-    labels : sequence, optional
-        Column names of the ``.csv`` file containing the properties to be
+    labels : list, optional
+        List of column names from the ``.csv`` file containing the properties to be
         predicted. No effect if ``path_to_Y=None``.
     transform_x : callable, optional
         Transformation to apply to point cloud.
@@ -454,15 +475,15 @@ class PCDDataset(Dataset):
     """
     def __init__(
             self,
-            pcd_names,
-            path_to_X,
+            pcd_names: Sequence[str],
+            path_to_X: str,
             *,
-            path_to_Y=None,
-            index_col=None,
-            labels=None,
-            transform_x=None,
-            transform_y=None,
-            ):
+            path_to_Y: str | None = None,
+            index_col: str | None = None,
+            labels: list[str] | None = None,
+            transform_x: Callable | None = None,
+            transform_y: Callable | None = None,
+            ) -> None:
 
         self._pcd_names = tuple(pcd_names)  # Immutable for safety.
         self.path_to_X = path_to_X
@@ -481,14 +502,14 @@ class PCDDataset(Dataset):
                     )
 
     @property
-    def pcd_names(self):
+    def pcd_names(self) -> tuple:
         r"""Point cloud names."""
         return self._pcd_names
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.pcd_names)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> tuple[Tensor, Tensor | None]:
         pcd_name = self.pcd_names[idx]
         pcd_path = os.path.join(self.path_to_X, f'{pcd_name}.npy')
 
