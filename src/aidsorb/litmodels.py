@@ -32,19 +32,18 @@ from ._torch_utils import get_optimizers
 
 class PCDLit(L.LightningModule):
     r"""
-    :class:`~lightning.pytorch.core.LightningModule` for supervised learning on
-    point clouds.
-
-    This module supports regression and classification tasks.
+    LightningModule for supervised learning on point clouds.
 
     .. note::
-        * Parametes for which ``requires_grad=False`` are excluded from
-          optimization.
-        * ``{train,validation,test}_step`` methods expect a batch of the form
-          ``(x, y)``, where ``x`` is compatible with :meth:`PCDLit.forward` and
-          ``y`` is compatible with output of :meth:`PCDLit.forward` as required by
-          ``criterion`` and ``metric``. For :meth:`PCDLit.predict_step`, ``y`` is
-          ignored.
+        * ``*_step`` methods expect a batch of the form ``(x, y)``, where:
+
+          * ``x`` is compatible with :meth:`PCDLit.forward`
+          * ``y`` is compatible with ``preds = self.forward(x)`` (required by
+            ``criterion`` and ``metric``)
+          * ``y`` is ignored in :meth:`PCDLit.predict_step`
+
+        * ``criterion`` must have signature ``metric(input=preds, target=y)``.
+        * ``metric`` must have signature ``metric(preds=preds, target=y)``.
         * Dictionaries passed as arguments are not copied. To avoid side
           effects, consider passing a copy.
 
@@ -62,7 +61,7 @@ class PCDLit(L.LightningModule):
             checkpoint_callback = ModelCheckpoint(monitor='val_R2Score', mode='max', ...)
 
 
-    .. _logging: https://lightning.ai/docs/pytorch/stable/extensions/logging.html#automatic-logging
+    .. _logging: https://lightning.ai/docs/pytorch/stable/extensions/logging.html#id3
 
     Parameters
     ----------
@@ -72,8 +71,8 @@ class PCDLit(L.LightningModule):
         Loss function to be optimized during training.
     metric : torchmetrics.MetricCollection
         Metric(s) to be logged and optionally monitored. All metric(s) are
-        logged based on Lightning's default hooks. For more information, see
-        `logging`_.
+        logged based on Lightning's default logging behavior. For more
+        information, see `logging`_.
     config_optimizer : dict, default=None
         Dictionary for configuring optimizer. If :obj:`None`, the
         :class:`~torch.optim.Adam` optimizer with default hyperparameters is
@@ -148,11 +147,6 @@ class PCDLit(L.LightningModule):
     def training_step(self, batch: tuple[Any, Any], batch_idx: int) -> Tensor:
         r"""
         Return loss on a single batch from the train set and log metric(s).
-
-        .. note::
-            Training metric(s) is computed with training mode enabled and thus,
-            may underestimate the true training performance if ``model``
-            contains modules like ``Dropout`` etc.
         """
         x, y = batch
         preds = self(x)
@@ -196,6 +190,10 @@ class PCDLit(L.LightningModule):
     def configure_optimizers(self) -> Optimizer | dict:
         r"""
         Configure optimizer and optionally learning rate scheduler.
+
+        .. warning::
+            Parameters for which ``requires_grad=False`` are excluded from
+            optimization.
 
         Returns
         -------
