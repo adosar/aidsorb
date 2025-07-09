@@ -20,6 +20,7 @@ r"""
 
 import os
 from collections.abc import Callable, Sequence
+from typing import Any
 from pathlib import Path
 
 import lightning as L
@@ -111,19 +112,19 @@ class PCDDataModule(L.LightningDataModule):
             self,
             path_to_X: str,
             *,
-            path_to_Y: str = None,
-            index_col: str = None,
-            labels: Sequence = None,
-            train_size: int = None,
-            train_transform_x: Callable = None,
-            eval_transform_x: Callable = None,
-            transform_y: Callable = None,
+            path_to_Y: str | None = None,
+            index_col: str | None = None,
+            labels: Sequence | None = None,
+            train_size: int | None = None,
+            train_transform_x: Callable | None = None,
+            eval_transform_x: Callable | None = None,
+            transform_y: Callable | None = None,
             shuffle: bool = False,
             drop_last: bool = False,
             train_batch_size: int = 32,
             eval_batch_size: int = 32,
-            config_dataloaders=None,
-            ):
+            config_dataloaders: dict[str, Any] | None = None,
+            ) -> None:
         super().__init__()
         self.save_hyperparameters()  # For argument-less load_from_checkpoint.
         
@@ -149,7 +150,7 @@ class PCDDataModule(L.LightningDataModule):
         if config_dataloaders is not None:
             self.config_dataloaders = config_dataloaders
 
-    def setup(self, stage=None):
+    def setup(self, stage: str | None = None) -> None:
         r"""
         Set up train, validation and test datasets.
 
@@ -168,7 +169,7 @@ class PCDDataModule(L.LightningDataModule):
         if stage in (None, 'test'):
             self._setup_dataset('test')
 
-    def _setup_dataset(self, mode):
+    def _setup_dataset(self, mode: str) -> None:
         path_to_names = Path(self.path_to_X).parent
         pcd_names = get_names(os.path.join(path_to_names, f'{mode}.json'))
 
@@ -189,7 +190,7 @@ class PCDDataModule(L.LightningDataModule):
                 )
         setattr(self, f'{mode}_dataset', dataset)
 
-    def train_dataloader(self):
+    def train_dataloader(self) -> DataLoader:
         r"""
         Return the train dataloader.
 
@@ -209,7 +210,7 @@ class PCDDataModule(L.LightningDataModule):
                 **self.config_dataloaders,
                 )
 
-    def val_dataloader(self):
+    def val_dataloader(self) -> DataLoader:
         r"""
         Return the validation dataloader.
 
@@ -229,7 +230,7 @@ class PCDDataModule(L.LightningDataModule):
                 **self.config_dataloaders,
                 )
 
-    def test_dataloader(self):
+    def test_dataloader(self) -> DataLoader:
         r"""
         Return the test dataloader.
 
