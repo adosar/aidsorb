@@ -123,8 +123,8 @@ class PCDLit(L.LightningModule):
             model: Module,
             criterion: Callable,
             metric: MetricCollection,
-            config_optimizer: dict[str, Any] | None = None,
-            config_scheduler: dict[str, Any] | None = None,
+            config_optimizer: dict[str, str | dict] | None = None,
+            config_scheduler: dict[str, str | dict] | None = None,
             ) -> None:
         super().__init__()
         self.save_hyperparameters()  # For argument-less load_from_checkpoint.
