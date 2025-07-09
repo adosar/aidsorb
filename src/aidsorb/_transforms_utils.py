@@ -17,9 +17,14 @@
 r"""Helper module for :mod:`.transforms`."""
 
 import torch
+from torch import Tensor
 
 
-def points_not_affected(pcd, n_points, return_affected=False):
+def points_not_affected(
+        pcd: Tensor,
+        n_points: int | float,
+        return_affected=False
+        ) -> int:
     r"""
     Return the number of points not affected by a transform.
 
@@ -60,7 +65,7 @@ def points_not_affected(pcd, n_points, return_affected=False):
     return len(pcd) - count if return_affected else count
 
 
-def local_patch_indices(pcd, n_points):
+def local_patch_indices(pcd: Tensor, n_points: int | float) -> Tensor:
     r"""
     Return the indices of a local patch.
 
