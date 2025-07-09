@@ -19,8 +19,11 @@ r"""
 """
 
 from collections.abc import Callable
+from typing import Any
 
 import lightning as L
+from torch import Tensor
+from torch.optim import Optimizer
 from torch.nn import Module
 from torchmetrics import MetricCollection
 
@@ -120,9 +123,9 @@ class PCDLit(L.LightningModule):
             model: Module,
             criterion: Callable,
             metric: MetricCollection,
-            config_optimizer: dict=None,
-            config_scheduler: dict=None,
-            ):
+            config_optimizer: dict[str, Any] | None = None,
+            config_scheduler: dict[str, Any] | None = None,
+            ) -> None:
         super().__init__()
         self.save_hyperparameters()  # For argument-less load_from_checkpoint.
 
@@ -138,11 +141,11 @@ class PCDLit(L.LightningModule):
         self.val_metric = metric.clone(prefix='val_')
         self.test_metric = metric.clone(prefix='test_')
 
-    def forward(self, x):
+    def forward(self, x: Any) -> Any:
         r"""Run forward pass (forward method) of ``model``."""
         return self.model(x)
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch: tuple[Any, Any], batch_idx: int) -> Tensor:
         r"""
         Return loss on a single batch from the train set and log metric(s).
 
@@ -163,7 +166,7 @@ class PCDLit(L.LightningModule):
 
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch: tuple[Any, Any], batch_idx: int) -> None:
         r"""
         Make predictions on a single batch from the validation set and log
         metric(s).
@@ -175,7 +178,7 @@ class PCDLit(L.LightningModule):
         self.val_metric.update(preds=preds, target=y)
         self.log_dict(self.val_metric, prog_bar=True)
 
-    def test_step(self, batch, batch_idx):
+    def test_step(self, batch: tuple[Any, Any], batch_idx: int) -> None:
         r"""
         Make predictions on a single batch from the test set and log metric(s).
         """
@@ -186,11 +189,11 @@ class PCDLit(L.LightningModule):
         self.test_metric.update(preds=preds, target=y)
         self.log_dict(self.test_metric, prog_bar=True)
 
-    def predict_step(self, batch, batch_idx):
+    def predict_step(self, batch: tuple[Any, Any], batch_idx: int) -> Any:
         r"""Return predictions on a single batch."""
         return self(batch[0])
 
-    def configure_optimizers(self):
+    def configure_optimizers(self) -> Optimizer | dict:
         r"""
         Configure optimizer and optionally learning rate scheduler.
 
