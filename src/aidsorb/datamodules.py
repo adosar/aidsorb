@@ -159,7 +159,12 @@ class PCDDataModule(L.LightningDataModule):
 
         Parameters
         ----------
-        stage : {None, 'fit', 'validate', 'test'}, optional
+        stage : {None, 'fit', 'validate', 'test'}, default=None
+            Which datasets to set up.
+
+            * If ``'fit'``, only the train and validation datasets are set up.
+            * If ``'validate'`` or ``'test'``, only the corresponding dataset is set up.
+            * If :obj:`None`, all datasets are set up.
         """
         if stage in (None, 'fit'):
             self._setup_dataset('train')
