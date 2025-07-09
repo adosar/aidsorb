@@ -37,13 +37,14 @@ Helper functions for visualizing molecular point clouds.
 """
 
 import numpy as np
-import plotly.graph_objects as go
+from numpy.typing import NDArray, ArrayLike
+from plotly.graph_objects import Figure, Scatter3d
 
 from ._internal import check_shape_vis, ptable
 from .utils import pcd_from_file
 
 
-def get_atom_colors(atomic_numbers, scheme='cpk'):
+def get_atom_colors(atomic_numbers: ArrayLike, scheme: str = 'cpk') -> NDArray:
     r"""
     Convert atomic numbers to colors based on ``scheme``.
 
@@ -62,7 +63,7 @@ def get_atom_colors(atomic_numbers, scheme='cpk'):
     return ptable.loc[atomic_numbers, scheme].to_numpy()
 
 
-def get_elements(atomic_numbers):
+def get_elements(atomic_numbers: ArrayLike) -> NDArray:
     r"""
     Convert atomic numbers to element names.
 
@@ -86,11 +87,11 @@ def get_elements(atomic_numbers):
 
 
 def draw_pcd(
-        pcd: np.ndarray,
+        pcd: NDArray,
         scheme: str = 'cpk',
-        feature_to_color: tuple = None,
-        colorscale: str = None,
-        ):
+        feature_to_color: tuple[int, str] | None = None,
+        colorscale: str | None = None,
+        ) -> Figure:
     r"""
     Visualize molecular point cloud with Plotly.
 
@@ -139,8 +140,8 @@ def draw_pcd(
                 'colorbar': {'thickness': 20, 'title': label}
                 }
 
-    fig = go.Figure(
-            data=[go.Scatter3d(
+    fig = Figure(
+            data=[Scatter3d(
                 x=pcd[:, 0],
                 y=pcd[:, 1],
                 z=pcd[:, 2],
@@ -153,7 +154,11 @@ def draw_pcd(
     return fig
 
 
-def draw_pcd_from_file(filename: str, render: bool = True, **kwargs):
+def draw_pcd_from_file(
+        filename: str,
+        render: bool = True,
+        **kwargs
+        ) -> Figure | None:
     r"""
     Visualize molecular point cloud from a file.
 
