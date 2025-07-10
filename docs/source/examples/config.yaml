@@ -47,7 +47,7 @@ model:
         mae: {class_path: torchmetrics.MeanAbsoluteError}
   model:
     # You can also pass a custom architecture
-    class_path: aidsorb.models.PointNet
+    class_path: aidsorb.modules.PointNet
     init_args:
       head:
         class_path: aidsorb.modules.PointNetClsHead
