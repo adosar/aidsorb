@@ -1,25 +1,30 @@
-seed_everything: 1  # Workers are seeded as well.
+seed_everything: 1  # Workers are seeded as well
 
-# (Optional) Here you setup the Trainer.
+# (Optional) Here you setup the Trainer
 trainer:
   max_epochs: 2
   accelerator: 'gpu'
 
-# Here you setup the DataModule (PCDDataModule).
-# For more information 👉 aidsorb.datamodules.
+# Here you setup the DataModule (PCDDataModule)
+# For more information 👉 aidsorb.datamodules
 data:
-  # The paths must be relative to where aidsorb-lit is called.
-  # Consider using absolute paths.
+  # The paths must be relative to where aidsorb-lit is called
+  # Consider using absolute paths
   path_to_X: 'path/to/pcd_data'
   path_to_Y: 'path/to/labels.csv'
   index_col: 'id'
   labels: ['y1', 'y3']
   train_transform_x:
-    # Here you can pass transformations for augmentation.
-    class_path: aidsorb.transforms.Center
+    class_path: torchvision.transforms.v2.Compose
+    init_args:
+      transforms:
+      - class_path: aidsorb.transforms.Center
+      # Data augmentation
+      - class_path: aidsorb.transforms.RandomJitter
+      - class_path: aidsorb.transforms.RandomRotation
   eval_transform_x:
     class_path: aidsorb.transforms.Center
-  train_size: Null  # Use all training data.
+  train_size: Null  # Use all training data
   train_batch_size: 2
   eval_batch_size: 2
   shuffle: True
@@ -29,8 +34,8 @@ data:
       init_args:
         channels_first: True
 
-# Here you setup the LightningModule (PCDLit).
-# For more information 👉 aidsorb.litmodels.
+# Here you setup the LightningModule (PCDLit)
+# For more information 👉 aidsorb.litmodels
 model:
   criterion:
     class_path: torch.nn.MSELoss
@@ -41,22 +46,23 @@ model:
         r2: {class_path: torchmetrics.R2Score}
         mae: {class_path: torchmetrics.MeanAbsoluteError}
   model:
-    # You can also pass a custom architecture.
+    # You can also pass a custom architecture
     class_path: aidsorb.models.PointNet
     init_args:
       head:
         class_path: aidsorb.modules.PointNetClsHead
         init_args:
-          dropout_rate: 0.7
+          n_outputs: 2
+          dropout_rate: 0.1
 
-# (Optional) Here you setup the optimizer.
+# (Optional) Here you setup the optimizer
 optimizer:
   class_path: torch.optim.SGD
   init_args:
     lr: 0.001
     momentum: 0.0
 
-# (Optional) Here you setup the learning rate scheduler.
+# (Optional) Here you setup the learning rate scheduler
 lr_scheduler:
   class_path: torch.optim.lr_scheduler.StepLR
   init_args:

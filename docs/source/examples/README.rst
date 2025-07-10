@@ -1,2 +1,2 @@
-:octicon:`code-square` Examples Gallery
-=======================================
+:octicon:`code-square` Gallery
+==============================

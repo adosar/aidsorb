@@ -167,7 +167,7 @@ After creating and splitting the point clouds:
 Train and test
 ^^^^^^^^^^^^^^
 
-🎉 All you need is a ``.yaml`` and some... ⌨️  keystrokes!
+All you need is a ``.yaml`` configuration file and some keystrokes:
 
 .. tab-set::
 
@@ -185,6 +185,13 @@ Train and test
 
     .. tab-item:: config.yaml
         
+        You can generate and start customizing a configuration file as following::
+
+            $ aidsorb-lit fit --print_config > config.yaml
+
+        Below is a dummy configuration file for multi-output regression using
+        PointNet:
+
         .. literalinclude:: examples/config.yaml
             :language: yaml
 
@@ -213,18 +220,18 @@ Summing up
 Questions
 ---------
 
-Can I use point clouds not created with |aidsorb|?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using point clouds not created with |aidsorb|?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Yes! The only requirement is to store them under a directory in ``.npy`` format
-(see :func:`numpy.save`) file and respect the shapes described in
+(see :func:`numpy.save`) and respect the shapes described in
 :ref:`Introduction`. Then, you can proceed as described :ref:`earlier <Summing
 up>` (omitting the point clouds creation part).
 
 .. _aidsorb_with_pytorch_and_lightning:
 
-Can I do DL without the CLI?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Deep learning without the CLI?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Of course! Although you are encouraged to use the :doc:`cli`, you can also use
 |aidsorb| with plain |pytorch| or |lightning|.
@@ -253,12 +260,12 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             from aidsorb.modules import PointNet
 
             # Create the datasets.
-            train_ds = PCDDataset(pcd_names=get_names('path/to/train.json'), ...)
-            val_ds = PCDDataset(pcd_names=get_names('path/to/validation.json'), ...)
+            train_set = PCDDataset(pcd_names=get_names('path/to/train.json'), ...)
+            val_set = PCDDataset(pcd_names=get_names('path/to/validation.json'), ...)
 
             # Create the dataloaders.
-            train_dl = DataLoader(train_ds, ..., collate_fn=Collator(...))
-            val_dl = DataLoader(val_ds, ..., collate_fn=Collator(...))
+            train_loader = DataLoader(train_ds, ..., collate_fn=Collator(...))
+            val_loader = DataLoader(val_ds, ..., collate_fn=Collator(...))
 
             # Instantiate the model.
             model = PointNet(...)
@@ -277,7 +284,11 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             from aidsorb.litmodels import PCDLit
 
             # Instantiate the datamodule.
-            dm = PCDDataModule(..., collate_fn=Collator(...))
+            dm = PCDDataModule(
+                path_to_X='path/to/pcd_data',
+                ...,
+                config_dataloaders=dict(collate_fn=Collator(...)),
+                )
 
             # Instantiate the litmodel.
             litmodel = PCDLit(model=PointNet(...), ...)
@@ -288,7 +299,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             # Your code goes here.
             ...
 
-Can I predict directly from the CLI?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Predicting directly from the CLI?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Currently, this feature is not available (see :ref:`index:TODO`).
