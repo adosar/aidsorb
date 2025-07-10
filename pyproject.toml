@@ -54,8 +54,8 @@ aidsorb-lit = "aidsorb._cli:lightning_cli"
 docs = [
     "sphinx>=8.2.3",
     "sphinx-rtd-theme==3.0.2",
-    "sphinx-copybutton==0.5.2",
-    "sphinx-design==0.6.0",
-    "sphinx-gallery==0.16.0",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-design>=0.6.1",
+    "sphinx-gallery>=0.16.0",
     "kaleido==0.2.1",
 ]
