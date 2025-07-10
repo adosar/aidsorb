@@ -4,8 +4,19 @@
 Version 2.0.0
 -------------
 
+.. admonition:: Notable changes
+
+    * :mod:`torch` is now used instead of :mod:`numpy` for controlling the
+      randomness in :mod:`.transforms`.
+    * New LighthningModule :class:`.PCDLit`, which supports customization for
+      optimizer and scheduler.
+    * New storing scheme for point clouds, stored as plain ``.npy`` files
+      instead of a single ``.npz`` file.
+
 .. versionadded:: 2.0.0
     
+    * Commands ``aidsorb create`` and ``aidsorb prepare`` now support
+      configuration files.
     * Option for ignoring critical indices in :meth:`.PointNetBackbone.forward`.
     * Support for visualizing ``.npy`` file with :func:`.draw_pcd_from_file` and
       ``aidsorb visualize``.
@@ -43,9 +54,9 @@ Version 2.0.0
 
 .. versionremoved:: 2.0.0
 
-    * :class:`Jitter`. Use :class:`.RandomJitter` instead.
+    * :class:`Jitter`, use :class:`.RandomJitter` instead.
     * :mod:`!models` to simplify codebase and improve project structure.
-    * :class:`!PointLit`. Use :class:`.PCDLit` instead.
+    * :class:`!PointLit`, use :class:`.PCDLit` instead.
     * :class:`!Identity` since it is equivalent to :class:`torch.nn.Identity`
       (and thus redundant).
 
