@@ -14,10 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-r"""
-Helper functions for the CLI.
-"""
-
+r"""Helper functions for the CLI."""
 
 def lightning_cli():
     r"""
@@ -32,9 +29,7 @@ def lightning_cli():
 
 
 def aidsorb_cli():
-    r"""
-    CLI for creating, preparing and visualizing molecular point clouds.
-    """
+    r"""CLI for creating, preparing and visualizing molecular point clouds."""
     from jsonargparse import auto_cli
 
     from .data import prepare_data
