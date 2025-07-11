@@ -84,11 +84,7 @@ class TestLightning(unittest.TestCase):
                 config_scheduler=config_scheduler,
                 )
 
-        self.trainer = L.Trainer(
-                max_epochs=1,
-                accelerator='cpu',
-                default_root_dir=self.tempdir.name
-                )
+        self.trainer = L.Trainer(max_epochs=1, default_root_dir=self.tempdir.name)
 
     def test_lightning(self):
         # Check training loop.
