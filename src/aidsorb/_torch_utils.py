@@ -139,11 +139,20 @@ def get_optimizers(
 
     Examples
     --------
+    >>> # Default behavior (Adam without scheduler).
+    >>> parameters = torch.nn.Linear(1, 1).parameters()
+    >>> get_optimizers(parameters)
+    ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    Adam (
+        ...
+    )
+
+    >>> # Non-default behavior.
     >>> config_optim = {'name': 'SGD', 'hparams': {'lr': 0.1}}
     >>> config_lrs = {'name': 'StepLR', 'hparams': {'step_size': 2}, 'config': {'interval': 'step'}}
 
-    >>> # Optimization without scheduler.
-    >>> parameters = torch.nn.Linear(1, 1).parameters()
+    >>> # Custom optimizer without scheduler.
+    >>> parameters = torch.nn.Linear(2, 2).parameters()
     >>> get_optimizers(parameters, config_optim)
     ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     SGD (
@@ -152,9 +161,15 @@ def get_optimizers(
         ...
     )
 
-    >>> # Optimization with scheduler.
-    >>> parameters = torch.nn.Linear(1, 1).parameters()
+    >>> # Custom optimizer with scheduler.
+    >>> parameters = torch.nn.Linear(2, 2).parameters()
     >>> optimizers = get_optimizers(parameters, config_optim, config_lrs)
+    >>> optimizers['optimizer'] # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+    SGD (
+        ...
+        lr: 0.1
+        ...
+    )
     >>> optimizers['lr_scheduler']['scheduler']  # doctest: +ELLIPSIS
     <torch.optim.lr_scheduler.StepLR object at 0x...>
     >>> optimizers['lr_scheduler']['interval']
