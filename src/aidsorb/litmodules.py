@@ -44,8 +44,8 @@ class PCDLit(L.LightningModule):
 
         * ``criterion`` must have signature ``metric(input=preds, target=y)``.
         * ``metric`` must have signature ``metric(preds=preds, target=y)``.
-        * Dictionaries passed as arguments are not copied. To avoid side
-          effects, consider passing a copy.
+        * Dictionaries passed as arguments are not deep copied. To avoid side
+          effects, consider passing a deep copy.
 
     .. tip::
         You can use ``'val_<MetricName>'`` as the quantity to monitor. For
