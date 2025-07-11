@@ -15,17 +15,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Unit tests for the aidsorb.litmodels module.
+Unit tests for the aidsorb.litmodules module.
 
 Run from: project's root directory
-Command: python -m unittest tests.test_litmodels
+Command: python -m unittest tests.test_litmodules
 """
 
 import doctest
 
-from aidsorb import litmodels
+from aidsorb import litmodules
 
 
 def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite(litmodels))
+    tests.addTests(doctest.DocTestSuite(litmodules))
     return tests

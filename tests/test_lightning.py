@@ -32,7 +32,7 @@ from torchmetrics import MetricCollection
 
 from aidsorb.data import Collator
 from aidsorb.datamodules import PCDDataModule
-from aidsorb.litmodels import PCDLit
+from aidsorb.litmodules import PCDLit
 
 
 def to_float(y):

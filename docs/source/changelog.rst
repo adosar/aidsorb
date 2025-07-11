@@ -36,6 +36,7 @@ Version 2.0.0
 
 .. versionchanged:: 2.0.0
 
+    * Renamed :mod:`.litmodels` to :mod:`.litmodules` (:issue:`63`).
     * :class:`.Collator` and :func:`.pad_pcds` now accept keyword-only
       arguments.
     * :class:`.PointNet` moved from :mod:`!models` to :mod:`.modules`.

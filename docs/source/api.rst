@@ -21,4 +21,4 @@
    datamodules
    transforms
    modules
-   litmodels
+   litmodules

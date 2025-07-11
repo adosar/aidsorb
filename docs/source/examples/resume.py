@@ -19,7 +19,7 @@ import lightning as L
 import torch
 
 from aidsorb.datamodules import PCDDataModule
-from aidsorb.litmodels import PCDLit
+from aidsorb.litmodules import PCDLit
 
 # Restore lightning modules from checkpoint.
 ckpt_path = 'path/to/checkpoint.ckpt'

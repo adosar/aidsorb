@@ -35,7 +35,7 @@ data:
         channels_first: True
 
 # Here you setup the LightningModule (PCDLit)
-# For more information 👉 aidsorb.litmodels
+# For more information 👉 aidsorb.litmodules
 model:
   criterion:
     class_path: torch.nn.MSELoss

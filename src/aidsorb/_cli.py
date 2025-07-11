@@ -23,7 +23,7 @@ def lightning_cli():
     from lightning.pytorch.cli import LightningCLI
 
     from .datamodules import PCDDataModule
-    from .litmodels import PCDLit
+    from .litmodules import PCDLit
 
     LightningCLI(PCDLit, PCDDataModule)
 
