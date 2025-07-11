@@ -349,7 +349,7 @@ class PointNetBackbone(nn.Module):
 
         Returns
         -------
-        out : tensor or tuple of length 2
+        out : tensor or tuple of tensors
             If ``return_indices=False`` the output are the features, otherwise
             tuple of the form ``(features, critical_indices)``.
         """

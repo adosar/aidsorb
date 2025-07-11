@@ -107,7 +107,7 @@ def draw_pcd(
     pcd : array of shape (N, 4+C)
     scheme : {'jmol', 'cpk'}, default='jmol'
         Takes effect only if ``feature_to_color=None``.
-    feature_to_color : tuple of length 2, optional
+    feature_to_color : tuple, optional
         Tuple of the form ``(index, label)``, where ``index`` is index of the
         feature to be colored and ``label`` is the text label for the colorbar.
     colorscale : str, optional

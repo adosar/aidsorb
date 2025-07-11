@@ -158,7 +158,7 @@ def pad_pcds(
 
     Returns
     -------
-    tensor or tuple of length 2
+    tensor or tuple of tensors
         ``batch`` if ``return_mask=False``, else ``(batch, mask)``.
 
     See Also
@@ -270,7 +270,7 @@ class Collator:
         * ``pcd`` tensor of shape ``(N_i, C)``.
         * ``label`` tensor of shape ``(n_outputs,)``, ``()`` or :obj:`None`.
 
-    * Output: tuple of length 2
+    * Output: tuple
 
         If ``return_mask=False``, then output is ``(x, y)``, else ``((x, mask), y)``.
 
@@ -416,7 +416,7 @@ class Collator:
 
         Returns
         -------
-        tuple of length 2
+        tuple
             ``(x, y)`` or ``(x, None)``. If ``return_mask=True``, then
             ``x`` is a tuple ``(batch, mask)``, else ``batch``.
         """

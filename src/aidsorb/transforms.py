@@ -104,7 +104,7 @@ def split_pcd(pcd: Tensor) -> tuple[Tensor, Tensor]:
 
     Returns
     -------
-    coords_feats : tuple of length 2
+    coords_feats : tuple
         Coordinates and features of point cloud as ``(coords, feats)``.
 
         * ``coords`` tensor of shape (N, 3)

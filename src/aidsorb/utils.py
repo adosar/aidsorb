@@ -58,7 +58,7 @@ def pcd_from_file(
 
     Returns
     -------
-     data : tuple of length 2
+     data : tuple
         Molecular point cloud and its name as ``(name, pcd)``.
 
     Notes
