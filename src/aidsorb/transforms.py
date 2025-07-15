@@ -69,7 +69,7 @@ def upsample_pcd(pcd: Tensor, size: int) -> Tensor:
             [2, 4, 5, 6],
             [2, 4, 5, 6]])
 
-    >>> # New points point must be from pcd.
+    >>> # New points must be from pcd.
     >>> pcd = torch.randn(10, 4)
     >>> new_pcd = upsample_pcd(pcd, 20)
     >>> (new_pcd[-1] == pcd).all(1).any()  # Check for last point.
