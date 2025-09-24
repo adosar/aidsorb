@@ -491,13 +491,15 @@ class PCDDataset(Dataset):
         self.transform_x = transform_x
         self.transform_y = transform_y
 
+        #: Dataframe for the labels. The columns follow the order in ``labels``.
         self.Y = None
+
         if self.path_to_Y is not None:  # Only for labeled datasets.
             self.Y = pd.read_csv(
                     self.path_to_Y,
                     index_col=self.index_col,
                     usecols=[*self.labels, self.index_col],
-                    )
+                    )[self.labels]
 
     @property
     def pcd_names(self) -> tuple:

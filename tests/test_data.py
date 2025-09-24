@@ -128,6 +128,9 @@ class TestPCDDataset(unittest.TestCase):
             self.assertEqual(y.shape, (self.batch_size, len(self.labels)))
             self.assertEqual(y.dtype, torch.int64)
 
+        # Check that columns follow the order passed by the user.
+        self.assertTrue(all(dataset.labels == dataset.Y.columns))
+
     def test_unlabeled_pcddataset(self):
         dataset = PCDDataset(
                 pcd_names=self.pcd_names,
