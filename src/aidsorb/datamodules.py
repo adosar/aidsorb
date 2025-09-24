@@ -70,7 +70,7 @@ class PCDDataModule(L.LightningDataModule):
         point clouds.
     index_col : str, optional
         Column name of the ``.csv`` file to be used for indexing.
-    labels : sequence, optional
+    labels : list, optional
         Column names of the ``.csv`` file containing the properties to be
         predicted.
     train_size : int, default=None
@@ -113,7 +113,7 @@ class PCDDataModule(L.LightningDataModule):
             *,
             path_to_Y: str | None = None,
             index_col: str | None = None,
-            labels: Sequence | None = None,
+            labels: list[str] | None = None,
             train_size: int | None = None,
             train_transform_x: Callable | None = None,
             eval_transform_x: Callable | None = None,
