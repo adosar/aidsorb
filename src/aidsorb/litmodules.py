@@ -43,7 +43,6 @@ class PCDLit(L.LightningModule):
           * ``y`` is ignored in :meth:`PCDLit.predict_step`
 
         * ``criterion`` must have signature ``criterion(input=preds, target=y)``.
-        * ``metric`` must have signature ``metric(preds=preds, target=y)``.
         * Dictionaries passed as arguments are not deep copied. To avoid side
           effects, consider passing a deep copy.
 
