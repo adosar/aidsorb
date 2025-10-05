@@ -23,7 +23,7 @@ from torch import Tensor
 def points_not_affected(
         pcd: Tensor,
         n_points: int | float,
-        return_affected=False
+        return_affected: bool = False
         ) -> int:
     r"""
     Return the number of points not affected by a transform.
