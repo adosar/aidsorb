@@ -260,14 +260,24 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             from aidsorb.modules import PointNet
 
             # Create the datasets.
-            train_set = PCDDataset(pcd_names=get_names('path/to/train.json'), ...)
-            val_set = PCDDataset(pcd_names=get_names('path/to/validation.json'), ...)
+            train_set = PCDDataset(
+                pcd_names=get_names('path/to/project_root/train.json'),
+                path_to_X='path/to/pcd_data/',
+                path_to_Y='path/to/labels.csv',
+                ...
+                )
+            val_set = PCDDataset(
+                pcd_names=get_names('path/to/project_root/validation.json'),
+                path_to_X='path/to/pcd_data/',
+                path_to_Y='path/to/labels.csv',
+                ...
+                )
 
             # Create the dataloaders.
-            train_loader = DataLoader(train_ds, ..., collate_fn=Collator(...))
-            val_loader = DataLoader(val_ds, ..., collate_fn=Collator(...))
+            train_loader = DataLoader(train_set, ..., collate_fn=Collator(channels_first=True))
+            val_loader = DataLoader(val_set, ..., collate_fn=Collator(channels_first=True))
 
-            # Instantiate the model.
+            # Create the model.
             model = PointNet(...)
 
             # Your code goes here.
@@ -283,17 +293,18 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             from aidsorb.modules import PointNet
             from aidsorb.litmodules import PCDLit
 
-            # Instantiate the datamodule.
+            # Create the datamodule.
             dm = PCDDataModule(
                 path_to_X='path/to/pcd_data',
+                path_to_Y='path/to/labels.csv',
                 ...,
-                config_dataloaders=dict(collate_fn=Collator(...)),
+                config_dataloaders=dict(collate_fn=Collator(channels_first=True), ...),
                 )
 
-            # Instantiate the litmodel.
+            # Create the litmodel.
             litmodel = PCDLit(model=PointNet(...), ...)
 
-            # Instantiate the trainer.
+            # Create the trainer.
             trainer = L.Trainer(...)
 
             # Your code goes here.
