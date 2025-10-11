@@ -165,12 +165,16 @@ class PCDDataModule(L.LightningDataModule):
             * If ``'validate'`` or ``'test'``, only the corresponding dataset is set up.
             * If :obj:`None`, all datasets are set up.
         """
-        if stage in (None, 'fit'):
+        if stage == 'fit':
             self._setup_dataset('train')
             self._setup_dataset('validation')
-        if stage in (None, 'validate'):
+        if stage == 'validate':
             self._setup_dataset('validation')
-        if stage in (None, 'test'):
+        if stage == 'test':
+            self._setup_dataset('test')
+        if stage is None:
+            self._setup_dataset('train')
+            self._setup_dataset('validation')
             self._setup_dataset('test')
 
     def _setup_dataset(self, mode: str) -> None:
