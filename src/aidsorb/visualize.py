@@ -23,7 +23,7 @@ Helper functions for visualizing point clouds.
 
         .. code-block:: console
             
-            $ aidsorb visualize path/to/structure_or_numpy
+            $ aidsorb visualize path/to/structure_or_pcd  # Structure (.xyz, .cif, etc) or .npy
 
     You can also visualize a structure with :mod:`ase`:
 
@@ -110,7 +110,7 @@ def draw_pcd(
     scheme : {'jmol', 'cpk'}, default='jmol'
         Takes effect only if ``molecular=True`` and ``feature_to_color=None``.
     size : float, default=2.
-        Controls the size of each point.
+        Controls the size of points.
     feature_to_color : tuple, optional
         Tuple of the form ``(index, label)``, where ``index`` is the index of
         the feature to be colored and ``label`` is the text label for the

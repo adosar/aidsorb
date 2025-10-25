@@ -52,9 +52,9 @@ pip install aidsorb
 
 Here is a summary of what you can do from the command line:
 
-1. Visualize a molecular point cloud:
+1. Visualize a point cloud:
 	```bash
-	aidsorb visualize path/to/structure
+	aidsorb visualize path/to/structure_or_pcd  # Structure (.xyz, .cif, etc) or .npy
 	```
 
 2.  Create and prepare point clouds:

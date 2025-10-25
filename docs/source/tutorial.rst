@@ -56,14 +56,6 @@ Introduction
    **atomic numbers** and ``pcd[:, 4:]`` any **additional features**. If ``C ==
    0``, then the only features are the atomic numbers.
 
-
-.. tip::
-   You can visualize a point cloud with:
-
-   .. code-block:: console
-
-      $ aidsorb visualize path/to/structure_or_numpy
-
 Deep learning on molecular point clouds
 ---------------------------------------
 
@@ -163,6 +155,13 @@ After creating and splitting the point clouds:
     * Each ``.npy`` file under ``pcd_data`` corresponds to a point cloud.
     * The ``.json`` files store the point cloud names for training,
       validation and testing.
+
+.. tip::
+   You can visualize a point cloud with:
+
+   .. code-block:: console
+
+      $ aidsorb visualize path/to/structure_or_pcd  # Structure (.xyz, .cif, etc) or .npy
 
 Train and test
 ^^^^^^^^^^^^^^
