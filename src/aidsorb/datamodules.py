@@ -173,9 +173,8 @@ class PCDDataModule(L.LightningDataModule):
         if stage == 'test':
             self._setup_dataset('test')
         if stage is None:
-            self._setup_dataset('train')
-            self._setup_dataset('validation')
-            self._setup_dataset('test')
+            for mode in ['train', 'validation', 'test']:
+                self._setup_dataset(mode)
 
     def _setup_dataset(self, mode: str) -> None:
         path_to_names = Path(self.path_to_X).parent
