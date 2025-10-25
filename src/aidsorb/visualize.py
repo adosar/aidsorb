@@ -15,15 +15,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Helper functions for visualizing molecular point clouds.
+Helper functions for visualizing point clouds.
 
 .. tip::
 
-    To visualize a molecular point cloud from the CLI:
+    To visualize a point cloud from the CLI:
 
         .. code-block:: console
             
-            $ aidsorb visualize path/to/structure
+            $ aidsorb visualize path/to/structure_or_numpy
 
     You can also visualize a structure with :mod:`ase`:
 
@@ -40,7 +40,7 @@ import numpy as np
 from numpy.typing import NDArray, ArrayLike
 from plotly.graph_objects import Figure, Scatter3d
 
-from ._internal import check_shape_vis, ptable
+from ._internal import check_shape, ptable
 from .utils import pcd_from_file
 
 
@@ -88,28 +88,33 @@ def get_elements(atomic_numbers: ArrayLike) -> NDArray:
 
 def draw_pcd(
         pcd: NDArray,
+        molecular: bool = True,
         scheme: str = 'cpk',
+        size: float = 2.,
         feature_to_color: tuple[int, str] | None = None,
         colorscale: str | None = None,
         ) -> Figure:
     r"""
-    Visualize molecular point cloud with Plotly.
-
-    * The size of each point is determined by its atomic number ``pcd[i, 3]``.
-    * The color of each point is determined by ``feature_to_color``. If :obj:`None`,
-      the atomic number of each point determines the color. Otherwise, ``pcd[i,
-      feature_to_color[0]]`` value determines the color.
+    Visualize point cloud with Plotly.
 
     .. _colorscale: https://plotly.com/python/builtin-colorscales/
 
     Parameters
     ----------
-    pcd : array of shape (N, 4+C)
+    pcd : array of shape (N, 3+C)
+    molecular : bool, default=True
+        If :obj:`True`, assume a molecular point cloud. In this case, each atom
+        is sized as :math:`r_{\text{vdW}}^4` and colorized based on ``scheme``.
+        If :obj:`False`, assume a generic point cloud and size each point based
+        on ``size``.
     scheme : {'jmol', 'cpk'}, default='jmol'
-        Takes effect only if ``feature_to_color=None``.
+        Takes effect only if ``molecular=True`` and ``feature_to_color=None``.
+    size : float, default=2.
+        Controls the size of each point.
     feature_to_color : tuple, optional
-        Tuple of the form ``(index, label)``, where ``index`` is index of the
-        feature to be colored and ``label`` is the text label for the colorbar.
+        Tuple of the form ``(index, label)``, where ``index`` is the index of
+        the feature to be colored and ``label`` is the text label for the
+        colorbar.
     colorscale : str, optional
         No effect if ``feature_to_color=None``. For available options, see
         `colorscale`_.
@@ -120,25 +125,23 @@ def draw_pcd(
 
     Examples
     --------
-    >>> pcd = np.random.randint(1, 30, (100, 5))
-    >>> fig = draw_pcd(pcd, feature_to_color=(0, 'x coord'), colorscale='viridis')
+    >>> pcd = np.random.randn(10, 3)
+    >>> fig = draw_pcd(pcd, molecular=False, feature_to_color=(0, 'x coord'), colorscale='viridis')
     """
-    check_shape_vis(pcd)
+    check_shape(pcd)
 
-    atomic_numbers = pcd[:, 3]
-    elements = get_elements(atomic_numbers)
+    size = (ptable.loc[pcd[:, 3], 'vdw_radius'] * 0.01)**4 if molecular else size
+    hovertext = get_elements(pcd[:, 3]) if molecular else None
+    color = get_atom_colors(pcd[:, 3], scheme=scheme) if molecular else None
+    marker = {'size': size, 'color': color}
 
-    if feature_to_color is None:
-        colors = get_atom_colors(atomic_numbers, scheme=scheme)
-        marker = {'size': atomic_numbers, 'color': colors}
-    else:
+    if feature_to_color is not None:
         idx, label = feature_to_color
-        colors = pcd[:, idx]
-        marker = {
-                'size': atomic_numbers, 'color': colors,
-                'colorscale': colorscale,
-                'colorbar': {'thickness': 20, 'title': label}
-                }
+        marker.update({
+            'color': pcd[:, idx],
+            'colorscale': colorscale,
+            'colorbar': {'thickness': 20, 'title': label},
+            })
 
     fig = Figure(
             data=[Scatter3d(
@@ -147,7 +150,7 @@ def draw_pcd(
                 z=pcd[:, 2],
                 mode='markers',
                 marker=marker,
-                hovertext=elements
+                hovertext=hovertext,
                 )],
             )
 
@@ -160,7 +163,7 @@ def draw_pcd_from_file(
         **kwargs
         ) -> Figure | None:
     r"""
-    Visualize molecular point cloud from a file.
+    Visualize point cloud from a file.
 
     Parameters
     ----------

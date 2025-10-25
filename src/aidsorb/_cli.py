@@ -29,7 +29,7 @@ def lightning_cli():
 
 
 def aidsorb_cli():
-    r"""CLI for creating, preparing and visualizing molecular point clouds."""
+    r"""CLI for creating, preparing and visualizing point clouds."""
     from jsonargparse import auto_cli
 
     from .data import prepare_data

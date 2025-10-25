@@ -41,26 +41,6 @@ def check_shape(obj):
                 )
 
 
-def check_shape_vis(array):
-    r"""
-    Check if ``array`` has valid shape to be considered a molecular point cloud.
-
-    Parameters
-    ----------
-    array
-
-    Raises
-    ------
-    ValueError
-        If ``array.shape != (N, 4+C)``.
-    """
-    if not ((array.ndim == 2) and (array.shape[1] >= 4)):
-        raise ValueError(
-                'expecting array of shape (N, 4+C) '
-                f'but received array of shape {array.shape}'
-                )
-
-
 # This will be the default on Pandas 3.0
 pd.options.mode.copy_on_write = True
 

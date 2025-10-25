@@ -15,6 +15,7 @@ Version 2.0.0
 
 .. versionadded:: 2.0.0
     
+    * Support for visualizing a generic point cloud (:issue:`69`).
     * Commands ``aidsorb create`` and ``aidsorb prepare`` now support
       configuration files.
     * Option for ignoring critical indices in :meth:`.PointNetBackbone.forward`.

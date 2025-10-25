@@ -24,10 +24,15 @@ Command: python -m unittest tests.test_visualize
 import doctest
 import unittest
 
+import numpy as np
 from aidsorb import visualize
 
 
 class TestDrawPCDFromFile(unittest.TestCase):
+    def test_draw_random_pcd(self):
+        pcd = np.random.randn(20, 3)
+        fig = visualize.draw_pcd(pcd, feature_to_color=(0, 'X'), molecular=False, size=4.5)
+        fig.show()
     def test_draw_from_structure(self):
         visualize.draw_pcd_from_file('tests/structures/IRMOF-1.xyz')
     def test_draw_from_npy(self):

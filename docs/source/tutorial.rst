@@ -58,11 +58,11 @@ Introduction
 
 
 .. tip::
-   You can visualize a molecular point cloud with:
+   You can visualize a point cloud with:
 
    .. code-block:: console
 
-      $ aidsorb visualize path/to/structure
+      $ aidsorb visualize path/to/structure_or_numpy
 
 Deep learning on molecular point clouds
 ---------------------------------------

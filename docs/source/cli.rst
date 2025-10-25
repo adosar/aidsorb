@@ -18,7 +18,7 @@ There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
         +------------+--------------------------------------------------------------+
         | prepare    | Split point clouds into train, validation and test sets.     |
         +------------+--------------------------------------------------------------+
-        | visualize  | Visualize a molecular point cloud.                           |
+        | visualize  | Visualize a point cloud.                                     |
         +------------+--------------------------------------------------------------+
 
         For more information::
@@ -44,4 +44,3 @@ There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
         For more information::
 
             $ aidsorb-lit [<subcommand>] --help
-
