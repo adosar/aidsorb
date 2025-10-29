@@ -101,7 +101,7 @@ For example, if you are adding a new function `foo` in the module `bar.py`, you 
 To run unit tests, the following commands should be executed from the project's root directory:
 
 ```bash
-python -m unittest tests.<test_name>  # run test for an indivitual module
+python -m unittest tests.<test_name>  # run test for an individual module
 python -m unittest  # run all tests at once
 ```
 
@@ -117,6 +117,7 @@ make sure the changes are reflected in the documentation.
 To build the docs:
 
 ```bash
+pip install '.[docs]'
 cd docs
 make html  # or make clean && make html to buld from scratch
 ```
