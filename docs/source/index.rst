@@ -98,21 +98,7 @@ TODO
 Contributing
 ------------
 
-🙌 We welcome contributions from the community to help improve and expand this
-project!
-
-You can start by 🛠️ `opening an issue <https://github.com/adosar/aidsorb/issues>`_ for:
-
-* 🐛 Reporting bugs
-* 🌟 Suggesting new features
-* 📚 Improving documentation
-* 🎨 Adding your example to the :doc:`Gallery <auto_examples/index>`
-
-We appreciate your efforts to submit well-documented :octicon:`git-pull-request`
-`pull requests <https://github.com/adosar/aidsorb/pulls>`_ and participate in
-discussions.
-
-💪 Together, we can make this project even better!
+We welcome contributions from the community! Please read our |contributing-guide| before submitting PRs or opening issues.
 
 Citing
 ------

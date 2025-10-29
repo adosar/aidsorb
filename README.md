@@ -79,9 +79,7 @@ section of the repository.
 > Please make sure to **read the documentation carefully first** before asking your question.
 
 ### Contributing
-We welcome contributions from the community! Please read our 🙌 [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs or opening issues.  
-
-
+We welcome contributions from the community! Please read our 🙌 [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs or opening issues.
 
 ## 📑 Citing
 * **To cite the software**, please refer to the [citation file](./CITATION.cff) or click the citation button.

@@ -151,10 +151,9 @@ After creating and splitting the point clouds:
     ├── train.json
     └── validation.json
 
-.. note::
-    * Each ``.npy`` file under ``pcd_data`` corresponds to a point cloud.
-    * The ``.json`` files store the point cloud names for training,
-      validation and testing.
+* Each ``.npy`` file under ``pcd_data`` corresponds to a point cloud.
+* The ``.json`` files store the point cloud names for training,
+  validation and testing.
 
 .. tip::
    You can visualize a point cloud with:
@@ -313,3 +312,11 @@ Predicting directly from the CLI?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Currently, this feature is not available (see :ref:`index:TODO`).
+
+Further questions
+^^^^^^^^^^^^^^^^^
+
+We warmly encourage you to share any questions or ideas in the |discussions|.
+
+.. note::
+    Before asking *how to do X?*, please read the documentation carefully.

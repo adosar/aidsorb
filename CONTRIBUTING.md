@@ -48,7 +48,7 @@ To contribute your changes follow these steps:
     * General changes: `<type>/<short-description>`
     * Linked to an issue: `<type>/<issue-id>_<short-description>`
 
-    Examples of branches names:
+    Examples of branch names:
 
     ```bash
     git switch -c docs/add-classification-example
