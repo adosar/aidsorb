@@ -68,24 +68,19 @@ Here is a summary of what you can do from the command line:
 	aidsorb-lit fit --config=path/to/config.yaml
 	aidsorb-lit test --config=path/to/config.yaml --ckpt_path=path/to/ckpt
 	```
+ 
+## 💡 Questions and Contributing
 
-## 💡 Contributing
+### Questions
+If you have any questions about how to use **AIdsorb**, we encourage you to post them in the 💬 [Discussions](https://github.com/adosar/aidsorb/discussions)
+section of the repository.
 
-🙌 We welcome contributions from the community to help improve and expand this
-project!
+> [!NOTE]
+> Please make sure to **read the documentation carefully first** before asking your question.
 
-You can start by 🛠️ [opening an issue](https://github.com/adosar/aidsorb/issues) for:
+### Contributing
+We welcome contributions from the community! Please read our 🙌 [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs or opening issues.  
 
-* 🐛 Reporting bugs
-* 🌟 Suggesting new features
-* 📚 Improving documentation
-* 🎨 Adding your example to the [Gallery](https://aidsorb.readthedocs.io/en/stable/auto_examples/index.html)
-
-We appreciate your efforts to submit well-documented 🔃 [pull
-requests](https://github.com/adosar/aidsorb/pulls) and participate in
-discussions.
-
-💪 Together, we can make this project even better!
 
 
 ## 📑 Citing
