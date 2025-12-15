@@ -41,7 +41,7 @@ def pcd_from_file(
         features: list[str] | None = None
         ) -> tuple[str, NDArray[np.float32]]:
     r"""
-    Create molecular point cloud from a file.
+    Create molecular point cloud from a structure file.
 
     The molecular ``pcd`` has shape ``(N, 4+C)`` where ``N`` is the
     number of atoms, ``pcd[:, :3]`` are the **atomic coordinates**,
@@ -93,7 +93,7 @@ def pcd_from_files(
         features: list[str] | None = None
         ) -> None:
     r"""
-    Create molecular point clouds from a list of files and store them.
+    Create molecular point clouds from a list of structure files and store them.
 
     Point clouds are stored under ``outname`` as ``.npy`` files.
 
@@ -103,7 +103,7 @@ def pcd_from_files(
         An iterable providing the filenames. Absolute or relative paths can be
         used.
     outname : str
-        Directory name where the data will be stored.
+        Directory name where the point clouds will be stored.
     features: list of str, optional
         See :func:`pcd_from_dir`.
 
@@ -139,7 +139,7 @@ def pcd_from_dir(
         features: list[str] | None = None
         ) -> None:
     r"""
-    Create molecular point clouds from a directory and store them.
+    Create molecular point clouds from a directory of structure files and store them.
 
     Point clouds are stored under ``outname`` as ``.npy`` files.
 
@@ -153,7 +153,8 @@ def pcd_from_dir(
     dirname : str
         Absolute or relative path to the directory.
     outname : str
-        Directory name where the data will be stored.
+        Directory name where the point clouds will be stored. The directory will
+        be created if does not exist.
     features: list of str, optional
         Elemental properties from `periodic table
         <https://mendeleev.readthedocs.io/en/stable/data.html#elements>`_.
