@@ -11,16 +11,17 @@
 </p>
 
 <h4 align="center">
-  <img alt="Static Badge" src="https://img.shields.io/badge/Python%203.11%2B-black?style=for-the-badge&logo=python&logoColor=cyan">
-  <img alt="Static Badge" src="https://img.shields.io/badge/GPL--3.0--only-black?style=for-the-badge&logo=gnu&logoColor=cyan">
-  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/unittest.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Tests&labelColor=black">
-  <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pylint.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Lint&labelColor=black">
-  <!--- <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pypi.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=Build&labelColor=black"> -->
-  
+	
+  ![Static Badge](https://img.shields.io/badge/PYTHON%203.11+-black?style=for-the-badge&logo=python&logoColor=cyan)
+  ![Static Badge](https://img.shields.io/badge/GPL--3.0--ONLY-black?style=for-the-badge&logo=gnu&logoColor=cyan)
+  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/unittest.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=TESTS&labelColor=black)
+  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/pylint.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=LINT&labelColor=black)
+  ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/adosar/aidsorb/build-install.yaml?style=for-the-badge&logo=github&logoColor=cyan&label=WHEEL&labelColor=black)
   [![coverage](https://img.shields.io/codecov/c/gh/adosar/aidsorb?style=for-the-badge&logo=codecov&logoColor=cyan&label=CODECOV&labelColor=black&color=purple)](https://app.codecov.io/gh/adosar/aidsorb)
   [![Docs](https://img.shields.io/badge/foo-stable-black?style=for-the-badge&logo=readthedocs&logoColor=cyan&label=ReadTheDocs&labelColor=black&color=purple)](https://aidsorb.readthedocs.io/en/stable/)
   [![PyPI](https://img.shields.io/pypi/v/aidsorb?style=for-the-badge&logo=pypi&logoColor=cyan&labelColor=black&color=purple)](https://pypi.org/project/aidsorb/)
   [![App](https://img.shields.io/badge/online%20app-purple?style=for-the-badge&logo=streamlit&logoSize=auto&logoColor=cyan&label=streamlit&labelColor=black)](https://aidsorb-online.streamlit.app)
+
 </h4>
 
 **AIdsorb** is a Python package for **deep learning on molecular point clouds**.
