@@ -38,7 +38,7 @@ dependencies = [
     "lightning>=2.5.0",
     "jsonargparse[signatures]>=4.39.0",
     "torchmetrics>=1.7.1",
-    "numpy==1.26.4",  # Temporarily, for avoiding dependency conflicts.
+    "numpy>=1.26.4",
 ]
 
 [project.urls]
