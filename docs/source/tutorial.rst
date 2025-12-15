@@ -190,6 +190,10 @@ All you need is a ``.yaml`` configuration file and some keystrokes:
         Below is a dummy configuration file for multi-output regression using
         PointNet:
 
+        .. warning::
+            The following configuration file is for illustration purposes only.
+            **Adjust it as needed!**
+
         .. literalinclude:: examples/config.yaml
             :language: yaml
 
