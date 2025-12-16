@@ -112,7 +112,7 @@ class TestLightning(unittest.TestCase):
 
         # Check that modules can be loaded from checkpoint.
         for Module in [PCDDataModule, PCDLit]:
-            Module.load_from_checkpoint(ckpt_path)
+            Module.load_from_checkpoint(ckpt_path, weights_only=False)
 
     def tearDown(self):
         self.tempdir.cleanup()
