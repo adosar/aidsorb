@@ -31,13 +31,17 @@ from aidsorb.datamodules import PCDDataModule
 from aidsorb.transforms import Center, RandomRotation
 
 
+def dummy_tfm(x):
+    return x - 1
+
+
 class TestPCDDataModule(unittest.TestCase):
     def setUp(self):
         # Arguments for the datamodule.
         self.train_size = 2
         self.train_trans_x = Center()
         self.eval_trans_x = RandomRotation()
-        self.trans_y = lambda y: y -1
+        self.trans_y = dummy_tfm
         self.shuffle = True
         self.drop_last = True
         self.train_bs = 3

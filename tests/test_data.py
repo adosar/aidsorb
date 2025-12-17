@@ -38,6 +38,9 @@ from aidsorb.transforms import Center
 from aidsorb.utils import pcd_from_dir
 
 
+def dummy_tfm(x):
+    return x - 1
+
 class TestPrepareData(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
@@ -82,7 +85,7 @@ class TestPCDDataset(unittest.TestCase):
         self.index_col = 'id'
         self.labels = ['y1', 'y3']
         self.transform_x = Center()
-        self.transform_y = lambda y: y - 1
+        self.transform_y = dummy_tfm
         self.batch_size = 2
         self.channels_first = True
 
