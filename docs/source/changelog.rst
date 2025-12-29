@@ -37,6 +37,7 @@ Version 2.0.0
 
 .. versionchanged:: 2.0.0
 
+    * Renamed :func:`.get_elements` to :func:`.get_atom_names`.
     * Columns in :attr:`.PCDDataset.Y` now follow the order specified
       by the user (:issue:`67`).
     * Renamed :mod:`.litmodels` to :mod:`.litmodules` (:issue:`63`).

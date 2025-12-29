@@ -63,7 +63,7 @@ def get_atom_colors(atomic_numbers: ArrayLike, scheme: str = 'cpk') -> NDArray:
     return ptable.loc[atomic_numbers, scheme].to_numpy()
 
 
-def get_elements(atomic_numbers: ArrayLike) -> NDArray:
+def get_atom_names(atomic_numbers: ArrayLike) -> NDArray:
     r"""
     Convert atomic numbers to element names.
 
@@ -78,7 +78,7 @@ def get_elements(atomic_numbers: ArrayLike) -> NDArray:
     Examples
     --------
     >>> atomic_numbers = np.array([1, 2, 7])
-    >>> get_elements(atomic_numbers)
+    >>> get_atom_names(atomic_numbers)
     array(['Hydrogen', 'Helium', 'Nitrogen'], dtype=object)
     """
     atomic_numbers = np.array(atomic_numbers)
@@ -131,7 +131,7 @@ def draw_pcd(
     check_shape(pcd)
 
     size = (ptable.loc[pcd[:, 3], 'vdw_radius'] * 0.01)**4 if molecular else size
-    hovertext = get_elements(pcd[:, 3]) if molecular else None
+    hovertext = get_atom_names(pcd[:, 3]) if molecular else None
     color = get_atom_colors(pcd[:, 3], scheme=scheme) if molecular else None
     marker = {'size': size, 'color': color}
 
