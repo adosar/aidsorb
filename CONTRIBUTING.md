@@ -53,7 +53,7 @@ To contribute your changes follow these steps:
     ```bash
     git switch -c docs/add-classification-example
     git switch -c feat/add-architecture-foo
-    git switch -c fix/42_fix-forward-pass-bar
+    git switch -c fix/42_fix-forward-bar
     ```
 
 5. **Make your changes**
