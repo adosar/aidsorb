@@ -99,7 +99,7 @@ Assuming your molecular structures are stored under a directory named
 
             from aidsorb.utils import pcd_from_dir
 
-            # We add electronegativity as additional feature.
+            # Add electronegativity as additional feature.
             pcd_from_dir(
                 dirname='path/to/structures',
                 outname='path/to/pcd_data',
