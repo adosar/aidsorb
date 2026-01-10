@@ -61,6 +61,7 @@ class PCDLit(L.LightningModule):
 
 
     .. _logging: https://lightning.ai/docs/pytorch/stable/extensions/logging.html#id3
+    .. _optimizers: https://lightning.ai/docs/pytorch/stable/common/lightning_module.html#configure-optimizers
 
     Parameters
     ----------
@@ -85,7 +86,7 @@ class PCDLit(L.LightningModule):
         
         * ``'name'`` scheduler's class name :class:`str`
         * ``'hparams'`` scheduler's hyperparameters :class:`dict`
-        * ``'config'`` scheduler's config  :class:`dict`
+        * ``'config'`` `scheduler's config <optimizers_>`_  :class:`dict`
 
     Examples
     --------
