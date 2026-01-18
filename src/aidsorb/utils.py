@@ -103,7 +103,8 @@ def pcd_from_files(
         An iterable providing the filenames. Absolute or relative paths can be
         used.
     outname : str
-        Directory name where the point clouds will be stored.
+        Directory where the point clouds will be stored. It is created if does
+        not exist.
     features: list of str, optional
         See :func:`pcd_from_dir`.
 
@@ -153,8 +154,8 @@ def pcd_from_dir(
     dirname : str
         Absolute or relative path to the directory.
     outname : str
-        Directory name where the point clouds will be stored. The directory will
-        be created if does not exist.
+        Directory where the point clouds will be stored. It is created if does
+        not exist.
     features: list of str, optional
         Elemental properties from `periodic table
         <https://mendeleev.readthedocs.io/en/stable/data.html#elements>`_.
