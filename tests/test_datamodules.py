@@ -105,9 +105,9 @@ class TestDataModule(unittest.TestCase):
 
         # The pairwise intersections must be the empty set.
         for ds_comb in combinations([
-                self.dm.train_dataset.pcd_names,
-                self.dm.validation_dataset.pcd_names,
-                self.dm.test_dataset.pcd_names,
+                self.dm.train_dataset.names,
+                self.dm.validation_dataset.names,
+                self.dm.test_dataset.names,
                 ], r=2):
             self.assertEqual(set(ds_comb[0]) & set(ds_comb[1]), set())
 

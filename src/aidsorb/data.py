@@ -28,7 +28,7 @@ import numpy as np
 import torch
 from torch import Tensor
 from torch.nn.utils.rnn import pad_sequence
-from torch.utils.data import Dataset, random_split
+from torch.utils.data import random_split
 
 from ._internal import pd
 from .transforms import upsample_pcd
@@ -257,7 +257,7 @@ def pad_pcds(
 
 class PCDCollator:
     r"""
-    Collate a sequence of samples into a batch.
+    Collator for point clouds.
 
     Point clouds are padded before collation, so they can form a batch.
 
@@ -431,16 +431,16 @@ class PCDCollator:
         return x, y
 
 
-class PCDDataset(Dataset):
+class Dataset(torch.utils.data.Dataset):
     r"""
-    :class:`~torch.utils.data.Dataset` for point clouds.
+    Dataset for supervised/unsupervised learning.
 
     Indexing the dataset returns ``(x, None)`` if data are unlabeled, i.e.
     ``path_to_Y=None``, else ``(x, y)``, where ``x`` and ``y`` are the results of
     ``transform_x`` and ``transform_y``, respectively.
 
     .. note::
-        * All data (i.e. point cloud and its label) are converted to
+        * All data (i.e. input and its label) are converted to
           :class:`~.torch.Tensor` before passed to transforms. As such,
           ``transform_x`` and ``transform_y`` expect :class:`~.torch.Tensor` as
           input.
@@ -449,13 +449,13 @@ class PCDDataset(Dataset):
 
     Parameters
     ----------
-    pcd_names : sequence
-        Point cloud names.
+    names : sequence
+        Names of the materials.
     path_to_X : str
-        Absolute or relative path to the directory holding the point clouds.
+        Absolute or relative path to the directory holding the inputs.
     path_to_Y : str, optional
         Absolute or relative path to the ``.csv`` file holding the labels of the
-        point clouds.
+        inputs.
     index_col : str, optional
         Column name of the ``.csv`` file to be used for indexing. This column
         must include ``pcd_names``. No effect if ``path_to_Y=None``.
@@ -463,17 +463,17 @@ class PCDDataset(Dataset):
         List of column names from the ``.csv`` file containing the properties to be
         predicted. No effect if ``path_to_Y=None``.
     transform_x : callable, optional
-        Transformation to apply to point cloud.
+        Transformation to apply to input.
     transform_y : callable, optional
         Transformation to apply to label. No effect if ``path_to_Y=None``.
 
     See Also
     --------
-    :mod:`aidsorb.transforms` : For available point cloud transformations.
+    :mod:`aidsorb.transforms` : For available input transformations.
     """
     def __init__(
             self,
-            pcd_names: Sequence[str],
+            names: Sequence[str],
             path_to_X: str,
             *,
             path_to_Y: str | None = None,
@@ -483,7 +483,7 @@ class PCDDataset(Dataset):
             transform_y: Callable | None = None,
             ) -> None:
 
-        self._pcd_names = tuple(pcd_names)  # Immutable for safety.
+        self._names = tuple(names)  # Immutable for safety.
         self.path_to_X = path_to_X
         self.path_to_Y = path_to_Y
         self.index_col = index_col
@@ -502,29 +502,29 @@ class PCDDataset(Dataset):
                     )[self.labels]
 
     @property
-    def pcd_names(self) -> tuple:
-        r"""Point cloud names."""
-        return self._pcd_names
+    def names(self) -> tuple:
+        r"""Names of the materials."""
+        return self._names
 
     def __len__(self) -> int:
-        return len(self.pcd_names)
+        return len(self.names)
 
     def __getitem__(self, idx: int) -> tuple[Tensor, Tensor | None]:
-        pcd_name = self.pcd_names[idx]
-        pcd_path = os.path.join(self.path_to_X, f'{pcd_name}.npy')
+        name = self.names[idx]
+        path = os.path.join(self.path_to_X, f'{name}.npy')
 
-        pcd = torch.tensor(np.load(pcd_path), dtype=torch.float)
-        label = None
+        x = torch.tensor(np.load(path), dtype=torch.float)
+        y = None
 
         if self.transform_x is not None:
-            pcd = self.transform_x(pcd)
+            x = self.transform_x(x)
 
         if self.Y is not None:
-            y_arr = self.Y.loc[pcd_name].to_numpy()
+            y_arr = self.Y.loc[name].to_numpy()
             dtype = torch.float if np.issubdtype(y_arr.dtype, np.floating) else None
-            label = torch.tensor(y_arr, dtype=dtype)
+            y = torch.tensor(y_arr, dtype=dtype)
 
             if self.transform_y is not None:
-                label = self.transform_y(label)
+                y = self.transform_y(y)
 
-        return pcd, label
+        return x, y

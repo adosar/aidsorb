@@ -242,7 +242,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
 
     For PyTorch:
 
-    * :class:`aidsorb.data.PCDDataset`
+    * :class:`aidsorb.data.Dataset`
     * :class:`aidsorb.modules`
 
     For PyTorch Lightning:
@@ -258,17 +258,17 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
         .. code-block:: python
 
             from torch.utils.data import DataLoader
-            from aidsorb.data import PCDDataset, PCDCollator, get_names
+            from aidsorb.data import Dataset, PCDCollator, get_names
             from aidsorb.modules import PointNet
 
             # Create the datasets.
-            train_set = PCDDataset(
+            train_set = Dataset(
                 pcd_names=get_names('path/to/project_root/train.json'),
                 path_to_X='path/to/pcd_data/',
                 path_to_Y='path/to/labels.csv',
                 ...
                 )
-            val_set = PCDDataset(
+            val_set = Dataset(
                 pcd_names=get_names('path/to/project_root/validation.json'),
                 path_to_X='path/to/pcd_data/',
                 path_to_Y='path/to/labels.csv',

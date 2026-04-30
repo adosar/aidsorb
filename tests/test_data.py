@@ -33,7 +33,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from aidsorb import data
-from aidsorb.data import PCDCollator, PCDDataset, get_names, prepare_data
+from aidsorb.data import PCDCollator, Dataset, get_names, prepare_data
 from aidsorb.transforms import Center
 from aidsorb.utils import pcd_from_dir
 
@@ -77,10 +77,10 @@ class TestPrepareData(unittest.TestCase):
         self.tempdir.cleanup()
 
 
-class TestPCDDataset(unittest.TestCase):
+class TestDataset(unittest.TestCase):
     def setUp(self):
         self.path_to_X = 'tests/dummy/toy_project/pcd_data'
-        self.pcd_names = [name.removesuffix('.npy') for name in os.listdir(self.path_to_X)]
+        self.names = [name.removesuffix('.npy') for name in os.listdir(self.path_to_X)]
         self.path_to_Y = 'tests/dummy/toy_dataset.csv'
         self.index_col = 'id'
         self.labels = ['y1', 'y3']
@@ -90,8 +90,8 @@ class TestPCDDataset(unittest.TestCase):
         self.channels_first = True
 
     def test_labeled_pcddataset(self):
-        dataset = PCDDataset(
-                pcd_names=self.pcd_names,
+        dataset = Dataset(
+                names=self.names,
                 path_to_X=self.path_to_X,
                 path_to_Y=self.path_to_Y,
                 index_col=self.index_col,
@@ -102,10 +102,10 @@ class TestPCDDataset(unittest.TestCase):
         Y = pd.read_csv(self.path_to_Y, index_col=self.index_col)[self.labels]
 
         # Check the size of the dataset.
-        self.assertEqual(len(dataset), len(self.pcd_names))
+        self.assertEqual(len(dataset), len(self.names))
         
         for i in range(len(dataset)):
-            name = self.pcd_names[i]
+            name = self.names[i]
 
             # Untransformed sample.
             x = torch.tensor(np.load(os.path.join(self.path_to_X, f'{name}.npy')))
@@ -135,17 +135,17 @@ class TestPCDDataset(unittest.TestCase):
         self.assertTrue(all(dataset.labels == dataset.Y.columns))
 
     def test_unlabeled_pcddataset(self):
-        dataset = PCDDataset(
-                pcd_names=self.pcd_names,
+        dataset = Dataset(
+                names=self.names,
                 path_to_X=self.path_to_X,
                 transform_x=None,
                 )
 
         # Check the size of the dataset.
-        self.assertEqual(len(dataset), len(self.pcd_names))
+        self.assertEqual(len(dataset), len(self.names))
         
         for i in range(len(dataset)):
-            name = self.pcd_names[i]
+            name = self.names[i]
 
             # Untransformed sample.
             x = torch.tensor(np.load(os.path.join(self.path_to_X, f'{name}.npy')))

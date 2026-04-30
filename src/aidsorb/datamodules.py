@@ -26,7 +26,7 @@ from pathlib import Path
 import lightning as L
 from torch.utils.data import DataLoader
 
-from .data import PCDDataset, get_names
+from .data import Dataset, get_names
 
 
 class DataModule(L.LightningDataModule):
@@ -45,7 +45,7 @@ class DataModule(L.LightningDataModule):
         └── validation.json
 
     train, validation, and test datasets are set up, all of which are instances
-    of :class:`~.PCDDataset`.
+    of :class:`~.Dataset`.
 
     .. note::
         Comma ``,`` is assumed as the field separator in ``.csv`` file.
@@ -178,16 +178,16 @@ class DataModule(L.LightningDataModule):
 
     def _setup_dataset(self, mode: str) -> None:
         path_to_names = Path(self.path_to_X).parent
-        pcd_names = get_names(os.path.join(path_to_names, f'{mode}.json'))
+        names = get_names(os.path.join(path_to_names, f'{mode}.json'))
 
         if mode == 'train':
             transform_x = self.train_transform_x
-            pcd_names = pcd_names[:self.train_size]  # Set the training set size.
+            names = names[:self.train_size]  # Set the training set size.
         else:
             transform_x = self.eval_transform_x
 
-        dataset = PCDDataset(
-                pcd_names=pcd_names,
+        dataset = Dataset(
+                names=names,
                 path_to_X=self.path_to_X,
                 path_to_Y=self.path_to_Y,
                 index_col=self.index_col,

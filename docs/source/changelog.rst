@@ -6,6 +6,7 @@ Version 3.0.0
 
 .. versionchanged:: 3.0.0
 
+    * Renamed :class:`.PCDDataset` to :class:`.Dataset`.
     * Renamed :class:`.Collator` to :class:`.PCDCollator`.
     * Renamed :class:`.PCDDataModule` to :class:`.DataModule`.
     * Renamed :class:`.PCDLit` to :class:`.LitModule`.
@@ -37,7 +38,7 @@ Version 2.0.0
       :func:`.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for
       :class:`.LitModule` and :class:`.DataModule`.
-    * Support for unlabeled data in :class:`.PCDDataset`,
+    * Support for unlabeled data in :class:`.Dataset`,
       :class:`.DataModule` and :class:`.PCDCollator`.
     * Option ``drop_last`` for :class:`.DataModule`.
     * :class:`.LitModule` which supports customization for optimizer and
@@ -47,7 +48,7 @@ Version 2.0.0
 .. versionchanged:: 2.0.0
 
     * Renamed :func:`.get_elements` to :func:`.get_atom_names`.
-    * Columns in :attr:`.PCDDataset.Y` now follow the order specified
+    * Columns in :attr:`.Dataset.Y` now follow the order specified
       by the user (:issue:`67`).
     * Renamed :mod:`.litmodels` to :mod:`.litmodules` (:issue:`63`).
     * :class:`.PCDCollator` and :func:`.pad_pcds` now accept keyword-only
