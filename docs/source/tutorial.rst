@@ -248,7 +248,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
     For PyTorch Lightning:
 
     * :class:`aidsorb.datamodules.PCDDataModule`
-    * :class:`aidsorb.litmodules.PCDLit`
+    * :class:`aidsorb.litmodules.LitModule`
 
 
 .. tab-set::
@@ -293,7 +293,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             from aidsorb.data import Collator
             from aidsorb.datamodules import PCDDataModule
             from aidsorb.modules import PointNet
-            from aidsorb.litmodules import PCDLit
+            from aidsorb.litmodules import LitModule
 
             # Create the datamodule.
             dm = PCDDataModule(
@@ -304,7 +304,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
                 )
 
             # Create the litmodel.
-            litmodel = PCDLit(model=PointNet(...), ...)
+            litmodel = LitModule(model=PointNet(...), ...)
 
             # Create the trainer.
             trainer = L.Trainer(...)

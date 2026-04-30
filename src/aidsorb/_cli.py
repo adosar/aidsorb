@@ -23,9 +23,9 @@ def lightning_cli():
     from lightning.pytorch.cli import LightningCLI
 
     from .datamodules import PCDDataModule
-    from .litmodules import PCDLit
+    from .litmodules import LitModule
 
-    LightningCLI(PCDLit, PCDDataModule)
+    LightningCLI(LitModule, PCDDataModule)
 
 
 def aidsorb_cli():

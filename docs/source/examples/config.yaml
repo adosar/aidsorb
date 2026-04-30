@@ -36,7 +36,7 @@ data:
       init_args:
         channels_first: True
 
-# Here you setup the LightningModule (PCDLit)
+# Here you setup the LightningModule (LitModule)
 # For more information 👉 aidsorb.litmodules
 model:
   criterion:

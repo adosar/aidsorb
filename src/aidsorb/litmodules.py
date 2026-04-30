@@ -30,17 +30,17 @@ from torchmetrics import MetricCollection
 from ._torch_utils import get_optimizers
 
 
-class PCDLit(L.LightningModule):
+class LitModule(L.LightningModule):
     r"""
-    LightningModule for supervised learning on point clouds.
+    LightningModule for supervised learning.
 
     .. note::
         * ``*_step`` methods expect a batch of the form ``(x, y)``, where:
 
-          * ``x`` is compatible with :meth:`PCDLit.forward`
+          * ``x`` is compatible with :meth:`LitModule.forward`
           * ``y`` is compatible with ``preds = self.forward(x)`` (required by
             ``criterion`` and ``metric``)
-          * ``y`` is ignored in :meth:`PCDLit.predict_step`
+          * ``y`` is ignored in :meth:`LitModule.predict_step`
 
         * ``criterion`` must have signature ``criterion(input=preds, target=y)``.
         * Dictionaries passed as arguments are not deep copied. To avoid side
@@ -66,7 +66,6 @@ class PCDLit(L.LightningModule):
     Parameters
     ----------
     model : torch.nn.Module
-        Architecture for point cloud processing.
     criterion : callable
         Loss function to be optimized during training.
     metric : torchmetrics.MetricCollection
@@ -98,7 +97,7 @@ class PCDLit(L.LightningModule):
     >>> criterion, metric = torch.nn.MSELoss(), MetricCollection(R2Score(), MAE())
 
     >>> # Adam optimizer with default hyperparameters, no scheduler.
-    >>> litmodel = PCDLit(model, criterion, metric)
+    >>> litmodel = LitModule(model, criterion, metric)
 
     >>> # Custom optimizer and scheduler.
     >>> config_optimizer = {
@@ -110,7 +109,7 @@ class PCDLit(L.LightningModule):
     ... 'hparams': {'step_size': 2},
     ... 'config': {'interval': 'step'},
     ... }
-    >>> litmodel = PCDLit(model, criterion, metric, config_optimizer, config_scheduler)
+    >>> litmodel = LitModule(model, criterion, metric, config_optimizer, config_scheduler)
 
     >>> # Forward pass.
     >>> x = torch.randn(32, 5, 100)
@@ -209,7 +208,7 @@ class PCDLit(L.LightningModule):
         >>> metric = MetricCollection(R2Score())
 
         >>> model = torch.nn.Linear(2, 2)
-        >>> litmodel = PCDLit(model, criterion, metric)
+        >>> litmodel = LitModule(model, criterion, metric)
         >>> litmodel.configure_optimizers()
         ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
         Adam (
@@ -218,7 +217,7 @@ class PCDLit(L.LightningModule):
 
         >>> model = torch.nn.Linear(4, 4)
         >>> _ = model.requires_grad_(False)
-        >>> litmodel = PCDLit(model, criterion, metric)
+        >>> litmodel = LitModule(model, criterion, metric)
         >>> litmodel.configure_optimizers()
         Traceback (most recent call last):
             ...

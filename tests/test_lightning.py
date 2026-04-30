@@ -32,7 +32,7 @@ from torchmetrics import MetricCollection
 
 from aidsorb.data import Collator
 from aidsorb.datamodules import PCDDataModule
-from aidsorb.litmodules import PCDLit
+from aidsorb.litmodules import LitModule
 
 
 def to_float(y):
@@ -76,7 +76,7 @@ class TestLightning(unittest.TestCase):
                 config_dataloaders={'collate_fn': Collator(channels_first=True)},
                 )
 
-        self.litmodel = PCDLit(
+        self.litmodel = LitModule(
                 model=dummy_model,
                 criterion=criterion,
                 metric=metric,
@@ -111,7 +111,7 @@ class TestLightning(unittest.TestCase):
         ckpt_path = f'{ckpt_dir}/{ckpt_name}'
 
         # Check that modules can be loaded from checkpoint.
-        for Module in [PCDDataModule, PCDLit]:
+        for Module in [PCDDataModule, LitModule]:
             Module.load_from_checkpoint(ckpt_path, weights_only=False)
 
     def tearDown(self):

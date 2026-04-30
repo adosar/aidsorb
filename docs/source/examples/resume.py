@@ -19,11 +19,11 @@ import lightning as L
 import torch
 
 from aidsorb.datamodules import PCDDataModule
-from aidsorb.litmodules import PCDLit
+from aidsorb.litmodules import LitModule
 
 # Restore lightning modules from checkpoint.
 ckpt_path = 'path/to/checkpoint.ckpt'
-litmodel = PCDLit.load_from_checkpoint(ckpt_path)
+litmodel = LitModule.load_from_checkpoint(ckpt_path)
 dm = PCDDataModule.load_from_checkpoint(ckpt_path)
 
 # Set the model for inference (disable grads & enable eval mode).

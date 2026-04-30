@@ -1,6 +1,13 @@
 :octicon:`log` Changelog
 ========================
 
+Version 3.0.0
+-------------
+
+.. versionchanged:: 3.0.0
+
+    * Renamed :class:`.PCDLit` to :class:`.LitModule`.
+
 Version 2.0.0
 -------------
 
@@ -8,7 +15,7 @@ Version 2.0.0
 
     * :mod:`torch` is now used instead of :mod:`numpy` for controlling the
       randomness in :mod:`.transforms`.
-    * New LighthningModule :class:`.PCDLit`, which supports customization for
+    * New LighthningModule :class:`.LitModule`, which supports customization for
       optimizer and scheduler.
     * New storing scheme for point clouds, stored as plain ``.npy`` files
       instead of a single ``.npz`` file.
@@ -27,11 +34,11 @@ Version 2.0.0
     * Support for configuring activation function in :func:`.conv1d_block` and
       :func:`.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for
-      :class:`.PCDLit` and :class:`.PCDDataModule`.
+      :class:`.LitModule` and :class:`.PCDDataModule`.
     * Support for unlabeled data in :class:`.PCDDataset`,
       :class:`.PCDDataModule` and :class:`.Collator`.
     * Option ``drop_last`` for :class:`.PCDDataModule`.
-    * :class:`.PCDLit` which supports customization for optimizer and
+    * :class:`.LitModule` which supports customization for optimizer and
       scheduler (:issue:`25`).
     * :func:`.center_pcd` as a functional interface of :class:`.Center`.
 
@@ -61,7 +68,7 @@ Version 2.0.0
 
     * :class:`Jitter`, use :class:`.RandomJitter` instead.
     * :mod:`!models` to simplify codebase and improve project structure.
-    * :class:`!PointLit`, use :class:`.PCDLit` instead.
+    * :class:`!PointLit`, use :class:`.LitModule` instead.
     * :class:`!Identity` since it is equivalent to :class:`torch.nn.Identity`
       (and thus redundant).
 
