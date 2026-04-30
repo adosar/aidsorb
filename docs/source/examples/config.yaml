@@ -32,7 +32,7 @@ data:
   shuffle: True
   config_dataloaders:
     collate_fn:
-      class_path: aidsorb.data.Collator
+      class_path: aidsorb.data.PCDCollator
       init_args:
         channels_first: True
 

@@ -6,6 +6,7 @@ Version 3.0.0
 
 .. versionchanged:: 3.0.0
 
+    * Renamed :class:`.Collator` to :class:`.PCDCollator`.
     * Renamed :class:`.PCDDataModule` to :class:`.DataModule`.
     * Renamed :class:`.PCDLit` to :class:`.LitModule`.
 
@@ -37,7 +38,7 @@ Version 2.0.0
     * Support to ``.load_from_checkpoint`` without arguments for
       :class:`.LitModule` and :class:`.DataModule`.
     * Support for unlabeled data in :class:`.PCDDataset`,
-      :class:`.DataModule` and :class:`.Collator`.
+      :class:`.DataModule` and :class:`.PCDCollator`.
     * Option ``drop_last`` for :class:`.DataModule`.
     * :class:`.LitModule` which supports customization for optimizer and
       scheduler (:issue:`25`).
@@ -49,7 +50,7 @@ Version 2.0.0
     * Columns in :attr:`.PCDDataset.Y` now follow the order specified
       by the user (:issue:`67`).
     * Renamed :mod:`.litmodels` to :mod:`.litmodules` (:issue:`63`).
-    * :class:`.Collator` and :func:`.pad_pcds` now accept keyword-only
+    * :class:`.PCDCollator` and :func:`.pad_pcds` now accept keyword-only
       arguments.
     * :class:`.PointNet` moved from :mod:`!models` to :mod:`.modules`.
     * :func:`.get_names` now returns :class:`tuple` instead of :class:`list`.

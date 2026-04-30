@@ -258,7 +258,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
         .. code-block:: python
 
             from torch.utils.data import DataLoader
-            from aidsorb.data import PCDDataset, Collator, get_names
+            from aidsorb.data import PCDDataset, PCDCollator, get_names
             from aidsorb.modules import PointNet
 
             # Create the datasets.
@@ -276,8 +276,8 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
                 )
 
             # Create the dataloaders.
-            train_loader = DataLoader(train_set, ..., collate_fn=Collator(channels_first=True))
-            val_loader = DataLoader(val_set, ..., collate_fn=Collator(channels_first=True))
+            train_loader = DataLoader(train_set, ..., collate_fn=PCDCollator(channels_first=True))
+            val_loader = DataLoader(val_set, ..., collate_fn=PCDCollator(channels_first=True))
 
             # Create the model.
             model = PointNet(...)
@@ -290,7 +290,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
         .. code-block:: python
 
             import lightning as L
-            from aidsorb.data import Collator
+            from aidsorb.data import PCDCollator
             from aidsorb.datamodules import DataModule
             from aidsorb.modules import PointNet
             from aidsorb.litmodules import LitModule
@@ -300,7 +300,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
                 path_to_X='path/to/pcd_data',
                 path_to_Y='path/to/labels.csv',
                 ...,
-                config_dataloaders=dict(collate_fn=Collator(channels_first=True), ...),
+                config_dataloaders=dict(collate_fn=PCDCollator(channels_first=True), ...),
                 )
 
             # Create the litmodel.

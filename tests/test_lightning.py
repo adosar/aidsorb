@@ -30,7 +30,7 @@ import torch
 from torchmetrics import MeanAbsoluteError as MAE
 from torchmetrics import MetricCollection
 
-from aidsorb.data import Collator
+from aidsorb.data import PCDCollator
 from aidsorb.datamodules import DataModule
 from aidsorb.litmodules import LitModule
 
@@ -73,7 +73,7 @@ class TestLightning(unittest.TestCase):
                 index_col='id',
                 labels=['y1'],
                 transform_y=to_float,
-                config_dataloaders={'collate_fn': Collator(channels_first=True)},
+                config_dataloaders={'collate_fn': PCDCollator(channels_first=True)},
                 )
 
         self.litmodel = LitModule(

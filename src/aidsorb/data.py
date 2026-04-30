@@ -255,7 +255,7 @@ def pad_pcds(
     return batch
 
 
-class Collator:
+class PCDCollator:
     r"""
     Collate a sequence of samples into a batch.
 
@@ -296,7 +296,7 @@ class Collator:
     >>> sample1 = (torch.tensor([[1, 4, 5, 2]]), torch.tensor([1., 2.]))
     >>> sample2 = (torch.tensor([[0, 4, 0, 2], [2, 4, 1, 8]]), torch.tensor([7., 3.]))
 
-    >>> collate_fn = Collator(channels_first=True)
+    >>> collate_fn = PCDCollator(channels_first=True)
     >>> x, y = collate_fn((sample1, sample2))
     >>> x
     tensor([[[1, 1],
@@ -312,7 +312,7 @@ class Collator:
     tensor([[1., 2.],
             [7., 3.]])
 
-    >>> collate_fn = Collator(channels_first=False, mode='zeropad')
+    >>> collate_fn = PCDCollator(channels_first=False, mode='zeropad')
     >>> x, y = collate_fn((sample1, sample2))
     >>> x
     tensor([[[1, 4, 5, 2],
@@ -327,7 +327,7 @@ class Collator:
     >>> # Label has shape (), i.e. is scalar.
     >>> sample1 = (torch.tensor([[3, 4, 3, 2]]), torch.tensor(0))
     >>> sample2 = (torch.tensor([[2, 4, 8, 2], [9, 4, 1, 8]]), torch.tensor(1))
-    >>> collate_fn = Collator(channels_first=False, mode='zeropad')
+    >>> collate_fn = PCDCollator(channels_first=False, mode='zeropad')
     >>> x, y = collate_fn((sample1, sample2))
     >>> x
     tensor([[[3, 4, 3, 2],
@@ -341,7 +341,7 @@ class Collator:
     >>> # Label is None, i.e. unlabeled data.
     >>> sample1 = (torch.tensor([[1., 0., 1., 0.]]), None)
     >>> sample2 = (torch.tensor([[5., 2., 2., 0.], [9., 0., 0., 1.]]), None)
-    >>> collate_fn = Collator(channels_first=True, mode='zeropad')
+    >>> collate_fn = PCDCollator(channels_first=True, mode='zeropad')
     >>> x, y = collate_fn((sample1, sample2))
     >>> x
     tensor([[[1., 0.],
@@ -358,7 +358,7 @@ class Collator:
     >>> # Collate and return padding mask.
     >>> sample1 = (torch.tensor([[4, 2, 1, 4], [2, 0, 0, 1]]), torch.tensor(1))
     >>> sample2 = (torch.tensor([[1, 2, 3, 1]]), torch.tensor(4))
-    >>> collate_fn = Collator(channels_first=False, mode='zeropad', return_mask=True)
+    >>> collate_fn = PCDCollator(channels_first=False, mode='zeropad', return_mask=True)
     >>> (x, mask), y = collate_fn((sample1, sample2))
     >>> x
     tensor([[[4, 2, 1, 4],
@@ -374,7 +374,7 @@ class Collator:
 
     >>> # Batch a single unlabeled sample.
     >>> sample = (torch.tensor([[2, 3, 4]]), None)
-    >>> collate_fn = Collator(channels_first=False)
+    >>> collate_fn = PCDCollator(channels_first=False)
     >>> x, y = collate_fn([sample])
     >>> x
     tensor([[[2, 3, 4]]])
@@ -382,7 +382,7 @@ class Collator:
 
     >>> # Batch a single labeled sample.
     >>> sample = (torch.tensor([[1, 1, 2]]), torch.tensor(10))
-    >>> collate_fn = Collator(channels_first=True, mode='zeropad')
+    >>> collate_fn = PCDCollator(channels_first=True, mode='zeropad')
     >>> x, y = collate_fn([sample])
     >>> x
     tensor([[[1],

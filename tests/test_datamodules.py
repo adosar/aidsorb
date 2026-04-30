@@ -26,7 +26,7 @@ from itertools import combinations
 
 from torch.utils.data import RandomSampler, SequentialSampler
 
-from aidsorb.data import Collator, get_names
+from aidsorb.data import PCDCollator, get_names
 from aidsorb.datamodules import DataModule
 from aidsorb.transforms import Center, RandomRotation
 
@@ -49,7 +49,7 @@ class TestDataModule(unittest.TestCase):
         self.config_dataloaders = {
                 'pin_memory': True,
                 'num_workers': 0,
-                'collate_fn': Collator(channels_first=True)
+                'collate_fn': PCDCollator(channels_first=True)
                 }
 
         # Instantiate the datamodule.

@@ -33,7 +33,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from aidsorb import data
-from aidsorb.data import Collator, PCDDataset, get_names, prepare_data
+from aidsorb.data import PCDCollator, PCDDataset, get_names, prepare_data
 from aidsorb.transforms import Center
 from aidsorb.utils import pcd_from_dir
 
@@ -121,7 +121,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=Collator(channels_first=self.channels_first),
+                collate_fn=PCDCollator(channels_first=self.channels_first),
                 num_workers=4,
                 persistent_workers=True,
                 ):
@@ -162,7 +162,7 @@ class TestPCDDataset(unittest.TestCase):
         # Check that it works properly with a dataloader.
         for x, y in DataLoader(
                 dataset, batch_size=self.batch_size,
-                collate_fn=Collator(channels_first=self.channels_first),
+                collate_fn=PCDCollator(channels_first=self.channels_first),
                 num_workers=2,
                 ):
             self.assertEqual(len(x), self.batch_size)
