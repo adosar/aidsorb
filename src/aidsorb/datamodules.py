@@ -29,9 +29,9 @@ from torch.utils.data import DataLoader
 from .data import PCDDataset, get_names
 
 
-class PCDDataModule(L.LightningDataModule):
+class DataModule(L.LightningDataModule):
     r"""
-    LightningDataModule for supervised/unsupervised learning on point clouds.
+    LightningDataModule for supervised/unsupervised learning.
 
     Given the following directory structure::
 
@@ -53,7 +53,7 @@ class PCDDataModule(L.LightningDataModule):
     .. warning::
         * For validation and test dataloaders, ``shuffle=False`` and
           ``drop_last=False``.
-        * If ``train_size`` is specified, the first ``train_size`` point clouds
+        * If ``train_size`` is specified, the first ``train_size`` names
           from ``train.json`` will be used. **If the data were not split with**
           :func:`~aidsorb.data.prepare_data`, **ensure that names in**
           ``train.json`` **don't follow a particular order**.
@@ -64,10 +64,10 @@ class PCDDataModule(L.LightningDataModule):
     Parameters
     ----------
     path_to_X : str
-        Absolute or relative path to the directory holding the point clouds.
+        Absolute or relative path to the directory holding the inputs.
     path_to_Y : str, optional
         Absolute or relative path to the ``.csv`` file holding the labels of the
-        point clouds.
+        inputs.
     index_col : str, optional
         Column name of the ``.csv`` file to be used for indexing.
     labels : list, optional
@@ -76,9 +76,9 @@ class PCDDataModule(L.LightningDataModule):
     train_size : int, default=None
         Number of training samples. If :obj:`None`, all training samples are used.
     train_transform_x : callable, optional
-        Transformation to apply to point cloud during training.
+        Transformation to apply to input during training.
     eval_transform_x : callable, optional
-        Transformation to apply to point cloud during validation and testing.
+        Transformation to apply to input during validation and testing.
     transform_y : callable, optional
         Transformation to apply to label.
     shuffle : bool, default=False

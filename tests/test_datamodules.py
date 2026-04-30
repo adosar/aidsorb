@@ -27,7 +27,7 @@ from itertools import combinations
 from torch.utils.data import RandomSampler, SequentialSampler
 
 from aidsorb.data import Collator, get_names
-from aidsorb.datamodules import PCDDataModule
+from aidsorb.datamodules import DataModule
 from aidsorb.transforms import Center, RandomRotation
 
 
@@ -35,7 +35,7 @@ def dummy_tfm(x):
     return x - 1
 
 
-class TestPCDDataModule(unittest.TestCase):
+class TestDataModule(unittest.TestCase):
     def setUp(self):
         # Arguments for the datamodule.
         self.train_size = 2
@@ -53,7 +53,7 @@ class TestPCDDataModule(unittest.TestCase):
                 }
 
         # Instantiate the datamodule.
-        self.dm = PCDDataModule(
+        self.dm = DataModule(
                 path_to_X='tests/dummy/toy_project/pcd_data',
                 path_to_Y='tests/dummy/toy_dataset.csv',
                 index_col='id',

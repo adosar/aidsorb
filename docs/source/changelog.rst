@@ -6,6 +6,7 @@ Version 3.0.0
 
 .. versionchanged:: 3.0.0
 
+    * Renamed :class:`.PCDDataModule` to :class:`.DataModule`.
     * Renamed :class:`.PCDLit` to :class:`.LitModule`.
 
 Version 2.0.0
@@ -34,10 +35,10 @@ Version 2.0.0
     * Support for configuring activation function in :func:`.conv1d_block` and
       :func:`.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for
-      :class:`.LitModule` and :class:`.PCDDataModule`.
+      :class:`.LitModule` and :class:`.DataModule`.
     * Support for unlabeled data in :class:`.PCDDataset`,
-      :class:`.PCDDataModule` and :class:`.Collator`.
-    * Option ``drop_last`` for :class:`.PCDDataModule`.
+      :class:`.DataModule` and :class:`.Collator`.
+    * Option ``drop_last`` for :class:`.DataModule`.
     * :class:`.LitModule` which supports customization for optimizer and
       scheduler (:issue:`25`).
     * :func:`.center_pcd` as a functional interface of :class:`.Center`.

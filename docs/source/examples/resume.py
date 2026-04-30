@@ -18,13 +18,13 @@ Coming back after model training
 import lightning as L
 import torch
 
-from aidsorb.datamodules import PCDDataModule
+from aidsorb.datamodules import DataModule
 from aidsorb.litmodules import LitModule
 
 # Restore lightning modules from checkpoint.
 ckpt_path = 'path/to/checkpoint.ckpt'
 litmodel = LitModule.load_from_checkpoint(ckpt_path)
-dm = PCDDataModule.load_from_checkpoint(ckpt_path)
+dm = DataModule.load_from_checkpoint(ckpt_path)
 
 # Set the model for inference (disable grads & enable eval mode).
 litmodel.freeze()

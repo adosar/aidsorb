@@ -31,7 +31,7 @@ from torchmetrics import MeanAbsoluteError as MAE
 from torchmetrics import MetricCollection
 
 from aidsorb.data import Collator
-from aidsorb.datamodules import PCDDataModule
+from aidsorb.datamodules import DataModule
 from aidsorb.litmodules import LitModule
 
 
@@ -67,7 +67,7 @@ class TestLightning(unittest.TestCase):
                 'config': {'interval': 'step'},
                 }
 
-        self.dm = PCDDataModule(
+        self.dm = DataModule(
                 path_to_X='tests/dummy/toy_project/pcd_data',
                 path_to_Y='tests/dummy/toy_dataset.csv',
                 index_col='id',
@@ -111,7 +111,7 @@ class TestLightning(unittest.TestCase):
         ckpt_path = f'{ckpt_dir}/{ckpt_name}'
 
         # Check that modules can be loaded from checkpoint.
-        for Module in [PCDDataModule, LitModule]:
+        for Module in [DataModule, LitModule]:
             Module.load_from_checkpoint(ckpt_path, weights_only=False)
 
     def tearDown(self):

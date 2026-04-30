@@ -22,10 +22,10 @@ def lightning_cli():
     """
     from lightning.pytorch.cli import LightningCLI
 
-    from .datamodules import PCDDataModule
+    from .datamodules import DataModule
     from .litmodules import LitModule
 
-    LightningCLI(LitModule, PCDDataModule)
+    LightningCLI(LitModule, DataModule)
 
 
 def aidsorb_cli():

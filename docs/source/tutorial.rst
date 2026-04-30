@@ -247,7 +247,7 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
 
     For PyTorch Lightning:
 
-    * :class:`aidsorb.datamodules.PCDDataModule`
+    * :class:`aidsorb.datamodules.DataModule`
     * :class:`aidsorb.litmodules.LitModule`
 
 
@@ -291,12 +291,12 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
 
             import lightning as L
             from aidsorb.data import Collator
-            from aidsorb.datamodules import PCDDataModule
+            from aidsorb.datamodules import DataModule
             from aidsorb.modules import PointNet
             from aidsorb.litmodules import LitModule
 
             # Create the datamodule.
-            dm = PCDDataModule(
+            dm = DataModule(
                 path_to_X='path/to/pcd_data',
                 path_to_Y='path/to/labels.csv',
                 ...,

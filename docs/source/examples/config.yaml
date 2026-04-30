@@ -5,7 +5,7 @@ trainer:
   max_epochs: 2
   accelerator: 'gpu'
 
-# Here you setup the DataModule (PCDDataModule)
+# Here you setup the DataModule (DataModule)
 # For more information 👉 aidsorb.datamodules
 data:
   # The paths must be relative to where aidsorb-lit is called
