@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Helper functions and classes for creating datasets and handling point clouds of
+Helper functions and classes for creating datasets and handling inputs of
 variable sizes.
 """
 
@@ -40,9 +40,9 @@ def prepare_data(
         seed: int = 1,
         ) -> None:
     r"""
-    Split point clouds into train, validation and test sets.
+    Split materials into train, validation and test sets.
 
-    Each ``.json`` file that is created, stores the names of the point clouds
+    Each ``.json`` file that is created, stores the names of the materials
     that will be used for training, validation and testing.
 
     .. warning::
@@ -56,7 +56,7 @@ def prepare_data(
     Parameters
     ----------
     source : str
-        Absolute or relative path to the directory holding the point clouds.
+        Absolute or relative path to the directory holding the inputs.
     split_ratio : sequence, default=None
         Absolute sizes or fractions of splits of the form ``(train, val,
         test)``. If :obj:`None`, it is set to ``(0.8, 0.1, 0.1)``.
@@ -89,14 +89,14 @@ def prepare_data(
     """
     rng = torch.Generator().manual_seed(seed)
     path = Path(source).parent
-    pcd_names = [name.removesuffix('.npy') for name in sorted(os.listdir(source))]
+    names = [name.removesuffix('.npy') for name in sorted(os.listdir(source))]
 
     # Set default split ratio.
     if split_ratio is None:
         split_ratio = (0.8, 0.1, 0.1)
 
-    # Split the names of the point clouds.
-    train, val, test = random_split(pcd_names, split_ratio, generator=rng)
+    # Split the names of the materials.
+    train, val, test = random_split(names, split_ratio, generator=rng)
 
     for split, mode in zip((train, val, test), ('train', 'validation', 'test')):
         names = list(split)
@@ -112,7 +112,7 @@ def prepare_data(
 
 def get_names(filename: str) -> tuple:
     r"""
-    Return point cloud names stored in a ``.json`` file.
+    Return names stored in a ``.json`` file.
 
     Parameters
     ----------
