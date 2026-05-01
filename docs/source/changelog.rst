@@ -18,7 +18,7 @@ Version 2.0.0
 
     * :mod:`torch` is now used instead of :mod:`numpy` for controlling the
       randomness in :mod:`.transforms`.
-    * New LighthningModule :class:`.LitModule`, which supports customization for
+    * New LighthningModule :class:`.PCDLit`, which supports customization for
       optimizer and scheduler.
     * New storing scheme for point clouds, stored as plain ``.npy`` files
       instead of a single ``.npz`` file.
@@ -37,21 +37,21 @@ Version 2.0.0
     * Support for configuring activation function in :func:`.conv1d_block` and
       :func:`.dense_block`.
     * Support to ``.load_from_checkpoint`` without arguments for
-      :class:`.LitModule` and :class:`.DataModule`.
-    * Support for unlabeled data in :class:`.Dataset`,
-      :class:`.DataModule` and :class:`.PCDCollator`.
-    * Option ``drop_last`` for :class:`.DataModule`.
-    * :class:`.LitModule` which supports customization for optimizer and
+      :class:`.PCDLit` and :class:`.PCDDataModule`.
+    * Support for unlabeled data in :class:`.PCDDataset`,
+      :class:`.PCDDataModule` and :class:`.Collator`.
+    * Option ``drop_last`` for :class:`.PCDDataModule`.
+    * :class:`.PCDLit` which supports customization for optimizer and
       scheduler (:issue:`25`).
     * :func:`.center_pcd` as a functional interface of :class:`.Center`.
 
 .. versionchanged:: 2.0.0
 
     * Renamed :func:`.get_elements` to :func:`.get_atom_names`.
-    * Columns in :attr:`.Dataset.Y` now follow the order specified
+    * Columns in :attr:`.PCDDataset.Y` now follow the order specified
       by the user (:issue:`67`).
     * Renamed :mod:`.litmodels` to :mod:`.litmodules` (:issue:`63`).
-    * :class:`.PCDCollator` and :func:`.pad_pcds` now accept keyword-only
+    * :class:`.Collator` and :func:`.pad_pcds` now accept keyword-only
       arguments.
     * :class:`.PointNet` moved from :mod:`!models` to :mod:`.modules`.
     * :func:`.get_names` now returns :class:`tuple` instead of :class:`list`.
@@ -71,7 +71,7 @@ Version 2.0.0
 
     * :class:`Jitter`, use :class:`.RandomJitter` instead.
     * :mod:`!models` to simplify codebase and improve project structure.
-    * :class:`!PointLit`, use :class:`.LitModule` instead.
+    * :class:`!PointLit`, use :class:`.PCDLit` instead.
     * :class:`!Identity` since it is equivalent to :class:`torch.nn.Identity`
       (and thus redundant).
 
