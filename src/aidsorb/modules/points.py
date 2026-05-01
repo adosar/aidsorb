@@ -47,7 +47,7 @@ from torch import Tensor
 from torch import nn
 from torch.nn import Module, Sequential
 
-from ._torch_utils import get_activation
+from .._torch_utils import get_activation
 
 
 def conv1d_block(

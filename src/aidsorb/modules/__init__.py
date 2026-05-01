@@ -15,18 +15,28 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Unit tests for the aidsorb.modules module.
+:class:`torch.nn.Module`'s for 3D deep learning.
 
-Run from: project's root directory
-Command: python -m unittest tests.test_modules
+.. rubric:: Submodules
+
+.. autosummary::
+   :nosignatures:
+   :template: module.rst
+   :toctree:
+
+   points
+   voxels
+
 """
 
-import doctest
+from .points import (
+        PointNet,
+        PointNetBackbone,
+        PointNetClsHead,
+        PointNetSegHead,
+        )
 
-from aidsorb.modules import points, voxels
-
-
-def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite(points))
-    tests.addTests(doctest.DocTestSuite(voxels))
-    return tests
+from .voxels import (
+        RetNeXt,
+        IntelliPore,
+        )

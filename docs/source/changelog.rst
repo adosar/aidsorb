@@ -4,8 +4,15 @@
 Version 3.0.0
 -------------
 
+.. versionadded:: 3.0.0
+
+   * :class:`.modules.voxels`'s, providing support for deep learning on voxel
+     data.
+
 .. versionchanged:: 3.0.0
 
+    * Split :mod:`.modules` into :mod:`.modules.points` and
+      :mod:`.modules.voxels`.
     * Renamed :class:`.PCDDataset` to :class:`.Dataset`.
     * Renamed :class:`.Collator` to :class:`.PCDCollator`.
     * Renamed :class:`.PCDDataModule` to :class:`.DataModule`.
