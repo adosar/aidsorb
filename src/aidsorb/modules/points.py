@@ -499,7 +499,7 @@ class PointNet(torch.nn.Module):
 
     See Also
     --------
-    :class:`modules.PointNetBackbone` :
+    :class:`.PointNetBackbone` :
         For a description of ``local_feats`` and ``n_global_feats``.
 
     Examples

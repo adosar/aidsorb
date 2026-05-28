@@ -20,6 +20,8 @@ r"""
 References
 ----------
 
+.. [IntelliPore] A. P. Sarikas, K. Gkagkas, and G. E. Froudakis, “IntelliPore: A
+                 Foundation Model for Gas Adsorption in Porous Materials"
 .. [RetNeXt] A. P. Sarikas, K. Gkagkas, and G. E. Froudakis, “RetNeXt: A
              Pretrained Model for Transfer Learning Across the MOF Adsorption
              Space,” Journal of Chemical Information and Modeling, vol. 66, no.
@@ -99,6 +101,10 @@ class RetNeXt(nn.Module):
     r"""
     Architecture from the [RetNeXt]_ paper.
 
+    .. note::
+        ``pretrained=True`` is only compatible with ``in_channels=1``, since the
+        pretrained backbone was trained on single-channel images.
+
     Parameters
     ----------
     in_channels : int, default=1
@@ -108,8 +114,8 @@ class RetNeXt(nn.Module):
 
     Examples
     --------
-    >>> x = torch.randn(8, 3, 32, 32, 32)
     >>> model = RetNeXt(3, 100)
+    >>> x = torch.randn(8, 3, 32, 32, 32)
     >>> model(x).shape  # Outputs
     torch.Size([8, 100])
     >>> model.backbone(x).shape  # Embeddings
@@ -121,7 +127,7 @@ class RetNeXt(nn.Module):
     torch.Size([16, 100])
 
     >>> # Pretrained weights for the backbone.
-    >>> model = RetNeXt(n_outputs=None, pretrained=True)
+    >>> model = RetNeXt(n_outputs=None, pretrained=True)  # doctest: +ELLIPSIS
     >>> x = torch.randn(2, 1, 32, 32, 32)
     >>> model(x).shape  # Embeddings
     torch.Size([2, 128])
@@ -129,7 +135,7 @@ class RetNeXt(nn.Module):
     def __init__(
             self,
             in_channels: int = 1,
-            n_outputs: int = 1,
+            n_outputs: int | None = 1,
             *,
             pretrained: bool = False,
             ):
@@ -152,10 +158,7 @@ class RetNeXt(nn.Module):
         if pretrained:
             self.backbone.load_state_dict(self.get_pretrained_weights())
 
-        if n_outputs is None:
-            self.head = nn.Identity()
-        else:
-            self.head = nn.Linear(128, n_outputs)
+        self.head = torch.nn.Identity() if n_outputs is None else nn.Linear(128, n_outputs)
 
     def forward(self, x: Tensor) -> Tensor:
         r"""
@@ -174,12 +177,96 @@ class RetNeXt(nn.Module):
         return self.head(self.backbone(x))
 
     def get_pretrained_weights(self) -> OrderedDict:
+        r"""
+        Return the state dict of the pretrained backbone.
+        """
         url = 'https://raw.githubusercontent.com/adosar/retnext-paper/master/pretrained_weights/retnext_cubic_boltzmann_final_all.pt'
         return torch.hub.load_state_dict_from_url(url)
 
 
-class IntelliPore:
+class IntelliPore(nn.Module):
     r"""
-    To be added later.
+    Architecture from the [IntelliPore]_ paper.
+
+    .. note::
+        ``pretrained=True`` is only compatible with ``in_channels=1``, since the
+        pretrained backbone was trained on single-channel images.
+
+    Parameters
+    ----------
+    in_channels : int, default=1
+    n_outputs : int or None, default=1
+    pretrained : bool, default=False
+        Whether to use pretrained weights for the backbone.
+
+    Examples
+    --------
+    >>> model = IntelliPore(3, 100)
+    >>> x = torch.randn(4, 3, 32, 32, 32)
+    >>> model(x).shape  # Outputs
+    torch.Size([4, 100])
+    >>> model.backbone(x).shape  # Embeddings
+    torch.Size([4, 128])
+
+    >>> # Works with different grid sizes (adaptive pooling).
+    >>> x = torch.randn(8, 3, 24, 24, 24)
+    >>> model(x).shape
+    torch.Size([8, 100])
+
+    >>> # Pretrained weights for the backbone.
+    >>> model = IntelliPore(n_outputs=None, pretrained=True)  # doctest: +ELLIPSIS
+    >>> x = torch.randn(4, 1, 32, 32, 32)
+    >>> model(x).shape  # Embeddings
+    torch.Size([4, 128])
     """
-    pass
+    def __init__(
+            self,
+            in_channels: int = 1,
+            n_outputs: int | None = 1,
+            *,
+            pretrained: bool = False,
+            ):
+        super().__init__()
+
+        self.backbone = nn.Sequential(
+                conv3d_block(in_channels, 32, kernel_size=3, padding='same'),
+                conv3d_block(32, 32, kernel_size=3, padding='same'),
+                nn.MaxPool3d(kernel_size=2), # 1st pooling layer
+                conv3d_block(32, 64, kernel_size=3, padding='same'),
+                conv3d_block(64, 64, kernel_size=3, padding='same'),
+                nn.MaxPool3d(kernel_size=2),  # 2nd pooling layer
+                conv3d_block(64, 128, kernel_size=3),
+                conv3d_block(128, 128, kernel_size=3),
+                nn.AdaptiveAvgPool3d(1),
+                nn.Flatten()
+                )
+
+        if pretrained:
+            self.backbone.load_state_dict(self.get_pretrained_weights())
+
+        self.head = torch.nn.Identity() if n_outputs is None else nn.Linear(128, n_outputs)
+
+    def forward(self, x: Tensor) -> Tensor:
+        r"""
+        Run the forward pass.
+
+        Parameters
+        ----------
+        x : tensor of shape (B, C, H, W, D)
+
+        Returns
+        -------
+        out : tensor
+            If ``n_outputs=None`` return the embeddings of shape ``(B, 128)``,
+            else the model outputs of shape ``(B, n_outputs)``.
+        """
+        return self.head(self.backbone(x))
+
+    def get_pretrained_weights(self) -> OrderedDict:
+        r"""
+        Return the state dict of the pretrained backbone.
+        """
+        #url = 'https://raw.githubusercontent.com/adosar/intellipore/master/pretrained_weights/intellipore_backbone_pretrained.pt'
+        # Temporary needs to be changed
+        url = 'https://raw.githubusercontent.com/adosar/trial/master/pretrained_weights/intellipore_backbone_pretrained.pt'
+        return torch.hub.load_state_dict_from_url(url)
