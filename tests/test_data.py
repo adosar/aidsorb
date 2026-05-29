@@ -34,7 +34,6 @@ from torch.utils.data import DataLoader
 
 from aidsorb import data
 from aidsorb.data import PCDCollator, Dataset, get_names, prepare_data
-from aidsorb.transforms import Center
 from aidsorb.utils import pcd_from_dir
 
 
@@ -84,7 +83,7 @@ class TestDataset(unittest.TestCase):
         self.path_to_Y = 'tests/dummy/toy_dataset.csv'
         self.index_col = 'id'
         self.labels = ['y1', 'y3']
-        self.transform_x = Center()
+        self.transform_x = dummy_tfm
         self.transform_y = dummy_tfm
         self.batch_size = 2
         self.channels_first = True

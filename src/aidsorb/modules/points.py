@@ -415,7 +415,7 @@ class PointNetClsHead(nn.Module):
 
         Returns
         -------
-        out : tensor of shape (B, n_outputs)
+        tensor of shape (B, n_outputs)
         """
         return self.mlp(x)
 
@@ -454,11 +454,11 @@ class PointNetSegHead(nn.Module):
 
         Parameters
         ----------
-        x : tensor of shape (B, C, N).
+        x : tensor of shape (B, C, N)
 
         Returns
         -------
-        out : tensor of shape (B, N, n_outputs)
+        tensor of shape (B, N, n_outputs)
         """
         out = self.shared_mlp(x)  # Shape (B, n_outputs, N).
 
@@ -544,7 +544,6 @@ class PointNet(torch.nn.Module):
 
         Returns
         -------
-        out : tensor
-            Output of ``head``.
+        Output of ``head``.
         """
         return self.head(self.backbone(x))

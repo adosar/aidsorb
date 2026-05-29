@@ -31,7 +31,7 @@ from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import random_split
 
 from ._internal import pd
-from .transforms import upsample_pcd
+from .transforms.points import upsample_pcd
 
 
 def prepare_data(

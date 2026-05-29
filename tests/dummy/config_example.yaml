@@ -18,9 +18,9 @@ data:
   index_col: 'id'
   labels: ['y2']
   train_transform_x:
-    class_path: aidsorb.transforms.Center
+    class_path: aidsorb.transforms.points.Center
   eval_transform_x:
-    class_path: aidsorb.transforms.Center
+    class_path: aidsorb.transforms.points.Center
   train_size: Null
   train_batch_size: 2
   eval_batch_size: 2

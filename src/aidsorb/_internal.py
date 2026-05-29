@@ -20,27 +20,6 @@ from importlib.resources import files
 
 import pandas as pd
 
-
-def check_shape(obj):
-    r"""
-    Check if ``obj`` has valid shape to be considered a point cloud.
-
-    Parameters
-    ----------
-    obj : array or tensor
-
-    Raises
-    ------
-    ValueError
-        If ``obj.shape != (N, 3+C)``.
-    """
-    if not ((obj.ndim == 2) and (obj.shape[1] >= 3)):
-        raise ValueError(
-                'expecting shape (N, 3+C) '
-                f'but received shape {tuple(obj.shape)}'
-                )
-
-
 # This will be the default on Pandas 3.0
 pd.options.mode.copy_on_write = True
 

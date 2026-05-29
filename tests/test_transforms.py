@@ -23,9 +23,11 @@ Command: python -m unittest tests.test_transforms
 
 import doctest
 
-from aidsorb import transforms
+from aidsorb.transforms import voxels, points, _utils
 
 
 def load_tests(loader, tests, ignore):
-    tests.addTests(doctest.DocTestSuite(transforms))
+    tests.addTests(doctest.DocTestSuite(voxels))
+    tests.addTests(doctest.DocTestSuite(points))
+    tests.addTests(doctest.DocTestSuite(_utils))
     return tests

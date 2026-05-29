@@ -18,32 +18,44 @@ r"""
 Helper functions and classes for transforming point clouds.
 
 .. note::
-    * ``pcd`` must be a :class:`~torch.Tensor` of shape ``(N, 3+C)``.
-    * All transforms are implemented using :mod:`torch`. Any randomness is handled
-      through PyTorch's RNG, so reproducibility can be controlled with
-      :func:`torch.manual_seed`.
-
-.. warning::
-    Transforms avoid in-place modifications. However, **the output tensor(s)
-    might be view(s) of the input tensor**. If it is necessary to preserve the
-    original data, it is recommended to copy them before applying the
-    transform.
-
-.. tip::
-    For implementing your own transforms, have a look at the transforms
-    `tutorial`_. For more flexibility, consider implementing them as callable
-    instances of classes. **If your transforms use some source of randomness, it
-    is recommended to control it with** :mod:`torch`.
-
-    .. _tutorial: https://pytorch.org/tutorials/beginner/data_loading_tutorial.html#transforms
+    All transforms expect an input :class:`~torch.Tensor` of shape ``(N, 3+C)``.
 """
 
 import torch
 from torch import Tensor
 from roma import random_rotmat
 
-from ._internal import check_shape
-from ._transforms_utils import local_patch_indices, points_not_affected
+from ._utils import local_patch_indices, points_not_affected
+
+
+def _check_shape(obj):
+    r"""
+    Check if ``obj`` has valid shape to be considered a point cloud.
+
+    Parameters
+    ----------
+    obj : array or tensor
+
+    Examples
+    --------
+    >>> x = torch.randn(2, 5)
+    >>> _check_shape(x)
+    >>> x = torch.randn(2, 2)
+    >>> _check_shape(x)
+    Traceback (most recent call last):
+    ...
+    ValueError: expecting shape (N, 3+C) but received shape (2, 2)
+
+    Raises
+    ------
+    ValueError
+        If ``obj.shape != (N, 3+C)``.
+    """
+    if not ((obj.ndim == 2) and (obj.shape[1] >= 3)):
+        raise ValueError(
+                'expecting shape (N, 3+C) '
+                f'but received shape {tuple(obj.shape)}'
+                )
 
 
 def upsample_pcd(pcd: Tensor, size: int) -> Tensor:
@@ -126,7 +138,7 @@ def split_pcd(pcd: Tensor) -> tuple[Tensor, Tensor]:
     >>> feats.shape
     torch.Size([15, 0])
     """
-    check_shape(pcd)
+    _check_shape(pcd)
 
     return pcd[:, :3], pcd[:, 3:]
 
@@ -164,7 +176,7 @@ def transform_pcd(pcd: Tensor, tfm: Tensor) -> Tensor:
         ...
     ValueError: expecting shape (N, 3+C) but received shape (424, 2)
     """
-    check_shape(pcd)
+    _check_shape(pcd)
 
     if not tfm.shape == (3, 3):
         raise ValueError(
@@ -204,7 +216,7 @@ def center_pcd(pcd: Tensor) -> Tensor:
         ...
     ValueError: expecting shape (N, 3+C) but received shape (5, 2)
     """
-    check_shape(pcd)
+    _check_shape(pcd)
 
     centroid = pcd.mean(dim=0)
     centroid[3:] = 0  # Center only the coordinates.
@@ -254,7 +266,7 @@ class RandomRotation:
     True
     """
     def __call__(self, pcd: Tensor) -> Tensor:
-        check_shape(pcd)
+        _check_shape(pcd)
         rr = random_rotmat()
 
         return transform_pcd(pcd=pcd, tfm=rr)
@@ -322,7 +334,7 @@ class RandomJitter:
         self.local = local
 
     def __call__(self, pcd: Tensor) -> Tensor:
-        check_shape(pcd)
+        _check_shape(pcd)
 
         noise = torch.normal(mean=0, std=self.std, size=pcd.shape)
         noise[:, 3:] = 0  # Jitter only the coordinates.
@@ -399,7 +411,7 @@ class RandomErase:
         self.local = local
 
     def __call__(self, pcd: Tensor) -> Tensor:
-        check_shape(pcd)
+        _check_shape(pcd)
 
         if self.local:
             # Erase a local patch.
@@ -444,7 +456,7 @@ class RandomSample:
         self.size = size
 
     def __call__(self, pcd: Tensor) -> Tensor:
-        check_shape(pcd)
+        _check_shape(pcd)
 
         if self.size >= len(pcd):
             return pcd
@@ -484,7 +496,7 @@ class RandomFlip:
     tensor(1)
     """
     def __call__(self, pcd: Tensor) -> Tensor:
-        check_shape(pcd)
+        _check_shape(pcd)
         new_pcd = pcd.clone()  # Copy to avoid modifying original tensor.
 
         axis = torch.randint(3, ()).item()  # Choose an axis randomly.

@@ -28,20 +28,27 @@ from torch.utils.data import RandomSampler, SequentialSampler
 
 from aidsorb.data import PCDCollator, get_names
 from aidsorb.datamodules import DataModule
-from aidsorb.transforms import Center, RandomRotation
 
 
-def dummy_tfm(x):
+def train_tfm(x):
     return x - 1
+
+
+def eval_tfm(x):
+    return x + 1
+
+
+def label_tfm(y):
+    return y + 1
 
 
 class TestDataModule(unittest.TestCase):
     def setUp(self):
         # Arguments for the datamodule.
         self.train_size = 2
-        self.train_trans_x = Center()
-        self.eval_trans_x = RandomRotation()
-        self.trans_y = dummy_tfm
+        self.train_trans_x = train_tfm
+        self.eval_trans_x = eval_tfm
+        self.trans_y = label_tfm
         self.shuffle = True
         self.drop_last = True
         self.train_bs = 3
