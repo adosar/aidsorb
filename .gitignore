@@ -1,5 +1,6 @@
 # Added by me
 docs/source/auto_examples
+docs/source/_autosummary
 *.swp
 
 # Byte-compiled / optimized / DLL files
