@@ -22,10 +22,11 @@ References
 
 .. [IntelliPore] A. P. Sarikas, K. Gkagkas, and G. E. Froudakis, “IntelliPore: A
                  Foundation Model for Gas Adsorption in Porous Materials"
-.. [RetNeXt] A. P. Sarikas, K. Gkagkas, and G. E. Froudakis, “RetNeXt: A
-             Pretrained Model for Transfer Learning Across the MOF Adsorption
-             Space,” Journal of Chemical Information and Modeling, vol. 66, no.
-             4, pp. 2110–2116, Feb. 2026, doi: 10.1021/acs.jcim.5c02698.
+                 ADD IT IN IEEE FORMAT
+.. [RetNeXt] Sarikas, A. P., Gkagkas, K., & Froudakis, G. E. (2026). RetNeXt: A
+             Pretrained Model for Transfer Learning Across the MOF Adsorption Space. Journal
+             of Chemical Information and Modeling, 66(4), 2110–2116.
+             https://doi.org/10.1021/acs.jcim.5c02698 
 """
 
 from collections import OrderedDict

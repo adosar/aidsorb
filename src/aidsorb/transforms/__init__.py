@@ -15,7 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Helper functions and classes for transforming inputs.
+Helper functions and classes for transforming input representations.
 
 .. warning::
     Transforms avoid in-place modifications. However, **the output tensor(s)

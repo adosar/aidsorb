@@ -6,6 +6,7 @@ Version 3.0.0
 
 .. versionadded:: 3.0.0
 
+   * Support in :mod:`.utils` for generating energy images.
    * :class:`.transforms.voxels`'s, providing support for transforming voxels.
    * :class:`.modules.voxels`'s, providing support for deep learning on voxels.
 

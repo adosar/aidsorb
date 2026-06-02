@@ -1,5 +1,5 @@
 # This file is part of AIdsorb.
-# Copyright (C) 2024 Antonios P. Sarikas
+# Copyright (C) 2024-2026 Antonios P. Sarikas
 
 # AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +15,32 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Helper functions for creating molecular point clouds.
+Helper functions for generating input representations.
 
-.. todo::
-    Add support for optional transform before storing the point cloud.
+Currently supported representations:
+
+* **Molecular point clouds**
+    Fast and flexible representation suitable for any molecular system.
+
+* **3D energy images**
+    Physics-informed representation tailored for adsorption in porous materials.
+
+References
+----------
+
+.. [1] DeFever, R. S., Targonski, C., Hall, S. W., Smith, M. C., & Sarupria, S. (2019).
+       A generalized deep learning approach for local structure identification in
+       molecular simulations. Chemical Science, 10(32), 7503–7515.
+       https://doi.org/10.1039/c9sc02097g
+
+.. [2] Sarikas, A. P., Gkagkas, K., & Froudakis, G. E. (2024). Gas adsorption
+       meets geometric deep learning: points, set and match. Scientific Reports, 14(1).
+       https://doi.org/10.1038/s41598-024-76319-8 
+
+.. [3] Sarikas, A. P., Gkagkas, K., & Froudakis, G. E. (2024). Gas adsorption
+       meets deep learning: voxelizing the potential energy surface of metal-organic
+       frameworks. Scientific Reports, 14(1).
+       https://doi.org/10.1038/s41598-023-50309-8
 """
 
 import os
@@ -30,10 +52,22 @@ import numpy as np
 from numpy.typing import NDArray
 from ase.io import read
 from tqdm import tqdm
+from moxel.utils import voxels_from_file, voxels_from_files, voxels_from_dir
 
 from ._internal import ptable
 
 warnings.filterwarnings('ignore')
+
+# See the Sphinx docs:
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#directive-option-automodule-members
+__all__ = [
+    "pcd_from_file",
+    "pcd_from_files",
+    "pcd_from_dir",
+    "voxels_from_file",
+    "voxels_from_files",
+    "voxels_from_dir",
+]
 
 
 def pcd_from_file(
@@ -110,7 +144,7 @@ def pcd_from_files(
 
     Notes
     -----
-    Molecules that can't be processed are omitted.
+    Structures that can't be processed are omitted.
 
     Examples
     --------
@@ -162,7 +196,7 @@ def pcd_from_dir(
 
     Notes
     -----
-    Molecules that can't be processed are omitted.
+    Structures that can't be processed are omitted.
 
     Examples
     --------

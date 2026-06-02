@@ -34,10 +34,11 @@ r"""
 References
 ----------
 
-.. [PointNet] R. Q. Charles, H. Su, M. Kaichun and L. J. Guibas, "PointNet: Deep
-              Learning on Point Sets for 3D Classification and Segmentation," 2017 IEEE
-              Conference on Computer Vision and Pattern Recognition (CVPR), Honolulu, HI,
-              USA, 2017, pp. 77-85, doi: 10.1109/CVPR.2017.16.
+.. [PointNet] Charles, R. Q., Su, H., Kaichun, M., & Guibas, L. J. (2017).
+              PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation. In
+              2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) (pp. 77–85).
+              IEEE. 2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR).
+              https://doi.org/10.1109/cvpr.2017.16
 """
 
 from typing import Any
