@@ -53,22 +53,10 @@ molecular point clouds**.
 |aidsorb| aims to provide a **simple, easy-to-use and reproduce** interface
 for:
 
-* 📥 **Creating molecular point clouds**
-* 🤖 **Training DL algorithms on molecular point clouds**
+* 📥 **Creating add text**
+* 🤖 **Training add text**
 
-.. raw:: html
-   :file: images/pcd_plotly.html
-
-.. rubric:: Why molecular point clouds?
-
-A *molecular point cloud*, being essentially a *set of atomic positions, atomic
-numbers and any additional information*, provides a natural and efficient way to
-represent molecular structures and chemical systems in a machine understandable
-format. This in turns allows us to **perform DL directly on raw structural
-information**, removing the need for manual feature extraction.
-
-The above point cloud represents IRMOF-1. You can hover :fa:`arrow-pointer;
-fa-beat-fade` over the figure to play with it.
+Add text and wave snippets.
 
 TODO
 ----
@@ -88,7 +76,7 @@ TODO
    .. card:: 3️⃣  Support more architectures
       :text-align: center
 
-      This might require the usage of |pyg|.
+      Provide clean and fast implementations of new architectures.
 
    .. card:: 4️⃣  Extend featurization
       :text-align: center
@@ -136,13 +124,18 @@ License
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contents
+   :caption: User Guide
 
    installation
-   tutorial
+   getting_started
    auto_examples/index
-   cli
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Reference
+
    api
+   cli
    changelog
 
 

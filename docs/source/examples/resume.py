@@ -10,7 +10,7 @@ Coming back after model training
 # .. note::
 #     This example assumes:
 #         * Training was performed with :doc:`AIdsorb CLI <../cli>` or :ref:`AIdsorb +
-#           PyTorch Lightning <aidsorb_with_pytorch_and_lightning>`.
+#           PyTorch Lightning <api_tutorial>`.
 #         * `PyTorch Lightning checkpoints
 #           <https://lightning.ai/docs/pytorch/stable/common/checkpointing_basic.html#lightningmodule-from-checkpoint>`_
 #           are enabled during training.

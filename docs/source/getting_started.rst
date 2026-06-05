@@ -1,14 +1,25 @@
-:octicon:`rocket` Tutorial
-==========================
+:octicon:`rocket` Getting started
+=================================
 
 .. note::
    **This tutorial covers the most common use cases of AIdsorb**. For more
-   advanced usage, you should consult the :doc:`api`.
-
-.. _Introduction:
+   advanced usage, you should consult the :doc:`/api`.
 
 Introduction
 ------------
+
+Here we will add text for the general pipeline.
+
+Supported representations
+-------------------------
+
+.. tip::
+   |aidsorb| is not limited to the built-in representations. You can train
+   models using your own representations, provided they are stored
+   as ``.npy`` files (see :func:`numpy.save`) under a directory.
+
+Point clouds
+^^^^^^^^^^^^
 
 *What is a point cloud?*
 
@@ -56,8 +67,25 @@ Introduction
    **atomic numbers** and ``pcd[:, 4:]`` any **additional features**. If ``C ==
    0``, then the only features are the atomic numbers.
 
-Deep learning on molecular point clouds
----------------------------------------
+.. raw:: html
+    :file: images/pcd_plotly.html
+
+The above point cloud represents IRMOF-1. You can hover :fa:`arrow-pointer;
+fa-beat-fade` over the figure to play with it.
+
+Energy images
+^^^^^^^^^^^^^
+
+Add text for energy images here.
+
+.. raw:: html
+    :file: images/pes_plotly.html
+
+The above energy image represents IRMOF-1. You can hover :fa:`arrow-pointer;
+fa-beat-fade` over the figure to play with it.
+
+Tutorial
+--------
 
 The following components are needed:
 
@@ -207,8 +235,6 @@ All you need is a ``.yaml`` configuration file and some keystrokes:
     <https://lightning.ai/docs/pytorch/stable/cli/lightning_cli.html>`_, in case
     you are not familiar with |lightning| and YAML.
 
-.. _Summing up:
-
 Summing up
 ^^^^^^^^^^
 
@@ -219,24 +245,14 @@ Summing up
     $ aidsorb-lit fit --config=path/to/config.yaml  # Train
     $ aidsorb-lit test --config=path/to/config.yaml --ckpt_path=path/to/ckpt  # Test
 
-Questions
----------
 
-Using point clouds not created with |aidsorb|?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _api_tutorial:
 
-Yes! The only requirement is to store them under a directory in ``.npy`` format
-(see :func:`numpy.save`) and respect the shapes described in
-:ref:`Introduction`. Then, you can proceed as described :ref:`earlier <Summing
-up>` (omitting the point clouds creation part).
+Using the :fa:`python` API
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _aidsorb_with_pytorch_and_lightning:
-
-Deep learning without the CLI?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Of course! Although you are encouraged to use the :doc:`cli`, you can also use
-|aidsorb| with plain |pytorch| or |lightning|.
+Although you are encouraged to use the :doc:`cli`, for more
+flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 
 .. seealso::
 
@@ -312,14 +328,8 @@ Of course! Although you are encouraged to use the :doc:`cli`, you can also use
             # Your code goes here.
             ...
 
-Predicting directly from the CLI?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Currently, this feature is not available (see :ref:`index:TODO`).
-
-Further questions
-^^^^^^^^^^^^^^^^^
-
+Questions
+---------
 We warmly encourage you to share any questions or ideas in the |discussions|.
 
 .. note::
