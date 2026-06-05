@@ -8,12 +8,12 @@ Version 3.0.0
 
    * Support for visualizing voxels.
    * Support in :mod:`.utils` for generating energy images.
-   * :class:`.transforms.voxels`'s, providing support for transforming voxels.
-   * :class:`.modules.voxels`'s, providing support for deep learning on voxels.
+   * :mod:`.transforms.voxels`'s, providing support for transforming voxels.
+   * :mod:`.modules.voxels`'s, providing support for deep learning on voxels.
 
 .. versionchanged:: 3.0.0
 
-    * Split :mod:`.tranforms` into :mod:`.transforms.points` and
+    * Split :mod:`.transforms` into :mod:`.transforms.points` and
       :mod:`.transforms.voxels`.
     * Split :mod:`.modules` into :mod:`.modules.points` and
       :mod:`.modules.voxels`.

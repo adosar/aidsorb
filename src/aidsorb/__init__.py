@@ -16,18 +16,7 @@
 
 r"""
 **AIdsorb** is a :fa:`python; fa-fade` Python package for **deep learning on
-molecular point clouds**.
-
-
-.. admonition:: AIdsorb adopts the following conventions
-
-    * A ``pcd`` is represented as a :class:`~numpy.ndarray` or
-      :class:`~torch.Tensor` of shape ``(N, 3+C)``.
-    * A molecular ``pcd`` is represented as a :class:`~numpy.ndarray` or
-      :class:`~torch.Tensor` of shape ``(N, 4+C)``, where ``N`` is the number of
-      atoms, ``pcd[:, :3]`` are the **atomic coordinates**, ``pcd[:, 3]`` are
-      the **atomic numbers** and ``pcd[:, 4:]`` any **additional features**. If
-      ``C == 0``, then the only features are the atomic numbers.
+porous materials**.
 """
 
 __author__ = 'Antonios P. Sarikas'

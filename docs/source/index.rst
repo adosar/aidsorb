@@ -13,7 +13,7 @@ About
 =====
 
 |aidsorb| is a :fa:`python; fa-fade` Python package for **deep learning on
-molecular point clouds**.
+porous materials**.
 
 .. grid:: 4
 

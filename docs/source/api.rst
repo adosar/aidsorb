@@ -8,7 +8,7 @@
    :undoc-members:
    :show-inheritance:
 
-.. rubric:: Submodules
+.. rubric:: Subpackages / Submodules
 
 .. autosummary::
    :nosignatures:
