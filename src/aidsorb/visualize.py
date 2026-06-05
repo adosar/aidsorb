@@ -1,5 +1,5 @@
 # This file is part of AIdsorb.
-# Copyright (C) 2024 Antonios P. Sarikas
+# Copyright (C) 2024-2026 Antonios P. Sarikas
 
 # AIdsorb is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,17 +15,17 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Helper functions for visualizing point clouds.
+Helper functions for visualizing input representations.
 
 .. tip::
 
-    To visualize a point cloud from the CLI:
+    To visualize point clouds or voxels using the CLI:
 
         .. code-block:: console
             
-            $ aidsorb visualize path/to/structure_or_pcd  # Structure (.xyz, .cif, etc) or .npy
+            $ aidsorb visualize path/to/pcd_or_voxels.npy
 
-    You can also visualize a structure with :mod:`ase`:
+    To visualize a structure you can use :mod:`ase`:
 
         .. code-block:: python
 
@@ -38,9 +38,9 @@ Helper functions for visualizing point clouds.
 
 import numpy as np
 from numpy.typing import NDArray, ArrayLike
-from plotly.graph_objects import Figure, Scatter3d
+from plotly.graph_objects import Figure, Scatter3d, Volume
 
-from ._internal import check_shape, ptable
+from ._internal import ptable
 from .utils import pcd_from_file
 
 
@@ -87,7 +87,7 @@ def get_atom_names(atomic_numbers: ArrayLike) -> NDArray:
 
 
 def draw_pcd(
-        pcd: NDArray,
+        pcd: ArrayLike,
         molecular: bool = True,
         scheme: str = 'cpk',
         size: float = 2.,
@@ -101,7 +101,7 @@ def draw_pcd(
 
     Parameters
     ----------
-    pcd : array of shape (N, 3+C)
+    pcd : array-like of shape (N, 3+C)
     molecular : bool, default=True
         If :obj:`True`, assume a molecular point cloud. In this case, each atom
         is sized as :math:`r_{\text{vdW}}^4` and colorized based on ``scheme``.
@@ -128,8 +128,6 @@ def draw_pcd(
     >>> pcd = np.random.randn(10, 3)
     >>> fig = draw_pcd(pcd, molecular=False, feature_to_color=(0, 'x coord'), colorscale='viridis')
     """
-    check_shape(pcd)
-
     size = (ptable.loc[pcd[:, 3], 'vdw_radius'] * 0.01)**4 if molecular else size
     hovertext = get_atom_names(pcd[:, 3]) if molecular else None
     color = get_atom_colors(pcd[:, 3], scheme=scheme) if molecular else None
@@ -157,33 +155,99 @@ def draw_pcd(
     return fig
 
 
-def draw_pcd_from_file(
+def draw_voxels(
+        voxels: ArrayLike,
+        isomin : float = -1000.,
+        isomax : float = 1000.,
+        opacity : float = 0.15,
+        surface_count: int = 5,
+        colorscale : str | None = None,
+        label : str | None = 'Energy / K',
+        ) -> Figure:
+    r"""
+    Visualize voxels with Plotly.
+
+    .. todo::
+        Add support for multi-channel voxels.
+
+    .. _colorscale: https://plotly.com/python/builtin-colorscales/
+
+    Parameters
+    ----------
+    voxels : array-like of shape (D, H, W)
+    isomin : float, default=-1000
+        Minimum value of the displayed range.
+    isomax : float, default=1000
+        Maximum value of the displayed range.
+    opacity : float, default=0.15
+        Opacity of the volume rendering.
+    surface_count : int, default=5
+        Number of isosurfaces to approximate the volume.
+    colorscale : str, optional
+        For available options, see `colorscale`_.
+    label : str, default='Energy / K'
+        Text label for the colorbar.
+
+    Returns
+    -------
+    plotly.graph_objects.Figure
+
+    Notes
+    -----
+    Default parameter values are chosen to provide a reasonable visualization
+    for energy voxels.
+
+    Examples
+    --------
+    >>> voxels = np.random.randn(3, 3, 3)
+    >>> fig = draw_voxels(voxels, colorscale='viridis')
+    """
+    x, y, z = np.mgrid[
+        0:voxels.shape[0],
+        0:voxels.shape[1],
+        0:voxels.shape[2]
+    ]
+
+    fig = Figure(data=Volume(
+        x=x.flatten(),
+        y=y.flatten(),
+        z=z.flatten(),
+        value=voxels.flatten(),
+        isomin=isomin,
+        isomax=isomax,
+        opacity=opacity,
+        surface_count=surface_count,
+        colorscale=colorscale,
+        colorbar={'title': label},
+    ))
+
+    return fig
+
+
+def draw_from_file(
         filename: str,
         render: bool = True,
         **kwargs
         ) -> Figure | None:
     r"""
-    Visualize point cloud from a file.
+    Visualize point cloud or voxels from a file.
 
     Parameters
     ----------
     filename : str
-        Absolute or relative path to a ``.npy`` or structure file.
+        Absolute or relative path to a ``.npy``.
     render : bool, default=True
-        Whether to render the point cloud with
-        :data:`plotly.io.renderers.default` or return the figure object.
+        Whether to render the data with :data:`plotly.io.renderers.default` or
+        return the figure object.
     **kwargs
-        Valid keyword arguments for :func:`draw_pcd`.
+        Valid keyword arguments for :func:`draw_pcd` or :func:`draw_voxels`.
 
     Returns
     -------
     plotly.graph_objects.Figure or None
     """
-    if filename.endswith('.npy'):
-        pcd = np.load(filename)
-    else:
-        _, pcd = pcd_from_file(filename)
-
-    fig = draw_pcd(pcd, **kwargs)
+    data = np.load(filename)
+    draw_fn = draw_pcd if data.ndim == 2 else draw_voxels
+    fig = draw_fn(data, **kwargs)
 
     return fig.show() if render else fig

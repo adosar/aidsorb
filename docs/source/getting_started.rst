@@ -10,8 +10,8 @@ Introduction
 
 Here we will add text for the general pipeline.
 
-Supported representations
--------------------------
+Representations
+---------------
 
 .. tip::
    |aidsorb| is not limited to the built-in representations. You can train
@@ -73,7 +73,7 @@ Point clouds
 The above point cloud represents IRMOF-1. You can hover :fa:`arrow-pointer;
 fa-beat-fade` over the figure to play with it.
 
-Energy images
+Energy voxels
 ^^^^^^^^^^^^^
 
 Add text for energy images here.
