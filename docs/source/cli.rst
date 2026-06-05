@@ -9,16 +9,16 @@ There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
 
     .. tab-item:: aidsorb
 
-        For creating, preparing and visualizing molecular point clouds.
+        For creating, preparing and visualizing input representations.
 
         +------------+--------------------------------------------------------------+
         | Subcommand | Short description                                            |
         +============+==============================================================+
-        | create     | Create molecular point clouds from a directory of structures.|
+        | create     | Create input representations from a directory of structures. |
         +------------+--------------------------------------------------------------+
-        | prepare    | Split point clouds into train, validation and test sets.     |
+        | prepare    | Split datat into train, validation and test sets.            |
         +------------+--------------------------------------------------------------+
-        | visualize  | Visualize a point cloud.                                     |
+        | visualize  | Visualize input representations.                             |
         +------------+--------------------------------------------------------------+
 
         For more information::

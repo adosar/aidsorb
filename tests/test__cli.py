@@ -29,7 +29,7 @@ import unittest
 class TestCLI(unittest.TestCase):
     def setUp(self):
         self.tempdir = tempfile.TemporaryDirectory(dir='/tmp')
-        self.outname = os.path.join(self.tempdir.name, 'pcd_data')
+        self.outname = os.path.join(self.tempdir.name, 'data')
         self.dirname = 'tests/structures'
         self.split_ratio = [2, 2, 2]
         self.path_to_logs = f'{self.tempdir.name}/lightning_logs/version_0'
@@ -39,8 +39,11 @@ class TestCLI(unittest.TestCase):
         if exit_status != 0:
             raise RuntimeError(command)
 
-    def test_cli(self):
-        self.run_command(f'aidsorb create {self.dirname} {self.outname}')
+    def test_visualize(self):
+        self.run_command(f'aidsorb visualize tests/dummy/toy_project/pcd_data/IRMOF-1.npy')
+
+    def test_workflow(self):
+        self.run_command(f'aidsorb create points {self.dirname} {self.outname}')
         self.run_command(f'aidsorb prepare {self.outname} --split_ratio "{self.split_ratio}"')
 
         # Check that the files are correctly created.

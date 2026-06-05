@@ -33,11 +33,14 @@ def aidsorb_cli():
     from jsonargparse import auto_cli
 
     from .data import prepare_data
-    from .utils import pcd_from_dir
-    from .visualize import draw_pcd_from_file
+    from .utils import pcd_from_dir, voxels_from_dir
+    from .visualize import draw_from_file
 
     auto_cli({
-        'visualize': draw_pcd_from_file,
-        'create': pcd_from_dir,
-        'prepare': prepare_data,
+        "create": {
+            "points": pcd_from_dir,
+            "voxels": voxels_from_dir,
+            },
+        "prepare": prepare_data,
+        "visualize": draw_from_file,
         })
