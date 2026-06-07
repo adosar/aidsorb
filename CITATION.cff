@@ -21,14 +21,18 @@ abstract: >-
   Python package for deep learning on molecular point
   clouds.
 keywords:
+  - machine learning
   - deep learning
   - geometric deep learning
   - point clouds
-  - machine learning
+  - molecular point clouds
+  - voxels
   - pytorch
   - pytorch lightning
+  - ai4science
+  - ai4chemistry
+  - chemistry
   - porous materials
   - material informatics
   - metal-organic frameworks
-  - molecular point clouds
 license: GPL-3.0-only
