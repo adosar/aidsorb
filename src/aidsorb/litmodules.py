@@ -90,10 +90,9 @@ class LitModule(L.LightningModule):
     Examples
     --------
     >>> import torch
-    >>> from aidsorb.modules import PointNetClsHead, PointNet
     >>> from torchmetrics import MetricCollection, R2Score, MeanAbsoluteError as MAE
 
-    >>> model = PointNet(head=PointNetClsHead(n_outputs=10))
+    >>> model = torch.nn.Linear(2, 10)
     >>> criterion, metric = torch.nn.MSELoss(), MetricCollection(R2Score(), MAE())
 
     >>> # Adam optimizer with default hyperparameters, no scheduler.
@@ -112,9 +111,9 @@ class LitModule(L.LightningModule):
     >>> litmodel = LitModule(model, criterion, metric, config_optimizer, config_scheduler)
 
     >>> # Forward pass.
-    >>> x = torch.randn(32, 5, 100)
+    >>> x = torch.randn(8, 2)
     >>> litmodel(x).shape
-    torch.Size([32, 10])
+    torch.Size([8, 10])
     """
     def __init__(
             self,

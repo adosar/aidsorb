@@ -26,7 +26,6 @@ r"""
 
    points
    voxels
-
 """
 
 from .points import (
