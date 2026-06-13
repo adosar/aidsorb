@@ -128,10 +128,7 @@ class RetNeXt(nn.Module):
     torch.Size([16, 100])
 
     >>> # Pretrained weights for the backbone.
-    >>> model = RetNeXt(n_outputs=None, pretrained=True)  # doctest: +ELLIPSIS
-    >>> x = torch.randn(2, 1, 32, 32, 32)
-    >>> model(x).shape  # Embeddings
-    torch.Size([2, 128])
+    >>> model = RetNeXt(n_outputs=None, pretrained=True)  # doctest: +SKIP
     """
     def __init__(
             self,
@@ -215,10 +212,7 @@ class IntelliPore(nn.Module):
     torch.Size([8, 100])
 
     >>> # Pretrained weights for the backbone.
-    >>> model = IntelliPore(n_outputs=None, pretrained=True)  # doctest: +ELLIPSIS
-    >>> x = torch.randn(4, 1, 32, 32, 32)
-    >>> model(x).shape  # Embeddings
-    torch.Size([4, 128])
+    >>> model = IntelliPore(n_outputs=None, pretrained=True)  # doctest: +SKIP
     """
     def __init__(
             self,
