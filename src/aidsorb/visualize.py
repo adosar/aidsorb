@@ -212,7 +212,7 @@ def draw_voxels(
         x=x.flatten(),
         y=y.flatten(),
         z=z.flatten(),
-        value=voxels.flatten(),
+        value=np.clip(voxels, isomin, isomax).flatten(),
         isomin=isomin,
         isomax=isomax,
         opacity=opacity,
