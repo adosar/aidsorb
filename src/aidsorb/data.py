@@ -458,7 +458,7 @@ class Dataset(torch.utils.data.Dataset):
         inputs.
     index_col : str, optional
         Column name of the ``.csv`` file to be used for indexing. This column
-        must include ``pcd_names``. No effect if ``path_to_Y=None``.
+        must include ``names``. No effect if ``path_to_Y=None``.
     labels : list, optional
         List of column names from the ``.csv`` file containing the properties to be
         predicted. No effect if ``path_to_Y=None``.

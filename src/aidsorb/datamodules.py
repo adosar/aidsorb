@@ -69,7 +69,9 @@ class DataModule(L.LightningDataModule):
         Absolute or relative path to the ``.csv`` file holding the labels of the
         inputs.
     index_col : str, optional
-        Column name of the ``.csv`` file to be used for indexing.
+        Column name of the ``.csv`` file to be used for indexing. Must match
+        file names in ``path_to_X`` (e.g. ``foo.npy`` → ``foo``). No effect
+        if ``path_to_Y=None``.
     labels : list, optional
         Column names of the ``.csv`` file containing the properties to be
         predicted.
