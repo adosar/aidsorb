@@ -51,7 +51,7 @@ def get_atom_colors(atomic_numbers: ArrayLike, scheme: str = 'cpk') -> NDArray:
     Parameters
     ----------
     atomic_numbers : array-like of shape (N,)
-    scheme : {'jmol', 'cpk'}, default='jmol'
+    scheme : {'jmol', 'cpk'}, default='cpk'
 
     Returns
     -------
@@ -107,7 +107,7 @@ def draw_pcd(
         is sized as :math:`r_{\text{vdW}}^4` and colorized based on ``scheme``.
         If :obj:`False`, assume a generic point cloud and size each point based
         on ``size``.
-    scheme : {'jmol', 'cpk'}, default='jmol'
+    scheme : {'jmol', 'cpk'}, default='cpk'
         Takes effect only if ``molecular=True`` and ``feature_to_color=None``.
     size : float, default=2.
         Controls the size of points.
