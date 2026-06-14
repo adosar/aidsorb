@@ -110,6 +110,8 @@ class RetNeXt(nn.Module):
     ----------
     in_channels : int, default=1
     n_outputs : int or None, default=1
+        Number of output units. If ``None``, no linear head is added and the
+        model acts as feature extractor.
     pretrained : bool, default=False
         Whether to use pretrained weights for the backbone.
 
@@ -126,9 +128,15 @@ class RetNeXt(nn.Module):
     >>> x = torch.randn(16, 3, 25, 25, 25)
     >>> model(x).shape
     torch.Size([16, 100])
+    
+    >>> # Acts as feature extractor.
+    >>> model = IntelliPore(in_channels=3, n_outputs=None)
+    >>> x = torch.randn(4, 3, 32, 32, 32)
+    >>> model(x).shape
+    torch.Size([4, 128])
 
     >>> # Pretrained weights for the backbone.
-    >>> model = RetNeXt(n_outputs=None, pretrained=True)  # doctest: +SKIP
+    >>> model = RetNeXt(pretrained=True)  # doctest: +SKIP
     """
     def __init__(
             self,
@@ -194,6 +202,8 @@ class IntelliPore(nn.Module):
     ----------
     in_channels : int, default=1
     n_outputs : int or None, default=1
+        Number of output units. If ``None``, no linear head is added and the
+        model acts as feature extractor.
     pretrained : bool, default=False
         Whether to use pretrained weights for the backbone.
 
@@ -211,8 +221,14 @@ class IntelliPore(nn.Module):
     >>> model(x).shape
     torch.Size([8, 100])
 
+    >>> # Acts as feature extractor.
+    >>> model = IntelliPore(in_channels=3, n_outputs=None)
+    >>> x = torch.randn(4, 3, 32, 32, 32)
+    >>> model(x).shape
+    torch.Size([4, 128])
+
     >>> # Pretrained weights for the backbone.
-    >>> model = IntelliPore(n_outputs=None, pretrained=True)  # doctest: +SKIP
+    >>> model = IntelliPore(pretrained=True)  # doctest: +SKIP
     """
     def __init__(
             self,
