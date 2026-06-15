@@ -355,10 +355,13 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
         .. code-block:: python
 
             import torch
-            import lightning as L
+            from lightning.pytorch import Trainer, seed_everything
 
             from aidsorb.datamodules import DataModule
             from aidsorb.litmodules import LitModule
+
+            # For reproducibility.
+            seed_everything(42)
 
             # Create the datamodule.
             dm = DataModule(
@@ -368,13 +371,23 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
                 )
 
             # Create the litmodel.
-            litmodel = LitModule(model=SomeModule(...), ...)
+            litmodel = LitModule(
+                model=SomeModule(...),
+                criterion=torch.nn.MSELoss(...),
+                ...
+                )
 
             # Create the trainer.
-            trainer = L.Trainer(...)
+            trainer = Trainer(
+                max_epochs=10,
+                accelerator='gpu',
+                ...)
 
-            # Your code goes here.
-            ...
+            # Train the model.
+            trainer.fit(litmodel, datamodule=dm)
+
+            # Test the model.
+            trainer.test(litmodel, datamodule=dm)
 
 Questions
 ---------
