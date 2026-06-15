@@ -24,19 +24,25 @@
 
 </h4>
 
-**AIdsorb** is a Python package for **deep learning on molecular point clouds**.
+**AIdsorb** is a Python package for **deep learning on porous materials**.
 
-This package aims to provide a **simple, easy-to-use and reproduce** interface for:
-
--   📥 **Creating molecular point clouds**
-  
--   🤖 **Training DL algorithms on molecular point clouds**
+It is designed to automate the repetitive tasks common to deep learning
+workflows, **allowing researchers to focus on developing and testing new ideas
+instead of writing boilerplate code**.
 
 <p align="center">
   <img alt="IRMOF-1" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/IRMOF-1.gif" width="25%"/>
   <img alt="Cu-BTC" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/Cu-BTC.gif" width="25%"/>
   <img alt="UiO-66" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/UiO-66.gif" width="25%"/>
 </p>
+
+**AIdsorb** provides a **unified, configuration-driven interface** to:
+
+* 🛠️ Generate input representations of materials.
+* 🗂️ Prepare and manage datasets.
+* 🤖 Train and fine-tune models with minimal boilerplate.
+* 🔬 Build reproducible and repeatable deep learning workflows.
+
 
 ## ⚙️  Installation
 > [!IMPORTANT] 
@@ -51,24 +57,9 @@ pip install aidsorb
 > [!NOTE] 
 > Refer to the 📚 [Documentation](https://aidsorb.readthedocs.io/en/stable/) for more information.
 
-Here is a summary of what you can do from the command line:
-
-1. Visualize a point cloud:
-	```bash
-	aidsorb visualize path/to/structure_or_pcd  # Structure (.xyz, .cif, etc) or .npy
-	```
-
-2.  Create and prepare point clouds:
-	```bash
-	aidsorb create path/to/structures path/to/pcd_data  # Create and store point clouds
-	aidsorb prepare path/to/pcd_data  # Split point clouds to train, valdation and test
-	```
-	
-3. Train and test a model:
-	```bash
-	aidsorb-lit fit --config=path/to/config.yaml
-	aidsorb-lit test --config=path/to/config.yaml --ckpt_path=path/to/ckpt
-	```
+<p align="center">
+  <img alt="AIdsorb Intro" src="https://raw.githubusercontent.com/adosar/aidsorb/master/docs/source/images/hello.gif" width="75%"/>
+</p>
  
 ## 💡 Questions and Contributing
 

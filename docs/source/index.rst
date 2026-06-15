@@ -65,7 +65,7 @@ runs. Managing these workflows consistently can quickly become cumbersome.
 
 |
 
-|aidsorb| provides a unified, configuration-driven interface to:
+|aidsorb| provides a **unified, configuration-driven interface** to:
 
 * 🛠️ Generate input representations of materials.
 * 🗂️ Prepare and manage datasets.
