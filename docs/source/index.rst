@@ -13,7 +13,9 @@ About
 =====
 
 |aidsorb| is a :fa:`python; fa-fade` Python package for **deep learning on
-porous materials**.
+porous materials**. It is designed to automate the repetitive tasks common to
+machine and deep learning workflows, **allowing researchers to focus on
+experiments** rather than infrastructure.
 
 .. grid:: 4
 
@@ -50,13 +52,19 @@ porous materials**.
 
                   :octicon:`telescope` |aidsorb| paper
 
-|aidsorb| aims to provide a **simple, easy-to-use and reproduce** interface
-for:
+In a typical project, the same sequence of steps is performed repeatedly:
+creating machine-learning representations, associating them with target
+properties, splitting data, configuring models, and launching training runs.
+|aidsorb| streamlines this workflow while promoting reproducibility through a
+unified, configuration-driven interface.
 
-* 📥 **Creating add text**
-* 🤖 **Training add text**
+In particular, |aidsorb| provides simple tools for:
 
-Add text and wave snippets.
+* Creating machine-learning representations.
+* Managing datasets and train/validation/test splits.
+* Automating end-to-end model training.
+* Configuring and customizing experiments through ``.yaml`` files.
+* Promoting reproducible and repeatable research.
 
 TODO
 ----

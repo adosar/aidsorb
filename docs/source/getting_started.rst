@@ -2,21 +2,38 @@
 =================================
 
 .. note::
-   **This tutorial covers the most common use cases of AIdsorb**. For more
-   advanced usage, you should consult the :doc:`/api`.
+   This section introduces the framework, its core concepts, and the main
+   components of its workflow. It provides a starting point for understanding
+   the framework and prepares you for the complete end-to-end :ref:`tutorial`.
+   For advanced usage, consult the :doc:`/api`.
 
 Introduction
 ------------
 
-Here we will add text for the general pipeline.
+At its core, |aidsorb| automates the end-to-end workflow of training deep
+learning models for porous materials.
+
+The process starts from a directory of molecular structures together with a
+``labels.csv`` file containing the target properties. The structures are first
+converted into one of the built-in representations. Alternatively, users can
+supply their own precomputed representations stored as ``.npy`` files. The
+resulting data are then split into training, validation, and test sets, after
+which the entire training pipeline is orchestrated through a single ``.yaml``
+configuration file.
+
+The general workflow is illustrated below.
+
+.. image:: images/aidsorb_workflow.png
+   :align: center
 
 Representations
 ---------------
 
 .. tip::
-   |aidsorb| is not limited to the built-in representations. You can train
-   models using your own representations, provided they are stored
-   as ``.npy`` files (see :func:`numpy.save`) under a directory.
+   The representations described below are built into |aidsorb|, but
+   you are not limited to them. You can train models using your own
+   representations, as long as they are stored as ``.npy`` files
+   (see :func:`numpy.save`) in a directory.
 
 Point clouds
 ^^^^^^^^^^^^
@@ -61,11 +78,19 @@ Point clouds
    It is a point cloud where coordinates correspond to **atomic positions**,
    and features correspond to **atomic numbers and any additional information**.
 
-   In |aidsorb|, a molecular ``pcd`` is represented as :class:`~numpy.ndarray`
-   or :class:`~torch.Tensor` of shape ``(N, 4+C)``, where ``N`` is the number of
-   atoms, ``pcd[:, :3]`` are the **atomic coordinates**, ``pcd[:, 3]`` are the
-   **atomic numbers** and ``pcd[:, 4:]`` any **additional features**. If ``C ==
-   0``, then the only features are the atomic numbers.
+   In |aidsorb|, a molecular point cloud is represented as
+   :class:`~numpy.ndarray` or :class:`~torch.Tensor` of shape ``(N, 4+C)``,
+   where ``N`` is the number of atoms, ``pcd[:, :3]`` are the **atomic
+   coordinates**, ``pcd[:, 3]`` are the **atomic numbers** and ``pcd[:, 4:]``
+   any **additional features**. If ``C == 0``, then the only features are the
+   atomic numbers.
+
+*Why molecular point clouds?*
+
+    A fast, generic, and flexible representation that can be applied to a wide
+    range of molecular and material systems. It enables deep learning directly
+    from raw structural information, but typically requires more training data
+    than more specialized representations.
 
 .. raw:: html
     :file: images/pcd_plotly.html
@@ -76,7 +101,21 @@ fa-beat-fade` over the figure to play with it.
 Energy voxels
 ^^^^^^^^^^^^^
 
-Add text for energy images here.
+*What are energy voxels?*
+
+    It is the **voxelized potential energy surface** of the material, that is a **3D
+    energy image**, representing the landscape of host-guest interactions.
+
+    In |aidsorb|, energy voxels are represented as :class:`~numpy.ndarray` or
+    :class:`~torch.Tensor` of shape ``(C, D, H, W)`` (multi-channel image) or ``(D,
+    H, W)`` (single-channel image).
+
+*Why energy voxels?*
+
+    A physics-informed representation tailored for adsorption in porous
+    materials. By explicitly encoding host–guest interaction energies, it often
+    achieves good predictive performance with less training data than more
+    generic representations, at the cost of reduced generality.
 
 .. raw:: html
     :file: images/pes_plotly.html
@@ -84,10 +123,19 @@ Add text for energy images here.
 The above energy image represents IRMOF-1. You can hover :fa:`arrow-pointer;
 fa-beat-fade` over the figure to play with it.
 
+.. _tutorial:
+
 Tutorial
 --------
 
-The following components are needed:
+This tutorial demonstrates a complete workflow using molecular point clouds.
+
+.. tip::
+    The overall workflow is essentially the same for all built-in
+    and custom representations. Only the representation-specific preprocessing
+    and model configuration need to be adapted.
+
+Before starting, the following components are needed:
 
 * A directory containing files of **molecular structures**.
 * A ``.csv`` file containing the **labels of the molecular structures**.
@@ -110,7 +158,7 @@ Assuming your molecular structures are stored under a directory named
 
         .. code-block:: console
 
-            $ aidsorb create path/to/structures path/to/pcd_data --features="[en_pauling]"
+            $ aidsorb create points path/to/structures path/to/pcd_data --features="[en_pauling]"
             $ aidsorb create --config=config.yaml  # Recommended for reproducibility
     
     .. tab-item:: config.yaml
@@ -142,7 +190,7 @@ Assuming your molecular structures are stored under a directory named
 
         .. code-block:: console
 
-            $ aidsorb prepare path/to/pcd_data --split_ratio="[0.7, 0.1, 0.2]" --seed=1
+            $ aidsorb prepare path/to/pcd_data --split_ratio="[0.7, 0.1, 0.2]" --seed=42
             $ aidsorb prepare --config=config.yaml  # Recommended for reproducibility
 
     .. tab-item:: config.yaml
@@ -151,7 +199,7 @@ Assuming your molecular structures are stored under a directory named
 
             source: 'path/to/pcd_data'
             split_ratio: [0.7, 0.1, 0.2]
-            seed: 1
+            seed: 42
 
     .. tab-item:: Python
 
@@ -183,12 +231,17 @@ After creating and splitting the point clouds:
 * The ``.json`` files store the point cloud names for training,
   validation and testing.
 
+.. note::
+   The names stored in the ``.json`` files must match the entries in the
+   ``index_col`` column of ``labels.csv``, without the ``.npy`` suffix
+   (e.g. ``foo.npy`` → ``foo``).
+
 .. tip::
-   You can visualize a point cloud with:
+   You can visualize an input representation with:
 
    .. code-block:: console
 
-      $ aidsorb visualize path/to/structure_or_pcd  # Structure (.xyz, .cif, etc) or .npy
+      $ aidsorb visualize path/to/input.npy
 
 Train and test
 ^^^^^^^^^^^^^^
@@ -240,7 +293,7 @@ Summing up
 
 .. code-block:: console
 
-    $ aidsorb create path/to/structures path/to/pcd_data  # Create point clouds
+    $ aidsorb create points path/to/structures path/to/pcd_data  # Create point clouds
     $ aidsorb prepare path/to/pcd_data  # Split point clouds
     $ aidsorb-lit fit --config=path/to/config.yaml  # Train
     $ aidsorb-lit test --config=path/to/config.yaml --ckpt_path=path/to/ckpt  # Test
@@ -256,13 +309,8 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 
 .. seealso::
 
-    For PyTorch:
-
     * :class:`aidsorb.data.Dataset`
     * :class:`aidsorb.modules`
-
-    For PyTorch Lightning:
-
     * :class:`aidsorb.datamodules.DataModule`
     * :class:`aidsorb.litmodules.LitModule`
 
@@ -273,30 +321,31 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 
         .. code-block:: python
 
+            import torch
             from torch.utils.data import DataLoader
-            from aidsorb.data import Dataset, PCDCollator, get_names
-            from aidsorb.modules import PointNet
+
+            from aidsorb.data import Dataset, get_names
 
             # Create the datasets.
             train_set = Dataset(
-                pcd_names=get_names('path/to/project_root/train.json'),
-                path_to_X='path/to/pcd_data/',
+                names=get_names('path/to/project_root/train.json'),
+                path_to_X='path/to/input_data/',
                 path_to_Y='path/to/labels.csv',
                 ...
                 )
             val_set = Dataset(
-                pcd_names=get_names('path/to/project_root/validation.json'),
-                path_to_X='path/to/pcd_data/',
+                names=get_names('path/to/project_root/validation.json'),
+                path_to_X='path/to/input_data/',
                 path_to_Y='path/to/labels.csv',
                 ...
                 )
 
             # Create the dataloaders.
-            train_loader = DataLoader(train_set, ..., collate_fn=PCDCollator(channels_first=True))
-            val_loader = DataLoader(val_set, ..., collate_fn=PCDCollator(channels_first=True))
+            train_loader = DataLoader(train_set, ...)
+            val_loader = DataLoader(val_set, ...)
 
             # Create the model.
-            model = PointNet(...)
+            model = SomeModule(...)
 
             # Your code goes here.
             ...
@@ -305,22 +354,22 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 
         .. code-block:: python
 
+            import torch
             import lightning as L
-            from aidsorb.data import PCDCollator
+
             from aidsorb.datamodules import DataModule
-            from aidsorb.modules import PointNet
             from aidsorb.litmodules import LitModule
 
             # Create the datamodule.
             dm = DataModule(
-                path_to_X='path/to/pcd_data',
+                path_to_X='path/to/input_data',
                 path_to_Y='path/to/labels.csv',
                 ...,
-                config_dataloaders=dict(collate_fn=PCDCollator(channels_first=True), ...),
                 )
 
             # Create the litmodel.
-            litmodel = LitModule(model=PointNet(...), ...)
+            model = SomeModule(...)
+            litmodel = LitModule(model=model, ...)
 
             # Create the trainer.
             trainer = L.Trainer(...)
@@ -331,6 +380,4 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 Questions
 ---------
 We warmly encourage you to share any questions or ideas in the |discussions|.
-
-.. note::
-    Before asking *how to do X?*, please read the documentation carefully.
+Before asking *how to do X?*, please read the documentation carefully.
