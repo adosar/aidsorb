@@ -19,7 +19,7 @@ r"""
 """
 
 import os
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from typing import Any
 from pathlib import Path
 

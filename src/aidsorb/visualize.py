@@ -41,7 +41,6 @@ from numpy.typing import NDArray, ArrayLike
 from plotly.graph_objects import Figure, Scatter3d, Volume
 
 from ._internal import ptable
-from .utils import pcd_from_file
 
 
 def get_atom_colors(atomic_numbers: ArrayLike, scheme: str = 'cpk') -> NDArray:
