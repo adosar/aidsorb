@@ -368,8 +368,7 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
                 )
 
             # Create the litmodel.
-            model = SomeModule(...)
-            litmodel = LitModule(model=model, ...)
+            litmodel = LitModule(model=SomeModule(...), ...)
 
             # Create the trainer.
             trainer = L.Trainer(...)

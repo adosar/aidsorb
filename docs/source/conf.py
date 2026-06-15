@@ -66,7 +66,7 @@ rst_epilog = '''
 .. |pytorch| replace:: :bdg-link-primary:`PyTorch <https://pytorch.org/>`
 .. |lightning| replace:: :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`
 .. |license| replace:: :bdg-link-primary:`GNU General Public License v3.0 only <https://spdx.org/licenses/GPL-3.0-only.html>`
-.. |aidsorb| replace:: **AIdsorb**
+.. |aidsorb| replace:: :bdg-link-primary:`AIdsorb <https://github.com/adosar/aidsorb/>`
 .. |github| replace:: :bdg-link-primary:`GitHub <https://github.com/adosar/aidsorb/>`
 .. |discussions| replace:: :bdg-link-primary:`Discussions <https://github.com/adosar/aidsorb/discussions>`
 .. |contributing-guide| replace:: :bdg-link-primary:`Contributing Guide <https://github.com/adosar/aidsorb?tab=contributing-ov-file>`
