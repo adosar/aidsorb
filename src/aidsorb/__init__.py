@@ -15,8 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-|aidsorb| is a :fa:`python; fa-fade` Python package for **deep learning on
-porous materials**.
+|aidsorb| is a Python package for **deep learning on porous materials**.
 """
 
 __author__ = 'Antonios P. Sarikas'

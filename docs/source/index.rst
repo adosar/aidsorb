@@ -4,52 +4,56 @@
    contain the root `toctree` directive.
 
 .. image:: images/aidsorb_logo_light.svg
-	:width: 50%
-	:align: center
+    :width: 50%
+    :align: center
+    :class: only-light
 
-|
+.. image:: images/aidsorb_logo_dark.svg
+    :width: 50%
+    :align: center
+    :class: only-dark
 
-.. grid:: 4
-
-      .. grid-item::
-
-            .. button-link:: https://github.com/adosar/aidsorb
-                  :color: primary
-                  :align: center
-
-                  :octicon:`mark-github` Source code
-
-      .. grid-item::
-
-            .. button-ref:: installation
-                  :ref-type: doc
-                  :color: primary
-                  :align: center
-
-                  🚀 Get started
-
-      .. grid-item::
-
-            .. button-link:: https://pypi.org/project/aidsorb/
-                  :color: primary
-                  :align: center
-
-                  📦 PyPI package
-
-      .. grid-item::
-
-            .. button-link:: https://www.nature.com/articles/s41598-024-76319-8
-                  :color: primary
-                  :align: center
-
-                  :octicon:`telescope` **AIdsorb** paper
+.. 
+.. .. grid:: 4
+.. 
+..       .. grid-item::
+.. 
+..             .. button-link:: https://github.com/adosar/aidsorb
+..                   :color: muted
+..                   :align: center
+.. 
+..                   :octicon:`mark-github` Source code
+.. 
+..       .. grid-item::
+.. 
+..             .. button-ref:: installation
+..                   :ref-type: doc
+..                   :color: muted
+..                   :align: center
+.. 
+..                   🚀 Get started
+.. 
+..       .. grid-item::
+.. 
+..             .. button-link:: https://pypi.org/project/aidsorb/
+..                   :color: muted
+..                   :align: center
+.. 
+..                   📦 PyPI package
+.. 
+..       .. grid-item::
+.. 
+..             .. button-link:: https://www.nature.com/articles/s41598-024-76319-8
+..                   :color: muted
+..                   :align: center
+.. 
+..                   :octicon:`telescope` **AIdsorb** paper
 
 
 About
 =====
 
-|aidsorb| is a :fa:`python; fa-fade` Python package for **deep learning on
-porous materials**.
+|aidsorb| is a Python package for **deep learning on porous materials**.
 
 It is designed to automate the repetitive tasks common to deep learning
 workflows, **allowing researchers to focus on developing and testing new ideas
@@ -75,24 +79,26 @@ runs. Managing these workflows consistently can quickly become cumbersome.
 TODO
 ----
 
-.. card-carousel:: 2
+.. grid:: 2
+   :gutter: 3
+   :class-container: sd-align-major-center
 
-   .. card:: 1️⃣  Extend the :doc:`cli`
+   .. grid-item-card:: 1️⃣ Extend the :doc:`cli`
       :text-align: center
 
       Enable users to make predictions from the command line.
 
-   .. card:: 2️⃣  Add pretrained models
+   .. grid-item-card:: 2️⃣ Add pretrained models
       :text-align: center
 
       Enable users to fine-tune models trained on large data.
 
-   .. card:: 3️⃣  Support more architectures
+   .. grid-item-card:: 3️⃣ Support more architectures
       :text-align: center
 
       Provide clean and fast implementations of new architectures.
 
-   .. card:: 4️⃣  Extend featurization
+   .. grid-item-card:: 4️⃣ Extend featurization
       :text-align: center
 
       Add more featurization options. These should be fast!

@@ -63,23 +63,56 @@ extlinks = {'issue': ('https://github.com/adosar/aidsorb/issues/%s', '#%s')}
 
 # For commonly used links and inline text.
 rst_epilog = '''
-.. |pytorch| replace:: :bdg-link-primary:`PyTorch <https://pytorch.org/>`
-.. |lightning| replace:: :bdg-link-primary:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`
-.. |license| replace:: :bdg-link-primary:`GNU General Public License v3.0 only <https://spdx.org/licenses/GPL-3.0-only.html>`
-.. |aidsorb| replace:: :bdg-link-primary:`AIdsorb <https://github.com/adosar/aidsorb/>`
-.. |github| replace:: :bdg-link-primary:`GitHub <https://github.com/adosar/aidsorb/>`
-.. |discussions| replace:: :bdg-link-primary:`Discussions <https://github.com/adosar/aidsorb/discussions>`
-.. |contributing-guide| replace:: :bdg-link-primary:`Contributing Guide <https://github.com/adosar/aidsorb?tab=contributing-ov-file>`
+.. |pytorch| replace:: :bdg-link-light:`PyTorch <https://pytorch.org/>`
+.. |lightning| replace:: :bdg-link-light:`PyTorch Lightning <https://lightning.ai/docs/pytorch/stable/>`
+.. |license| replace:: :bdg-link-light:`GNU General Public License v3.0 only <https://spdx.org/licenses/GPL-3.0-only.html>`
+.. |aidsorb| replace:: :bdg-link-light:`AIdsorb <https://github.com/adosar/aidsorb/>`
+.. |github| replace:: :bdg-link-light:`GitHub <https://github.com/adosar/aidsorb/>`
+.. |discussions| replace:: :bdg-link-light:`Discussions <https://github.com/adosar/aidsorb/discussions>`
+.. |contributing-guide| replace:: :bdg-link-light:`Contributing Guide <https://github.com/adosar/aidsorb?tab=contributing-ov-file>`
 '''
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
+#html_theme = 'sphinx_rtd_theme'
+html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
-html_logo = 'images/aidsorb_logo_dark.svg'
-html_theme_options = {'logo_only': True}
-html_css_files = [
-        'custom.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
-        ]
+#html_logo = 'images/aidsorb_logo_dark.svg'
+html_context = {'default_mode': 'light'}
+
+html_theme_options = {
+        'default_mode': 'dark',
+        'header_links_before_dropdown': 4,
+        'logo': {
+            #'text': 'Documentation',
+            'alt_text': 'AIdsorb documentation - Home',
+            'image_light': 'images/aidsorb_logo_light.svg',
+            'image_dark': 'images/aidsorb_logo_dark.svg',
+            },
+        'icon_links': [
+            {
+                'name': 'GitHub',
+                'url': 'https://github.com/adosar/aidsorb',
+                'icon': 'fa-brands fa-github',
+                'type': 'fontawesome',
+                },
+            {
+                'name': 'PyPI',
+                'url': 'https://pypi.org/project/aidsorb/',
+                'icon': 'fa-brands fa-python',
+                'type': 'fontawesome',
+                },
+            {
+                'name': 'Paper',
+                'url': 'https://www.nature.com/articles/s41598-024-76319-8',
+                'icon': 'fa-solid fa-microscope',
+                'type': 'fontawesome',
+                },
+            ]
+        }
+#html_theme_options = {'logo_only': True}
+#html_css_files = [
+#        'custom.css',
+#        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css',
+#        ]

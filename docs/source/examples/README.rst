@@ -1,2 +1,2 @@
-:octicon:`code-square` Gallery
-==============================
+🎨 Gallery
+==========

@@ -1,9 +1,9 @@
 .. highlight:: console
 
-:octicon:`flame` Installation
-=============================
+🔥 Installation
+===============
 
-.. admonition:: |aidsorb| is availabe for :fa:`python; fa-fade` Python 3.11+
+.. admonition:: |aidsorb| is availabe for Python 3.11+
 
 	In all cases, it is recommended to **perform the installation inside a
 	virtual environment**.

@@ -1,5 +1,5 @@
-:octicon:`log` Changelog
-========================
+📜 Changelog
+============
 
 Version 3.0.0
 -------------

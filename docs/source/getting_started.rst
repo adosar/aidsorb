@@ -1,5 +1,5 @@
-:octicon:`rocket` Getting started
-=================================
+🚀 Getting started
+==================
 
 .. note::
    This section introduces the framework, its core concepts, and the main
@@ -92,11 +92,13 @@ Point clouds
     from raw structural information, but typically requires more training data
     than more specialized representations.
 
-.. raw:: html
-    :file: images/pcd_plotly.html
+.. dropdown:: Molecular point cloud example
 
-The above point cloud represents IRMOF-1. You can hover :fa:`arrow-pointer;
-fa-beat-fade` over the figure to play with it.
+    .. raw:: html
+        :file: images/pcd_plotly.html
+
+    The above point cloud represents IRMOF-1. You can hover 🖱️ over the figure to
+    play with it.
 
 Energy voxels
 ^^^^^^^^^^^^^
@@ -117,11 +119,13 @@ Energy voxels
     achieves good predictive performance with less training data than more
     generic representations, at the cost of reduced generality.
 
-.. raw:: html
-    :file: images/pes_plotly.html
+.. dropdown:: Energy voxels example
 
-The above energy image represents IRMOF-1. You can hover :fa:`arrow-pointer;
-fa-beat-fade` over the figure to play with it.
+    .. raw:: html
+        :file: images/pes_plotly.html
+
+    The above energy image represents IRMOF-1. You can hover 🖱️ over the figure to
+    play with it.
 
 .. _tutorial:
 
@@ -301,19 +305,11 @@ Summing up
 
 .. _api_tutorial:
 
-Using the :fa:`python` API
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Using the Python API
+^^^^^^^^^^^^^^^^^^^^
 
 Although you are encouraged to use the :doc:`cli`, for more
 flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
-
-.. seealso::
-
-    * :class:`aidsorb.data.Dataset`
-    * :class:`aidsorb.modules`
-    * :class:`aidsorb.datamodules.DataModule`
-    * :class:`aidsorb.litmodules.LitModule`
-
 
 .. tab-set::
 
@@ -388,6 +384,13 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 
             # Test the model.
             trainer.test(litmodel, datamodule=dm)
+
+.. seealso::
+
+    * :class:`aidsorb.data.Dataset`
+    * :class:`aidsorb.modules`
+    * :class:`aidsorb.datamodules.DataModule`
+    * :class:`aidsorb.litmodules.LitModule`
 
 Questions
 ---------

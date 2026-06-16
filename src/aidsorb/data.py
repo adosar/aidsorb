@@ -15,8 +15,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 r"""
-Helper functions and classes for creating datasets and handling inputs of
-variable sizes.
+Helper functions and classes for creating datasets and collating data.
 """
 
 import json

@@ -1,7 +1,7 @@
 .. highlight:: console
 
-:octicon:`terminal` CLI
-=======================
+💻 CLI
+======
 
 There are two available commands: ``aidsorb`` and ``aidsorb-lit``.
 
