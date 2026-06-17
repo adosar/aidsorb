@@ -25,7 +25,7 @@ r"""
 .. warning::
     It is recommended to **use batched inputs in all cases**. For example, even
     if a single ``pcd`` of shape ``(3+C, N)`` is to be passed to
-    :class:`PointNetBackbone`, **reshape it to** ``(1, 3+C, N)``. One way to you
+    :class:`PointNetBackbone`, **reshape it to** ``(1, 3+C, N)``. One way you
     can do it is the following: ``pcd = pcd.unsqueeze(0)``.
 
 .. todo::
