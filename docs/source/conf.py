@@ -77,12 +77,11 @@ rst_epilog = '''
 
 #html_theme = 'sphinx_rtd_theme'
 html_theme = 'pydata_sphinx_theme'
-html_static_path = ['_static']
+#html_static_path = ['_static']
 #html_logo = 'images/aidsorb_logo_dark.svg'
 html_context = {'default_mode': 'light'}
 
 html_theme_options = {
-        'default_mode': 'dark',
         'header_links_before_dropdown': 4,
         'logo': {
             #'text': 'Documentation',

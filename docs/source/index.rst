@@ -86,7 +86,7 @@ TODO
    .. grid-item-card:: 1️⃣ Extend the :doc:`cli`
       :text-align: center
 
-      Enable users to make predictions from the command line.
+      Enable users to predict from the command line.
 
    .. grid-item-card:: 2️⃣ Add pretrained models
       :text-align: center
@@ -96,7 +96,7 @@ TODO
    .. grid-item-card:: 3️⃣ Support more architectures
       :text-align: center
 
-      Provide clean and fast implementations of new architectures.
+      Provide clean and fast implementations!
 
    .. grid-item-card:: 4️⃣ Extend featurization
       :text-align: center
