@@ -162,7 +162,7 @@ Assuming your molecular structures are stored under a directory named
 
         .. code-block:: console
 
-            $ aidsorb create points path/to/structures path/to/pcd_data --features="[en_pauling]"
+            $ aidsorb create points path/to/structures path/to/pcd_data --features='[en_pauling]'
             $ aidsorb create --config=config.yaml  # Recommended for reproducibility
     
     .. tab-item:: config.yaml
@@ -194,7 +194,7 @@ Assuming your molecular structures are stored under a directory named
 
         .. code-block:: console
 
-            $ aidsorb prepare path/to/pcd_data --split_ratio="[0.7, 0.1, 0.2]" --seed=42
+            $ aidsorb prepare path/to/pcd_data --split_ratio='[0.7, 0.1, 0.2]' --seed=42
             $ aidsorb prepare --config=config.yaml  # Recommended for reproducibility
 
     .. tab-item:: config.yaml
