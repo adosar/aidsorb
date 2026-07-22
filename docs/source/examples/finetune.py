@@ -40,6 +40,18 @@ Fine-tune a pretrained model
 # %%
 # Model fine-tuning
 # -----------------
+#
+# The settings below provide a reasonable starting point, but they should
+# not be considered optimal for every use case. In particular, **the number of
+# frozen layers can have a significant impact on final performance** and often
+# benefits from tuning.
+#
+# .. tip::
+#    To further improve performance, consider experimenting with:
+#
+#    * The number of frozen layers
+#    * The learning rate, optimizer, and learning rate scheduler
+#    * Lower-precision training to reduce memory usage and speed up fine-tuning
 
 import torch
 from torchvision.transforms.v2 import Compose, RandomChoice
@@ -68,6 +80,7 @@ def custom_optimizer(self):
 seed_everything(42, workers=True)
 
 # Load pretrained model and freeze early backbone layers.
+# IMPORTANT: play with the number of frozen layers for best results.
 model = IntelliPore(n_outputs=1, pretrained=True)
 model.backbone[:6].requires_grad_(False)
 model.backbone[:6].eval()
@@ -94,7 +107,7 @@ criterion = torch.nn.MSELoss()
 metric = MetricCollection(R2Score(), MeanAbsoluteError())
 
 # Create the litmodule.
-litmodel = LitModule(model, criterion, metric=metric)
+litmodel = LitModule(model=model, criterion=criterion, metric=metric)
 
 # Create the datamodule.
 datamodule = DataModule(
@@ -121,9 +134,11 @@ checkpoint_callback = ModelCheckpoint(
 )
 
 # Create the trainer.
+# TIP: use lower precision (16) if you are limited in memory.
 trainer = Trainer(
     max_epochs=100,
     accelerator='gpu',
+    precision=32,
     callbacks=checkpoint_callback,
 )
 
@@ -133,4 +148,4 @@ torch.nn.init.constant_(model.head.bias, y_mean)
 
 # Train and test the fine-tuned model.
 trainer.fit(litmodel, datamodule=datamodule)
-trainer.test(litmodel, datamodule=datamodule, ckpt_path='best')
+trainer.test(litmodel, datamodule=datamodule, ckpt_path='best', weights_only=False)

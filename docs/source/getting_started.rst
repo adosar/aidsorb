@@ -317,7 +317,6 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 
         .. code-block:: python
 
-            import torch
             from torch.utils.data import DataLoader
 
             from aidsorb.data import Dataset, get_names

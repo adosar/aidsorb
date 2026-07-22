@@ -22,7 +22,7 @@ Currently supported representations:
 * **Molecular point clouds**
     Fast and flexible representation suitable for any molecular system.
 
-* **3D energy images**
+* **Energy voxels**
     Physics-informed representation tailored for adsorption in porous materials.
 
 References

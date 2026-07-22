@@ -14,6 +14,7 @@
     :class: only-dark
 
 |
+
 .. 
 .. .. grid:: 4
 .. 
@@ -89,7 +90,7 @@ TODO
 
       Enable users to predict from the command line.
 
-   .. grid-item-card:: 2️⃣ Add pretrained models
+   .. grid-item-card:: 2️⃣ Add more pretrained models
       :text-align: center
 
       Enable users to fine-tune models trained on large data.
