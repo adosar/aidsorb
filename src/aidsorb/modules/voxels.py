@@ -277,7 +277,5 @@ class IntelliPore(nn.Module):
         r"""
         Return the state dict of the pretrained backbone.
         """
-        #url = 'https://raw.githubusercontent.com/adosar/intellipore/master/pretrained_weights/intellipore_backbone_pretrained.pt'
-        # Temporary needs to be changed
-        url = 'https://raw.githubusercontent.com/adosar/trial/master/pretrained_weights/intellipore_backbone_pretrained.pt'
+        url = 'https://raw.githubusercontent.com/adosar/intellipore-paper/master/pretrained_weights/intellipore_backbone_pretrained.pt'
         return torch.hub.load_state_dict_from_url(url)
