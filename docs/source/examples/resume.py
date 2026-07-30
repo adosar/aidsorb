@@ -23,8 +23,8 @@ from aidsorb.litmodules import LitModule
 
 # Restore lightning modules from checkpoint.
 ckpt_path = 'path/to/checkpoint.ckpt'
-litmodel = LitModule.load_from_checkpoint(ckpt_path)
-dm = DataModule.load_from_checkpoint(ckpt_path)
+litmodel = LitModule.load_from_checkpoint(ckpt_path, weights_only=False)
+dm = DataModule.load_from_checkpoint(ckpt_path, weights_only=False)
 
 # Set the model for inference (disable grads & enable eval mode).
 litmodel.freeze()
