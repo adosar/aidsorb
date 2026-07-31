@@ -64,14 +64,14 @@ pip install aidsorb
 ## 💡 Questions and Contributing
 
 ### Questions
-If you have any questions about how to use **AIdsorb**, we encourage you to post them in the 💬 [Discussions](https://github.com/adosar/aidsorb/discussions)
+If you have any questions about how to use **AIdsorb**, please post them in the 💬 [Discussions](https://github.com/adosar/aidsorb/discussions)
 section of the repository.
 
 > [!NOTE]
 > Please make sure to **read the documentation carefully first** before asking your question.
 
 ### Contributing
-We welcome contributions from the community! Please read our 🙌 [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs or opening issues.
+Contributions from the community are appreciated! Please read the 🙌 [Contributing Guidelines](CONTRIBUTING.md) before submitting PRs or opening issues.
 
 ## 📑 Citing
 * **To cite the software**, please refer to the [citation file](./CITATION.cff) or click the citation button.

@@ -108,7 +108,7 @@ TODO
 Contributing
 ------------
 
-We welcome contributions from the community! Please read our |contributing-guide| before submitting PRs or opening issues.
+Contributions from the community are appreciated! Please read the |contributing-guide| before submitting PRs or opening issues.
 
 Citing
 ------

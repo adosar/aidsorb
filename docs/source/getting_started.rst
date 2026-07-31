@@ -393,5 +393,5 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
 
 Questions
 ---------
-We warmly encourage you to share any questions or ideas in the |discussions|.
+You are warmly encouraged to share any questions or ideas in the |discussions|.
 Before asking *how to do X?*, please read the documentation carefully.
