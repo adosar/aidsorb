@@ -369,14 +369,14 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
             litmodel = LitModule(
                 model=SomeModule(...),
                 criterion=torch.nn.MSELoss(...),
-                ...
+                ...,
                 )
 
             # Create the trainer.
             trainer = Trainer(
                 max_epochs=10,
                 accelerator='gpu',
-                ...
+                ...,
                 )
 
             # Train the model.
