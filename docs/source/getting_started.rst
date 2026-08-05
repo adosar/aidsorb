@@ -376,7 +376,8 @@ flexibility you can also use |aidsorb| with plain |pytorch| or |lightning|.
             trainer = Trainer(
                 max_epochs=10,
                 accelerator='gpu',
-                ...)
+                ...
+                )
 
             # Train the model.
             trainer.fit(litmodel, datamodule=dm)
