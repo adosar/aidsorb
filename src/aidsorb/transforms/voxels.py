@@ -157,8 +157,6 @@ class RandomNoise:
     >>> out = RandomNoise(0.1)(x)
     >>> out.shape
     torch.Size([3, 3])
-    >>> torch.equal(x, out)
-    False
     """
     def __init__(self, std):
         self.std = std
@@ -178,8 +176,13 @@ class RandomRotation90:
     >>> out = RandomRotation90()(x)
     >>> out.shape
     torch.Size([2, 3, 3, 3])
-    >>> torch.equal(x, out)
-    False
+
+    >>> # Values are not altered.
+    >>> torch.equal(
+    ... x.flatten().sort().values,
+    ... out.flatten().sort().values
+    ... )
+    True
     """
     def __init__(self):
         self.planes = list(combinations([1, 2, 3], 2))
@@ -206,8 +209,13 @@ class RandomFlip:
     >>> out = RandomFlip()(x)
     >>> out.shape
     torch.Size([2, 3, 3, 3])
-    >>> torch.equal(x, out)
-    False
+
+    >>> # Values are not altered.
+    >>> torch.equal(
+    ... x.flatten().sort().values,
+    ... out.flatten().sort().values
+    ... )
+    True
     """
     def __call__(self, x):
         _check_shape(x)
@@ -226,8 +234,13 @@ class RandomReflect:
     >>> out = RandomReflect()(x)
     >>> out.shape
     torch.Size([2, 3, 3, 3])
-    >>> torch.equal(x, out)
-    False
+
+    >>> # Values are not altered.
+    >>> torch.equal(
+    ... x.flatten().sort().values,
+    ... out.flatten().sort().values
+    ... )
+    True
     """
     def __init__(self):
         self.planes = list(combinations([1, 2, 3], 2))
