@@ -18,8 +18,7 @@ identifiers:
 repository-code: 'https://github.com/adosar/aidsorb'
 url: 'https://aidsorb.readthedocs.io/en/stable/'
 abstract: >-
-  Python package for deep learning on molecular point
-  clouds.
+  Python package for deep learning on porous materials.
 keywords:
   - machine learning
   - deep learning
@@ -33,6 +32,6 @@ keywords:
   - ai4chemistry
   - chemistry
   - porous materials
-  - material informatics
+  - materials informatics
   - metal-organic frameworks
 license: GPL-3.0-only
