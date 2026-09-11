@@ -107,7 +107,7 @@ def get_optimizers(
         params: Iterable,
         config_optim: dict[str, str | dict] | None = None,
         config_lrs: dict[str, str | dict] | None = None,
-        ):
+        ) -> Optimizer | dict[str, Optimizer | dict]:
     r"""
     Construct optimizer and optionally scheduler.
 
